@@ -202,7 +202,7 @@ rebase
 
 ![1555992303663](\Image\markdown\1555992303663.png)
 
-![1555992438008](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992438008.png)
+![1555992438008](https://github.com/johncxf/Documents/blob/master/Image/Markdown/1555992438008.png)
 
 #### SSH
 
@@ -223,9 +223,9 @@ ssh-keygen -t rsa
 
 **向GitHub添加秘钥**
 
-![1555992728666](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992728666.png)
+![1555992728666](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992728666.png
 
-![1555992753070](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992753070.png)
+![1555992753070](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992753070.png
 
 点击 `New SSH key` 按钮，添加上面生成的 `id_rsa.pub` 公钥内容。
 
