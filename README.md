@@ -192,8 +192,6 @@ rebase
 >
 > 移动主分支
 
-![1555947886909](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1555947886909.png)
-
 ### 远程仓库
 
 下面是最热的`Github`进行讲解，使用`码云、codeing` 等国内仓库使用方式一致，就不在赘述了。
@@ -202,9 +200,9 @@ rebase
 
 为了完成以下示例，你需要在`GitHub` 创建好仓库。
 
-![1555992303663](E:\Image\markdown\1555992303663.png)
+![1555992303663](\Image\markdown\1555992303663.png)
 
-![1555992438008](E:\Image\markdown\1555992438008.png)
+![1555992438008](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992438008.png)
 
 #### SSH
 
@@ -221,13 +219,13 @@ ssh-keygen -t rsa
 
 一直按回车键直到结束。系统会在`~/.ssh` 目录中生成 `id_rsa`和`id_rsa.pub`，即密钥`id_rsa`和公钥`id_rsa.pub`。
 
-![1556003264905](E:\Image\markdown\1556003264905.png)
+![1556003264905](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1556003264905.png)
 
 **向GitHub添加秘钥**
 
-![1555992728666](E:\Image\markdown\1555992728666.png)
+![1555992728666](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992728666.png)
 
-![1555992753070](E:\Image\markdown\1555992753070.png)
+![1555992753070](https://github.com/johncxf/Documents/tree/master/Image/Markdown/1555992753070.png)
 
 点击 `New SSH key` 按钮，添加上面生成的 `id_rsa.pub` 公钥内容。
 
