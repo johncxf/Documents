@@ -192,7 +192,7 @@ rebase
 >
 > 移动主分支
 
-![1555947886909](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1555947886909.png)
+![1555947886909](..\Image\1555947886909.png)
 
 ### 远程仓库
 
