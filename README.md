@@ -200,9 +200,9 @@ rebase
 
 为了完成以下示例，你需要在`GitHub` 创建好仓库。
 
-![1555992303663](johncxf/Documents/master/Manual/1555992303663.png)
+![1555992303663](/Image/Markdown/1555992303663.png)
 
-![1555992438008](johncxf/Documents/master/Manual/1555992438008.png)
+![1555992438008](/Image/Markdown/1555992438008.png)
 
 #### SSH
 
