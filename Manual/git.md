@@ -190,8 +190,6 @@ rebase
 >
 > 移动主分支
 
-![1555947886909](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1555947886909.png)
-
 ### 远程仓库
 
 下面是最热的`Github`进行讲解，使用`码云、codeing` 等国内仓库使用方式一致，就不在赘述了。
