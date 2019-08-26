@@ -79,7 +79,7 @@ locale' => 'en' 改成 locale' => 'zh-CN'
 |	| js				js文件
 | resources 	资源目录
 |	| assets
-|	| lang
+|	| lang				语言包
 |	| views				视图文件
 | routes 		路由目录
 | storage 		存储目录
