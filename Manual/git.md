@@ -2,6 +2,16 @@
 菜单typora-copy-images-to: ..\..\Image\markdown
 ---
 
+## 
+
+### 使用技巧
+
+#### 退出查看状态
+
+> 当使用`git log`，`git tag`等指令查看所有的时候，按英文字母Q退出
+
+
+
 ### 指令分类
 
 #### 安装

@@ -344,6 +344,8 @@ class Whale implements IAction {
 ##### 4.1 单例模式
 
 > 通过提供对自身共享实例的访问， 单例设计模式用于限制特定对象只能被创建一次。单例设计模式最常用于构建数据库连接对象
+>
+> 不管调用多少次singleton方法，都只会new一次
 
 ```php
 <?php
@@ -400,6 +402,8 @@ $test_clone = clone $test;
 ##### 4.2 工厂模式
 
 > 工厂模式（Factory）允许你在代码执行时实例化对象。它之所以被称为工厂模式是因为它负责“生产”对象。工厂方法的参数是 你要生成的对象对应的类名称。
+>
+> 只需要new一次，如果new的对象名做了修改也只需要更改一个地方
 
 ```php
 <?php
@@ -430,7 +434,36 @@ $sqlite = Example::factory('SQLite');
 ?>
 ```
 
-##### 4.3 抽象工厂模式
+##### 4.3 注册器模式
+
+> 注册器模式也叫注册树模式，注册模式等
+>
+> 注册树模式通过将对象实例注册到一棵全局的对象树上，需要的时候从对象树上采摘的模式设计方法
+
+```
+<?php
+/**
+* 注册模式
+*/
+class Register{
+    protected status $objects;
+   
+    static function set ($alias, $object)
+    {
+    	self::$objects[$alias] = $object;
+    }
+    static function get($name)
+    {
+    	return self::$objects[$name];
+    }
+    static function _unset($alias)
+    {
+   		 unset(self::$objects[$alias]);
+    }
+}
+```
+
+##### 4.4 抽象工厂模式
 
 抽象工厂模式:用来生成一组相关或相互依赖的对象。
 
@@ -556,200 +589,950 @@ $car = carFactory::create('audi');
 echo $car->run();
 ```
 
-#### 5 算法
+##### 4.5 原型设计模式
 
-##### 5.1 冒泡排序
+> 原型设计模式创建对象的方式是复制和克隆初始对象或原型，这种方式比创建新实例更为有效。
 
-> 每次比较相邻的两个元素，如果它们顺序错误就交换过来
->
-> 时间复杂度：O(n2)
+```
+<?php
+//初始CD类
+class CD {
+
+    public $title = "";
+    public $band  = "";
+    public $trackList = array();
+    public function __construct($id) {
+        $handle = mysqli_connect("localhost", "root", "root");
+        mysqli_select_db("test", $handle);
+
+        $query  = "select * from cd where id = {$id}";
+        $results= mysqli_query($query, $handle);
+
+        if ($row = mysqli_fetch_assoc($results)) {
+            $this->band  = $row["band"];
+            $this->title = $row["title"];
+        }
+    }
+
+    public function buy() {
+        var_dump($this);
+    }
+}
+
+//采用原型设计模式的混合CD类, 利用PHP的克隆能力。
+class MixtapeCD extends CD {
+    public function __clone() {
+        $this->title = "Mixtape";
+    }
+}
+
+//示例测试
+$externalPurchaseInfoBandID = 1;
+$bandMixproto = new MixtapeCD($externalPurchaseInfoBandID);
+
+$externalPurchaseInfo   = array();
+$externalPurchaseInfo[] = array("brrr", "goodbye");
+$externalPurchaseInfo[] = array("what it means", "brrr");
+
+//因为使用克隆技术， 所以每个新的循环都不需要针对数据库的新查询。
+foreach ($externalPurchaseInfo as $mixed) {
+    $cd = clone $bandMixproto;
+    $cd->trackList = $mixed;
+    $cd->buy();
+}
+```
+
+##### 4.6 建造者模式
+
+> 建造者模式主要是消除其他对象的复杂创建过程，这是最佳做法，而且在对象的构造和配置方法改变时，可以尽可能的减少重复更改代码。
 
 ```php
 <?php
-    $a = array(3,8,1,4,11,7);
-	$len = count($a);
-	for ($i=1; $i<$len; $i++) {
-        for($j=$len-1; $j>=$i;$j--) {
-            if ($a[$j] < $a[$j-1]){//如果改成从大到小的话，只要将if改成if ($a[$j] > $a[$j-1])
-                $temp = $a[$j];
-                $a[$j] = $a[$j-1];
-                $a[$j-1] = $temp;
+class product
+{
+    protected $_type = "";
+    protected $_size = "";
+    protected $_color = "";
+
+    //假设有三个复杂的创建过程
+    public function setType($type)
+    {
+        $this->_type = $type;
+    }
+    public function setSize($size)
+    {
+        $this->_size = $size;
+    }
+    public function setColor($color)
+    {
+        $this->_color = $color;
+    }
+}
+
+$productConfigs = array('type'=>'shirt','size'=>'XL','color'=>'red');
+
+$product = new product();
+//创建对象时分别调用每个方法不是最佳做法，扩展和可适应性低
+$product->setType($productConfigs['type']);
+$product->setSize($productConfigs['size']);
+$product->setColor($productConfigs['color']);
+//复杂的创建过程中使用构造函数来实现更不可取。
+
+
+//建造者模式
+class productBuilder
+{
+    protected $_product = null;
+    protected $_configs = array();
+
+    public function __construct($configs)
+    {
+        $this->_product = new product();
+        $this->_configs = $configs; 
+    }
+
+    public function build()
+    {
+        $this->_product->setSize($this->_configs['size']);
+        $this->_product->setType($this->_configs['type']);
+        $this->_product->setColor($this->_configs['color']);
+    }
+
+    public function getProduct()
+    {
+        return $this->_product;
+    }
+}
+
+$builder = new productBuilder($productConfigs);
+$builder->build();
+$product = $builder->getProduct();
+```
+
+##### 4.7 观察者模式
+
+> 当一个对象状态发生改变时，依赖它的对象全部会受到通知，并自动更新
+>
+> 观察者：能够更便利地创建查看目标对象状态的对象，并且提供与核心对象非耦合的指定功能性
+>
+> 在创建其核心功能可能包含可观察状态变化的对象时候，最佳的做法是基于观察者设计模式创建于目标对象进行交互的其他类
+>
+> 常见的观察者设计模式示例有：插件系统，RSS源缓存器构建
+
+被观察者： 基础CD类
+
+```php
+<?php 
+/**
+ *被观察者： 基础CD类
+ */
+class CD {
+
+    public $title = "";
+    public $band  = "";
+    protected $_observers = array();   // 观察者对象数组
+
+    public function __construct($title, $band) {
+        $this->title = $title;
+        $this->band  = $band;
+    }
+
+    public function attachObserver($type, $observer) {
+        $this->_observers[$type][] = $observer;
+    }
+
+    public function notifyObserver($type) {
+        if (isset($this->_observers[$type])) {
+            foreach ($this->_observers[$type] as $observer) {
+                $observer->update($this);
             }
         }
+    }
+
+    public function buy() {
+        $this->notifyObserver("purchased");
+    }
+}
+```
+
+观察者类
+
+```php
+<?php
+//观察者类 后台处理
+class buyCDNotifyStreamObserver {
+    public function update(CD $cd) {
+        $activity  = "The CD named {$cd->title} by ";
+        $activity .= "{$cd->band} was just purchased.";
+        activityStream::addNewItem($activity);
+    }
+}
+```
+
+消息同事类
+
+```php
+<?php
+//消息同事类 前台输出
+class activityStream {
+    static public function addNewItem($item) {
+        print $item;
+    }
+}
+```
+
+测试实例
+
+```php
+<?php
+//测试实例
+$title = "Waste of a Rib";
+$band  = "Never Again";
+
+$cd    = new CD($title, $band);
+$observer = new buyCDNotifyStreamObserver();
+
+$cd->attachObserver("purchased", $observer);
+$cd->buy();
+```
+
+##### 4.8 适配器模式
+
+> 可以将截然不同的函数接口封装成统一的API
+
+下面用数据库的连接来演示适配器模式，一下是每个php文件主要代码，省略部分代码，如：命名空间，类的自动加载等代码
+
+定义一个database接口，mysql、mysqli、pdo三种连接数据库的方式统一继承这个接口
+
+Database.php
+
+```php
+<?php
+/**
+* 接口
+*/
+interface Database
+{
+	function connect($host, $user, $passwd, $dbname);
+	function query($sql);
+	function close();
+}
+```
+
+MYSQL.php
+
+```php
+<?php
+/**
+* mysql方式连接数据库
+*/
+class MYSQL implements Database
+{
+    protected $conn;
+	function connect($host, $user, $passwd, $dbname)
+    {
+        $conn = mysql_connect($host, $user, $passwd);
+        mysql_select_db($dbname, $conn);
+        $this->conn = $conn;
+    }
+	function query($sql)
+    {
+        return mysql_query($sql, $this->conn);
+    }
+	function close()
+    {
+        mysql_close($this->conn);
+    }
+}
+```
+
+MYSQLi.php
+
+```
+<?php
+/**
+* mysqli方式连接数据库
+*/
+class MYSQLi implements Database
+{
+    protected $conn;
+	function connect($host, $user, $passwd, $dbname)
+    {
+        $conn = mysqli_connect($host, $user, $passwd, $dbname);
+        $this->conn = $conn;
+    }
+	function query($sql)
+    {
+        return mysqli_query($this->conn, $sql);
+    }
+	function close()
+    {
+        mysqli_close($this->conn);
+    }
+}
+```
+
+PDO.php
+
+```
+<?php
+/**
+* PDO方式连接数据库
+*/
+class PDO implements Database
+{
+    protected $conn;
+	function connect($host, $user, $passwd, $dbname)
+    {
+        $conn = new \PDO('mysql:host=$host;dbname=$dbname', $user, $password);
+        $this->conn = $conn;
+    }
+	function query($sql)
+    {
+        return $this->conn->query($sql);
+    }
+	function close()
+    {
+        unset($this->conn);
+    }
+}
+```
+
+index.php
+
+```
+<?php
+/**
+* 调用以上三个数据库连接类型中一种
+*/
+$db = new ...\Database\数据库.php;
+$db->connect('localhost', 'root', 'root', 'test');
+$db->query('show databases');
+$db->close();
+```
+
+##### 4.9 策略模式
+
+> 将一组特定的行为和算法封装成类，以适应某些特定的上下文环境，这种模式就是策略模式
+
+比如说购物车系统，在给商品计算总价的时候，普通会员肯定是商品单价乘以数量，但是对中级会员提供8者折扣，对高级会员提供7折折扣，这种场景就可以使用策略模式
+
+抽象策略角色
+
+```php
+<?php
+/**
+ * 策略模式实例
+ *
+ */
+//抽象策略角色《为接口或者抽象类，给具体策略类继承》
+interface Strategy
+{
+  public function computePrice($price);
+}
+```
+
+具体策略角色-普通会员策略类
+
+```php
+<?php
+//具体策略角色-普通会员策略类
+class GenernalMember implements Strategy
+{
+  public function computePrice($price)
+  {
+    return $price;
+  }
+}
+```
+
+  具体策略角色-中级会员策略类
+
+```php
+<?php
+//具体策略角色-中级会员策略类
+class MiddleMember implements Strategy
+{
+  public function computePrice($price)
+  {
+    return $price * 0.8;
+  }
+}
+```
+
+具体策略角色-高级会员策略类
+
+```php
+<?php
+//具体策略角色-高级会员策略类
+class HignMember implements Strategy
+{
+  public function computePrice($price)
+  {
+    return $price * 0.7;
+  }
+}
+```
+
+环境角色实现类
+
+```php
+<?php
+//环境角色实现类
+class Price
+{
+  //具体策略对象
+  private $strategyInstance;
+  //构造函数
+  public function __construct($instance)
+  {
+    $this->strategyInstance = $instance;
+  }
+  public function compute($price)
+  {
+    return $this->strategyInstance->computePrice($price);
+  }
+}
+```
+
+客户端
+
+```php
+<?php
+
+//客户端使用
+$p = new Price(new HignMember());
+$totalPrice = $p->compute(100);
+echo $totalPrice; //70
+```
+
+##### 4.10 数据对象映射模式
+
+> 将对象和数据存储映射起来，对一个对象的操作会映射为对数据存储的操作
+
+下面实现一个ORM类，将复杂的sql语句映射成对象属性的操作
+
+User.php
+
+```php
+<?php
+/*
+*
+*/
+class User
+{
+    public $id;
+    public $name;
+    public $mobile;
+    public $regtime;
+    
+    function __construct($id)
+    {
+        $this->db = new \Database\MYSSQLi();
+        $this->db->connect('localhost', 'root', 'root', 'test');
+        $res = $this->db->query("select * from test");
+        $data = $res->fetch_assoc();
+        
+        $this->id = $data['id'];
+        $this->name = $data['name'];
+        $this->mobile = $data['mobile'];
+        $this->regtime = $data['regtime'];
+    }
+    
+    function __destruct()
+    {
+        $this->db->query("update test set name='{$this->name}',...");
+    }
+}
+```
+
+使用
+
+```php
+<?php
+
+$user = new ..\User(1);
+
+$user->mobile = '12321312';
+$user->name = 'test';
+$user->regitime = time();
+
+```
+
+下面将结合使用前面博客讲到的工厂模式和注册模式实现ORM类
+
+Factory.php
+
+```php
+<?php
+/*
+*工厂模式
+*/
+class Factory
+{
+    ...
+        
+    static function createDatabase()
+    {
+        $db = Database::getInstance();
+        Register::set('db1', $db);
+        return $db;
+    }
+    
+    static function getUser($id)
+    {
+        //采用注册器模式，结合前面有关注册器模式的博客
+        $key = 'user_'.$id;
+        $user = Register::get($key);
+        if(!$user) {
+            $user = new User($id);
+            Register::set($key, $user);
+        }
+        return $user;
+    }
+}
+```
+
+index.php
+
+```php
+<?php
+/*
+*
+*/
+class Page
+{
+    function index()
+    {
+        $user = new ..\Factory::getUser(1);
+        $user->name = 'test';
+        
+        $this->test();
+    }
+    
+    function test()
+    {
+        $user = new ..\Factory::getUser(1);
+        $user->mobile = '12321312';
+    }
+}
+```
+
+
+
+#### 5 常见算法
+
+##### 5.1 冒泡排序
+
+**原理**
+
+> 两两相邻的数进行比较，如果反序就交换，否则不交换
+
+**复杂度**
+
+> 时间复杂度：O(n^2)
+>
+> 空间复杂度：O(1)
+
+**代码实现**
+
+```php
+<?php
+/**
+  * 快速排序.
+  * @param  array $arr 待排序数组
+  * @return array
+  */
+function bubblesort($arr) {
+	$len = count($arr);
+	//从小到大
+	for($i = 1; $i < $len; $i++){
+		for ($j = $len-1; $j >= $i; $j--) {
+			if ($arr[$j] < $arr[$j-1]) {//如果是从大到小的话，只要在这里的判断改成if($b[$j]>$b[$j-1])就可以了
+				 $tmp = $arr[$j];
+				 $arr[$j] = $arr[$j-1];
+				 $arr[$j-1] = $tmp;
+			}
+		}
 	}
-	print_r($a);
+	return $arr;
+}
 ```
 
 ##### 5.2 快速排序
 
-> 选择一个基准元素，通常选择第一个元素或者最后一个元素。通过一趟扫描，将待排序列分成两部分，一部分比基准元素小，一部分大于等于基准元素。此时基准元素在其排好序后的正确位置，然后再用同样的方法递归地排序划分的两部分
+**原理**
+
+> 选择一个基准元素，通常选择第一个元素或者最后一个元素。通过一趟扫描，将待排序列分成两部分，一部分比基准元素小，一部分大于等于基准元素。此时基准元素在其排好序后的正确位置，然后再用同样的方法递归地排序划分的两部分。
+
+**复杂度**
+
+> 时间复杂度：O(nlog2n)，最差：O(n^2)
 >
-> 时间复杂度：O(nlogN) 最差：O(n2)
+> 空间复杂度：O(n)，最差：O(log2n)
 
-**方法一**
-
-```php
-<?php
-    /**
-    * 快速排序.
-  	* @param  array $value 待排序数组
-  	* @param  array $left  左边界
-  	* @param  array $right 右边界
-  	* @return array
-  	*/
-    function quick(&$value, $left, $right) {
-        //左右边界重合，跳出
-        if ($left >= $right) {
-            return;
-        }
-        //左边的设为基准数
-        $base = $left;
-        //执行
-        do {
-            // 从最右边开始找到第一个比基准小的值，互换位置
-            // 找到基准索引为止
-            for ($i=$right; $i > $base; --$i) {
-                if ($value[$i] < $value[$base]) {
-                    $tmp = $value[$i];
-                    $value[$i] = $value[$base];
-                    $value[$base] = $tmp;
-                    $base = $i; // 更新基准值索引
-                    break;
-                }
-            }
-            // 从最左边开始找到第一个比基准大的值，互换位置
-            // 找到基准索引为止
-            for ($j=$left; $j < $base; ++$j) {
-                if ($value[$j] > $value[$base]) {
-                    $tmp = $value[$j];
-                    $value[$j] = $value[$base];
-                    $value[$base] = $tmp;
-                    $base = $j; // 更新基准值索引
-                    break;
-                }
-            }
-        } while($i > $j);//直到左右索引重合为止
-        // 开始递归
-        // 以当前索引为分界
-        // 开始排序左部分
-        quick($value, $left, $i-1);
-        // 开始排序右边部分
-        quick($value, $i+1, $right);
-        return $value;
-	}
-```
-
-**方法二**
+**代码实现**
 
 ```php
 <?php
-   	/**
-   	* 快速排序.while版本
-   	* @param  array $value 待排序数组
-   	* @param  array $left  左边界
-   	* @param  array $right 右边界
-   	* @return array
-   	*/
-    function quick_while(&value, $left, $right) {
-        if ($left >= $right) {
-            return;
-        }
-        $point = $left;
-        $i = $right;
-        $j = $left;
-        //查右边值
-        while ($i > $j) {
-            if ($value[$i] < $value[$point]) {
-                $tmp = $value[$i];
-                $value[$i] = $value[$point];
-                $value[$point] = $tmp;
-                $point = $i;
-                break;
-            }
-            --$i;
-        }
-        //查左边值
-        while ($j < $point) {
-            if ($value[$j] > $value[$point]) {
-                $tmp = $value[$j];
-                $value[$j] = $value[$point];
-                $value[$point] = $tmp;
-                $point = $j;
-                break;
-            }
-            ++$j;
-        }
-        // 开始递归
-        // 以当前索引为分界
-        // 开始排序左部分
-        quick_while($value, $left, $i-1);
-        // 开始排序右边部分
-        quick_while($value, $i+1, $right);
-        return $value;
+/**
+  * 快速排序.
+  * @param  array $value 待排序数组
+  * @param  array $left  左边界
+  * @param  array $right 右边界
+  * @return array
+  */
+function quicksort(&$value, $left, $right) {
+	//左右重合，跳出
+	if ($left >= $right) {
+		return;
 	}
+	$base = $left;
+	do {
+		//最右边开始找第一个小于基准点的值，然后互换位置
+		//找到为止
+		for ($i = $right; $i > $base; --$i) {
+			if ($value[$base] > $value[$i]) {
+				$tmp = $value[$i];
+				$value[$i] = $value[$base];
+				$value[$base] = $tmp;
+				$base = $i;
+				break;
+			
+			}
+		}
+		
+		//最左边开始找第一个大于基准点的值，互换位置
+		//找到为止
+
+		for ($j = $left; $j < $base; ++$j) {
+			if ($value[$base] < $value[$j]) {
+				$tmp = $value[$j];
+				$value[$j] = $value[$base];
+				$value[$base] = $tmp;
+				$base = $j;
+				break;
+			
+			}
+		}
+	} while ($i > $j);//直到索引重合
+	//开始递归
+	//以当前索引为分界
+	//开始排序左部分
+	quicksort($value, $left, $i - 1);
+	quicksort($value, $i + 1, $right);
+
+}
+// $value = [1,4,2,7,6,4,2];
+// quicksort($value,0,count($value) - 1);
+// print_r($value);
+
 ```
 
 ##### 5.3 选择排序
 
-> 在要排序的一组数中，选出最小的一个数与第一个位置的数交换。然后在剩下的数当中再找最小的与第二个位置的数交换，如此循环到倒数第二个数和最后一个数比较为止。
+**原理**
+
+> 每次从待排序的数据元素中选出最小（或最大）的一个元素，存放在序列起始位置，直到全部排序的数据元素排完
+
+**复杂度**
+
+> 时间复杂度：O(n^2)
+>
+> 空间复杂度：O(1)
+
+**代码实现**
 
 ```php
-$list = array(10,3,5,7,18,11,45,64,74,23,21,6);
-$list = selectSort($list)
-var_dump($list);
-
+<?php
+/**
+  * 选择排序.
+  * @param  array $arr 待排序数组
+  * @return array
+  */
 function selectSort($arr) {
-//双重循环完成，外层控制轮数，内层控制比较次数
- $len=count($arr);
-    for($i=0; $i<$len-1; $i++) {
-        //先假设最小的值的位置
-        $p = $i;
-
-        for($j=$i+1; $j<$len; $j++) {
-            //$arr[$p] 是当前已知的最小值
-            if($arr[$p] > $arr[$j]) {
-            //比较，发现更小的,记录下最小值的位置；并且在下次比较时采用已知的最小值进行比较。
-                $p = $j;
-            }
-        }
-        //已经确定了当前的最小值的位置，保存到$p中。如果发现最小值的位置与当前假设的位置$i不同，则位置互换即可。
-        if($p != $i) {
-            $tmp = $arr[$p];
-            $arr[$p] = $arr[$i];
+	$len = count($arr);
+	for ($i = 0; $i < $len - 1; $i++) {
+		//假设最小值为$i
+		$min = $i;
+		for ($j = $i + 1; $j < $len; $j++) { 
+			//发现更小的,记录下最小值的位置；并且在下次比较时采用已知的最小值进行比较
+			if ($arr[$min] > $arr[$j]) {
+				$min = $j;
+			}
+		}
+		//已经确定了当前的最小值的位置，如果发现最小值的位置与当前假设的位置$i不同，则位置互换即可
+		if ($min != $i) {
+			$tmp = $arr[$min];
+            $arr[$min] = $arr[$i];
             $arr[$i] = $tmp;
-        }
-    }
-    //返回最终结果
-    return $arr;
+		}
+	}
+	return $arr;
 }
+// $list = array(10,3,5,7,18,11,45,64,74,23,21,6);
+// $list = selectSort($list);
+// print_r($list);
 ```
 
 ##### 5.4 插入排序
 
-> 在要排序的一组数中，假设前面的数已经是排好顺序的，现在要把第n个数插到前面的有序数中，使得这n个数也是排好顺序的。如此反复循环，直到全部排好顺序。
+**原理**
+
+> 每次从无序表中取出第一个元素，把他到有序表合适的位置，使有序表依然有序
+
+![](../Image/Markdown/1551852585590812-1566894101824.gif)
+
+**复杂度**
+
+> 时间复杂度：O(n^2)
+>
+> 空间复杂度：O(1)
+
+**代码实现**
 
 ```php
-$list = array(10,3,5,7,18,11,45,64,74,23,21,6);
-$list = insertSort($list);
-var_dump($list);
-
+/**
+  * 插入排序.
+  * @param  array $arr 待排序数组
+  * @return array
+  */
 function insertSort($arr) {
-    $len=count($arr); 
-    for($i=1, $i<$len; $i++) {
-        $tmp = $arr[$i];
-        //内层循环控制，比较并插入
-        for($j=$i-1;$j>=0;$j--) {
-            if($tmp < $arr[$j]) {
-                //发现插入的元素要小，交换位置，将后边的元素与前面的元素互换
-                $arr[$j+1] = $arr[$j];
+	$len = count($arr);
+	for ($i = 1; $i < $len; $i++) {
+		$tmp = $arr[$i];
+		for ($j = $i - 1; $j >= 0; $j--) {
+			//发现插入的元素要小，交换位置，将后边的元素与前面的元素互换
+			if ($tmp < $arr[$j]) {
+				$arr[$j+1] = $arr[$j];
                 $arr[$j] = $tmp;
-            } else {
-                //如果碰到不需要移动的元素，由于是已经排序好是数组，则前面的就不需要再次比较了。
+			} else {
+				//如果碰到不需要移动的元素，由于是已经排序好是数组，则前面的就不需要再次比较了。
                 break;
+			}
+		}
+	}
+	return $arr;
+}
+// $list = array(10,3,5,7,18,11,45,64,74,23,21,6);
+// $list = insertSort($list);
+// print_r($list);
+```
+
+##### 5.5 希尔排序
+
+**原理**
+
+> 把待排序的数据根据增量分成几个子序列，对子序列进行插入排序，直到增量为1，直接进行插入排序；增量的排序，一般是数组的长度的一半，再变为原来增量的一半，直到增量为1
+
+**示例**
+
+对`49，38，65，97，76，13，27，49，55，04 `十个数字排序
+
+增量分别为：`ceil(10 / 2) = 5`，`ceil(5 / 2) = 3`，`ceil(3 / 2) = 2`，`ceil(2 / 1) = 1`
+
+```
+初始：      49，38，65，97，76，13，27，49，55，04
+第一趟：    13，27，49，55，04，49，38，65，97，76
+第二趟：    13，04，49，38，27，49，55，65，97，76
+第三趟：    13，04，27，38，49，49，55，65，97，76
+第四趟：    13，04，27，38，49，49，55，65，76，97
+```
+
+![](../Image/Markdown/1565338298541-1566894101826.png)
+
+
+
+**复杂度**
+
+> 时间复杂度：O(nlog2n)，最差：O(n^2)
+>
+> 空间复杂度：O(1)
+
+**代码实现**
+
+```php
+<?php
+/**
+  * 希尔排序(对直接插入排序的改进)
+  * @param  array $arr 待排序数组
+  * @return array
+  */
+function shellSort(&$arr) {
+    $count = count($arr);
+    //增量
+    $inc = $count;
+    do {
+        //计算增量
+        $inc = ceil($inc / 2);
+        for ($i = $inc; $i < $count; $i++) {
+        	//设置哨兵
+            $temp = $arr[$i];
+            //需将$temp插入有序增量子表
+            for ($j = $i - $inc; $j >= 0 && $arr[$j + $inc] < $arr[$j]; $j -= $inc) {
+                $arr[$j + $inc] = $arr[$j]; //记录后移
+            }
+            //插入
+            $arr[$j + $inc] = $temp;
+        }
+        //增量为1时停止循环
+    } while ($inc > 1);
+}
+// $arr = array(49,38,65,97,76,13,27,49,55,04);
+// shellSort($arr);
+// print_r($arr);
+```
+
+##### 5.6 归并排序
+
+**原理**
+
+> 归并排序：又称合并排序
+>
+> 归并（Merge）排序法是将两个（或两个以上）有序表合并成一个新的有序表，
+>
+> 即把待排序序列分为若干个有序的子序列，再把有序的子序列合并为整体有序序列。
+>
+> 归并排序的一个缺点是它需要存储器有另一个大小等于数据项数目的数组。如果初始数组几乎占满整个存储器，那么归并排序将不能工作，但是如果有足够的空间，归并排序会是一个很好的选择。
+
+**复杂度**
+
+> 时间复杂度：O(nlog2n)
+>
+> 空间复杂度：O(n)
+
+**代码实现**
+
+```php
+class Merge_sort{
+	/**
+	* 归并排序
+	*/
+ 	public static function mergeSort(&$array, $cmp_function = 'strcmp') {
+ 		//边界判断
+        if (count($array) < 2) {
+            return;
+        }
+        //拆分
+        $halfway = count($array) / 2;
+        $array1 = array_slice($array, 0, $halfway);
+        $array2 = array_slice($array, $halfway);
+        //递归调用
+        self::mergeSort($array1, $cmp_function);
+        self::mergeSort($array2, $cmp_function);
+		//array1与array2各自有序;要整体有序，需要比较array1的最后一个元素和array2的第一个元素大小
+        if (call_user_func($cmp_function, end($array1), $array2[0]) < 1) {
+            $array = array_merge($array1, $array2);
+            return;
+        }
+        //将两个有序数组合并为一个有序数组
+        $array = array();
+        $ptr1 = $ptr2 = 0;
+        while ($ptr1 < count($array1) && $ptr2 < count($array2)) {
+            if (call_user_func($cmp_function, $array1[$ptr1], $array2[$ptr2]) < 1) {
+                $array[] = $array1[$ptr1++];
+            } else {
+                $array[] = $array2[$ptr2++];  
             }
         }
+        //合并剩余部分
+        while ($ptr1 < count($array1)) {
+            $array[] = $array1[$ptr1++];  
+        }
+        while ($ptr2 < count($array2)) {
+            $array[] = $array2[$ptr2++];
+        }
+        return;
     }
-    return $arr;
+    public static function stableSort(&$array, $cmp_function = 'strcmp') { 
+	    //使用合并排序
+	    self::mergeSort($array, $cmp_function);
+	    return;
+	}
+}  
+	$list = array(3,2,4,1,5);
+	$sort = new Merge_sort();
+	$sort->stableSort($list, function ($a, $b) {// function ($a, $b)匿名函数  
+	    return $a < $b;  
+	});  
+	//静态调用方式也行  
+	/*Merge_sort:: stableSort($arrStoreList, function ($a, $b) {
+	    return $a < $b; 
+	});*/
+	print_r($list); 
+```
+
+##### 5.7 二分算法
+
+**原理**
+
+> 先和中间数对比，若和中间不等，且小于中间数，则在左边查找，反之在右侧查找
+
+**复杂度**
+
+> 时间复杂度：O(log2n)
+>
+> 空间复杂度：迭代：O(1)，递归：O(log2n)
+
+**代码实现**
+
+```php
+<?php
+ /**
+  * 二分查找
+  * @param  array $data 查找数组
+  * @param  string $search 匹配元素
+  * @return string
+  */
+function binarySearch($data, $search){
+    $low = 0;
+    $high = count($data) - 1;
+    while( $low <= $high ){
+        $mid = floor( ($low + $high) / 2 );
+        if( $data[$mid] == $search ){
+            return $mid;
+        }
+        if( $data[$mid] > $search ){
+            $high = $mid - 1;
+        }
+        if($data[$mid] < $search){
+            $low = $mid + 1;
+        }
+    }
+    return -1;
+}
+```
+
+##### 5.8 顺序查找
+
+**原理**
+
+> 按照顺序查找，暴力
+
+**复杂度**
+
+> 时间复杂度：O(n)
+>
+> 空间复杂度：O(1)
+
+**代码实现**
+
+```php
+<?php
+ /**
+  * 顺序查找
+  * @param  array $data 查找数组
+  * @param  string $search 匹配元素
+  * @return string
+  */
+function search($data, $search){
+    $len = count($)
+    for ($i = 0; $i < $len; $i++) {
+        if ($search == $data[$i]) {
+            return $i;
+        }
+    }
+    return -1;
 }
 ```
 

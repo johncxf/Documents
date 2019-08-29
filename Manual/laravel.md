@@ -62,10 +62,12 @@ locale' => 'en' 改成 locale' => 'zh-CN'
 | 	| Console 			控制台目录
 | 	| Http				Http目录
 | 	| Providers			服务目录
+|	| Job				队列作业
+|	| Listeners			时间侦听
 | 	| Exceptions 		异常处理
 | 	| Mail				邮件目录
 | 	| Notifications		通知目录
-| 	| Providers			策略目录
+| 	| Policy			策略目录
 | bootstrap 	Bootstrap目录
 | 	| cache				服务缓存文件
 | 	| app.php			路由文件
