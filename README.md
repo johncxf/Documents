@@ -1,7 +1,3 @@
----
-菜单typora-copy-images-to: ..\..\Image\markdown
----
-
 ### 指令分类
 
 #### 安装
