@@ -1,16 +1,41 @@
----
-菜单typora-copy-images-to: ..\..\Image\markdown
----
-
-## 
-
 ### 使用技巧
 
 #### 退出查看状态
 
 > 当使用`git log`，`git tag`等指令查看所有的时候，按英文字母Q退出
 
+#### 撤销add
 
+```
+git reset HEAD -filename # .表示所有的
+```
+
+#### 撤销commit
+
+```
+git reset --参数 HEAD^ 		# HEAD^表示上一个版本，也可以接commit_id（通过git log查看）
+```
+
+**参数**
+
+- mixed： 不删除工作空间改动代码，撤销commit，并且撤销git add . 操作
+- soft  不删除工作空间改动代码，撤销commit，不撤销git add . 
+
+- hard：删除工作空间改动代码，撤销commit，撤销git add . 
+
+#### 暂存
+
+使用场景
+
+> 当前分支发生改动，需要切换到其他分支
+>
+> 没注意再主分支或者不对的分支进行了开发，想要将代码转到正确的分支上去
+
+```
+git stash	#暂存
+git checkout ... #切换分支
+git pop	#从暂存拉取代码（应用并删除储藏，更多选项查看“冲突”部分）
+```
 
 ### 指令分类
 
@@ -22,7 +47,7 @@ https://gitforwindows.org/
 
 **注意：安装路径不要有中文**
 
-#### 配置：
+#### 配置
 
 > 配置文件为 `~/.gitconfig` ，执行任何Git配置命令后文件将自动创建
 
@@ -31,23 +56,23 @@ git config --global user.name 'johncxf'
 ```
 
 ```
-git config --global user.email '13777719513@163.com
+git config --global user.email '13777719513@163.com'
 ```
 
 #### 常用指令
 
 - 初始化新仓库 `git init`
-- 克隆旧仓库 `git clone https://github.com/houdunwang/arr.git`
+- 克隆旧仓库 `git clone `
 - 查看状态 `git status`
 - 提交单个文件 `git add index.php`
-- 提交所有文件 `git add -A`
+- 提交所有文件 `git add -A `或`git add .`
 - 使用通配符提交 `git add *.js`
 - 提交到仓库中 `git commit -m '提示信息'`
 - 提交已经跟踪过的文件，不需要执行add `git commit -a -m '提交信息'`
 - 删除版本库与项目目录中的文件 `git rm index.php`
 - 只删除版本库中文件但保存项目目录中文件 `git rm --cached index.php`
 - 修改最后一次提交 `git commit --amend`
-- 修改文件名：git mv `a.php index.php`
+- 修改文件名：`git mv a.php index.php`
 
 #### 清理指令
 
@@ -326,72 +351,3 @@ git push github
 ```
 alias gp="git push & git push github"
 ```
-
-### 自动部署
-
-GitHub设置 `WebHook`
-
-![1565407311666](../Image/Markdown/1565407311666.png)
-
-#### PHP
-
-项目中添加处理 webhook 的webhook.php文件内容如下，并提交到版本库。
-
-```
-<?php
-// GitHub Webhook Secret.
-// GitHub项目 Settings/Webhooks 中的 Secret
-$secret = "houdunren";
-
-// Path to your respostory on your server.
-// e.g. "/var/www/respostory"
-// 项目地址
-$path = "/www/wwwroot/xj.houdunren.com";
-
-// Headers deliveried from GitHub
-$signature = $_SERVER['HTTP_X_HUB_SIGNATURE'];
-
-if ($signature) {
-  $hash = "sha1=".hash_hmac('sha1', file_get_contents("php://input"), $secret);
-  if (strcmp($signature, $hash) == 0) {
-    echo shell_exec("cd {$path} && /usr/bin/git reset --hard origin/master && /usr/bin/git clean -f && /usr/bin/git pull 2>&1");
-    exit();
-  }
-}
-
-http_response_code(404);
-?>
-```
-
-**创建站点**
-
-下面示例我使用的是 `宝塔` 主机面板。 ![1526280838031]
-
-![aa](https://houdunren-image.oss-cn-qingdao.aliyuncs.com/11553615369.png)
-
-现在服务器上生成了站点目录 `/www/wwwroot/xj.houdunren.com` ，因为目录中存在 `.user.ini` 文件（定义站点可以访问的目录权限），造成不能 `clone` 代码，将目录随意改名。
-
-**开启 shell_exec**
-
-执行 `git pull` 指令需要使用 `shell_exec` 函数，删除shell_exec 禁用函数后重启PHP。
-
-![1565407349641](../Image/Markdown/1565407349641.png)
-
-**clone**
-
-登录服务器并使用 https 协议 clone 项目代码
-
-```
-ssh root@xj.houdunren.com -p 22
-git clone https://github.com/houdunwang/xj.git xj.houdunren.com
-```
-
-**修改权限**
-
-```
-chown -R www .
-chmod -R g+s .
-sudo -u www git pull
-```
-
-现在向GitHub 推送代码后，服务器将自动执行代码拉取，自动部署功能设置完成了。
