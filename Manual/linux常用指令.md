@@ -33,6 +33,15 @@ update user set password=password('root') where user='root' and host='10.64.128.
 flush privileges;
 ```
 
+#### 用户
+
+```
+//查看所有用户
+cat /etc/passwd
+//查看所有用户组
+cat /etc/group
+```
+
 
 
 ### 分类
