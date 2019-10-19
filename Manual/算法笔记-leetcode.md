@@ -1988,3 +1988,108 @@ class Solution {
 }
 ```
 
+#### 30.在排序数组中查找元素的第一个和最后一个位置
+
+**题目描述**
+
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+
+你的算法时间复杂度必须是 O(log n) 级别。
+
+如果数组中不存在目标值，返回 [-1, -1]。
+
+**样例**
+
+示例 1:
+
+```
+输入: nums = [5,7,7,8,8,10], target = 8
+输出: [3,4]
+```
+
+
+示例 2:
+
+```
+输入: nums = [5,7,7,8,8,10], target = 6
+输出: [-1,-1]
+```
+
+**解题思路**
+
+> 由题意中复杂度O(log n) ，可知应该用二分思想
+>
+> 下面是暴力和二分实现代码示例
+
+**暴力**
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[]
+     */
+    function searchRange($nums, $target) {
+        $a = -1;
+        $b = -1;
+        for ($i = 0; $i < count($nums); $i++) {
+            if($nums[$i] == $target){
+                $a = $i;
+                break;
+            }
+        }
+        for ($j = count($nums) - 1; $j >= $a; $j--){
+            if($nums[$j] == $target){
+                $b= $j;
+                break;
+            }
+        }
+        return [$a,$b];
+    }
+}
+```
+
+**二分实现**
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[]
+     */
+    function searchRange($nums, $target) {
+        $left = 0;
+        $right = count($nums) - 1;
+        $result = [-1, -1];
+        while ($left <= $right) {
+            $mid = floor(($right + $left) / 2);
+            if($nums[$mid] == $target) {
+                while ($mid >= $left && $nums[$mid] == $target) {
+                    $mid--;
+                }
+                $result[0] = $mid + 1;
+                $mid = floor(($right + $left) / 2);
+                while ($mid <= $right && $nums[$mid] == $target) {
+                    $mid++;
+                }
+                $result[1] = $mid - 1;
+                break;
+            } elseif($nums[$mid] > $target) {
+                $right = $mid - 1;
+            } else {
+                $left = $mid + 1;
+            }
+        }
+        return $result;
+    }
+}
+```
+
+
+
+
+

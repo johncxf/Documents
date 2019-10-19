@@ -593,7 +593,7 @@ echo $car->run();
 
 > 原型设计模式创建对象的方式是复制和克隆初始对象或原型，这种方式比创建新实例更为有效。
 
-```
+```php
 <?php
 //初始CD类
 class CD {
@@ -618,7 +618,11 @@ class CD {
         var_dump($this);
     }
 }
+```
 
+原型设计模式
+
+```php
 //采用原型设计模式的混合CD类, 利用PHP的克隆能力。
 class MixtapeCD extends CD {
     public function __clone() {
@@ -626,6 +630,12 @@ class MixtapeCD extends CD {
     }
 }
 
+
+```
+
+测试
+
+```php
 //示例测试
 $externalPurchaseInfoBandID = 1;
 $bandMixproto = new MixtapeCD($externalPurchaseInfoBandID);
@@ -645,6 +655,8 @@ foreach ($externalPurchaseInfo as $mixed) {
 ##### 4.6 建造者模式
 
 > 建造者模式主要是消除其他对象的复杂创建过程，这是最佳做法，而且在对象的构造和配置方法改变时，可以尽可能的减少重复更改代码。
+
+普通方法定义一个类
 
 ```php
 <?php
@@ -668,7 +680,11 @@ class product
         $this->_color = $color;
     }
 }
+```
 
+调用
+
+```php
 $productConfigs = array('type'=>'shirt','size'=>'XL','color'=>'red');
 
 $product = new product();
@@ -677,8 +693,11 @@ $product->setType($productConfigs['type']);
 $product->setSize($productConfigs['size']);
 $product->setColor($productConfigs['color']);
 //复杂的创建过程中使用构造函数来实现更不可取。
+```
 
+使用建造者模式定义
 
+```php
 //建造者模式
 class productBuilder
 {
@@ -704,6 +723,11 @@ class productBuilder
     }
 }
 
+```
+
+调用
+
+```php
 $builder = new productBuilder($productConfigs);
 $builder->build();
 $product = $builder->getProduct();
@@ -848,7 +872,7 @@ class MYSQL implements Database
 
 MYSQLi.php
 
-```
+```php
 <?php
 /**
 * mysqli方式连接数据库
@@ -874,7 +898,7 @@ class MYSQLi implements Database
 
 PDO.php
 
-```
+```php
 <?php
 /**
 * PDO方式连接数据库
@@ -900,7 +924,7 @@ class PDO implements Database
 
 index.php
 
-```
+```php
 <?php
 /**
 * 调用以上三个数据库连接类型中一种
