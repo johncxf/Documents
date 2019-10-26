@@ -1,3 +1,5 @@
+## 剑指offer
+
 #### 1.二维数组中的查找
 
 **题目描述**
@@ -31,7 +33,63 @@ while(fscanf(STDIN,"%d,%s",$target,$arr) == 2){
 
 **代码实现**
 
+```php
+<?php
+function replaceSpace($str)
+{
+    return str_replace(" ", "%20", $str);
+}
 ```
 
+#### 3.从头到尾打印链表
+
+**题目描述**
+
+> 输入一个链表，按链表从尾到头的顺序返回一个ArrayList。
+
+**代码实现**
+
+php版
+
+```php
+<?php
+
+/*class ListNode{
+    var $val;
+    var $next = NULL;
+    function __construct($x){
+        $this->val = $x;
+    }
+}*/
+function printListFromTailToHead($head)
+{
+    $arr = [];
+    $current = $head;
+    while($current !== null){
+        $arr[] = $current->val;
+        $current = $current->next;
+    }
+    return array_reverse($arr);
+}
+```
+
+python版
+
+```python
+# -*- coding:utf-8 -*-
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # 返回从尾部到头部的列表值序列，例如[1,2,3]
+    def printListFromTailToHead(self, listNode):
+        list = []
+        head = listNode
+        while head:
+            list.insert(0, head.val)
+            head = head.next
+        return list
 ```
 
