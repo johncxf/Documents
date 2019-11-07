@@ -1,6 +1,57 @@
-### Python学习手册
+## Python学习手册
 
-#### urllib
+#### 基础语法
+
+##### 行和缩进
+
+> Python的代码块不使用大括号（{}）来控制类，函数以及其他逻辑判断。python最具特色的就是用缩进来写模块
+
+##### 注释
+
+单行注释`#`开头
+
+```python
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# 文件名：test.py
+
+# 第一个注释
+print "Hello, Python!"; # 第二个注释
+```
+
+多行注释使用三个单引号(''')或三个双引号(""")
+
+```python
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# 文件名：test.py
+
+'''
+这是多行注释，使用单引号。
+这是多行注释，使用单引号。
+这是多行注释，使用单引号。
+'''
+
+"""
+这是多行注释，使用双引号。
+这是多行注释，使用双引号。
+这是多行注释，使用双引号。
+"""
+```
+
+##### 空行
+
+函数之间或类的方法之间用空行分隔，表示一段新的代码的开始。类和函数入口之间也用一行空行分隔，以突出函数入口的开始。
+
+**注：**空行也是程序代码的一部分。
+
+#### 其他
+
+
+
+#### 类库
+
+##### urllib
 
 > HTTP库
 
@@ -23,7 +74,7 @@ import urllib.request
 response = urllib.request.urlopen('https://www.baidu.com')
 ```
 
-#### Requests
+##### Requests
 
 > Python语言白编写，基于urllib，采用Apache2 Licensed 开源协议的HTTP库
 
@@ -61,7 +112,7 @@ import requests
  print(response.history);
 ```
 
-#### Selenium
+##### Selenium
 
 **基本使用**
 
