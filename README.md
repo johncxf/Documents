@@ -195,9 +195,9 @@ rebase
 
 为了完成以下示例，你需要在`GitHub` 创建好仓库。
 
-![1555992303663](/Image/Markdown/1555992303663.png)
+![1555992303663](Manual/image/oldimg/1555992303663.png)
 
-![1555992438008](/Image/Markdown/1555992438008.png)
+![1555992438008](Manual/image/oldimg/1555992438008.png)
 
 #### SSH
 
@@ -214,13 +214,13 @@ ssh-keygen -t rsa
 
 一直按回车键直到结束。系统会在`~/.ssh` 目录中生成 `id_rsa`和`id_rsa.pub`，即密钥`id_rsa`和公钥`id_rsa.pub`。
 
-![1556003264905](/Image/Markdown/1556003264905.png)
+![1556003264905](Manual/image/oldimg/1556003264905.png)
 
 **向GitHub添加秘钥**
 
-![1555992728666](/Image/Markdown/1555992728666.png)
+![1555992728666](Manual/image/oldimg/1555992728666.png)
 
-![1555992753070](/Image/Markdown/1555992753070.png)
+![1555992753070](Manual/image/oldimg/1555992753070.png)
 
 点击 `New SSH key` 按钮，添加上面生成的 `id_rsa.pub` 公钥内容。
 
@@ -329,7 +329,7 @@ alias gp="git push & git push github"
 
 GitHub设置 `WebHook`
 
-![1565407311666](johncxf/Documents/master/Manual/1565407311666.png)
+![1565407311666](Manual/image/oldimg/1565407311666.png)
 
 #### PHP
 
@@ -374,7 +374,7 @@ http_response_code(404);
 
 执行 `git pull` 指令需要使用 `shell_exec` 函数，删除shell_exec 禁用函数后重启PHP。
 
-![1565407349641](/Image/Markdown/1565407349641.png)
+![1565407349641](Manual/image/oldimg/1565407349641.png)
 
 **clone**
 
