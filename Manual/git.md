@@ -251,13 +251,13 @@ ssh-keygen -t rsa
 
 一直按回车键直到结束。系统会在`~/.ssh` 目录中生成 `id_rsa`和`id_rsa.pub`，即密钥`id_rsa`和公钥`id_rsa.pub`。
 
-![1556003264905](../Image/markdown/1556003264905.png)
+![1556003264905](image/oldimg/1556003264905.png)
 
 **向GitHub添加秘钥**
 
-![1555992728666](../Image/markdown/1555992728666.png)
+![1555992728666](image/oldimg/1555992728666.png)
 
-![1555992753070](../Image/markdown/1555992753070.png)
+![1555992753070](image/oldimg/1555992753070.png)
 
 点击 `New SSH key` 按钮，添加上面生成的 `id_rsa.pub` 公钥内容。
 
