@@ -100,6 +100,20 @@ npm install
 
 参考：https://xueyuanjun.com/post/9665.html
 
+#### mysql版本问题
+
+如果mysql版本低于5.7.7，使用数据迁移的数据后报错
+
+需要在laravel的`App\Providers\AppServiceProvider`中添加
+
+```
+public function boot()
+{
+    //
+    \Schema::defaultStringLength(191);
+}
+```
+
 ### 目录结构
 
 开始学习框架第一步应该先了解他的目录结构，接下来学习起来才能得心应手
@@ -583,6 +597,20 @@ return redirect()->route('user.show',[$user]);
 
 假设路由规则为 `Route::get('user/show/{user}')` ，上例中的`[$user]`会自动提出 $user模型对象的主键做为路由参数。
 
+### 数据迁移
+
+创建表文件，在`database\magrations\`中会生成对应的表结构文件
+
+```
+php artisan make:migration create_blogs_table --create
+```
+
+创建表到数据库
+
+```
+php artisan migration
+```
+
 ### 数据填充
 
 #### 普通方式
@@ -829,13 +857,56 @@ class InvoicePaid extends Notification implements ShouldQueue
 
 做好一上操作并正常配置好队列后，系统将自动使用异步队列发送通知。
 
+### 添加Blade模板标签
 
+- **在`\app\services`新建service类`TagService.php`**
 
+- **在providers中注册**
 
+```php
+public function boot()
+{
+	(new TagService())->make();
+}
+```
 
+- **在`TagService.php`中编写，下面是示例代码**
 
+```php
+public function make()
+{
+    $this->friendLinkLists();
+}
 
+/**
+     * 友情链接
+     */
+public function friendLinkLists()
+{
+    Blade::directive('friendLinks', function ($expression) {
+        $expression = $expression?$expression:10;
+        $php=<<<php
+            <ul class="list-group mt-2">
+            <li class="list-group-item active">友情链接</li>
+            <?php
+            \$param = $expression;
+        \$data = (new \App\Stores\Home\HomeStore)->getFriendLinks(\$param);
+        foreach(\$data as \$field):
+        echo '<li class="list-group-item"><a href="'.\$field->url.'" class="text-decoration-none" target="_blank">'.\$field->name.'</a></li>';
+        endforeach;
+        ?>
+            </ul>
+            php;
+        return $php;
+    });
+}
+```
 
+- **在blade模板中调用**
+
+```
+@friendLinks
+```
 
 
 
