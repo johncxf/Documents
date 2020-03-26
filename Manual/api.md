@@ -474,7 +474,7 @@ php artisan jwt:secret
 
 这将用 `JWT_SECRET=foobar` 更新.env文件
 
-### [](http://houdunren.gitee.io/note/laravel/API.html#配置说明-2)配置说明
+### 配置说明
 
 JWT配置文件是 `config/jwt.php`，下面有部分配置项进行说明：
 
@@ -486,7 +486,7 @@ JWT配置文件是 `config/jwt.php`，下面有部分配置项进行说明：
 'refresh_ttl' => env('JWT_REFRESH_TTL', 20160)
 ```
 
-### [](http://houdunren.gitee.io/note/laravel/API.html#更新用户模型)更新用户模型
+### 修改用户模型
 
 首先，您需要在用户模型上实现 `Tymon\JWTAuth\Contracts\JWTSubject` 契约，它要求您实现两个方法 `getJWTIdentifier()` 和 `getJWTCustomClaims()`。
 
@@ -528,7 +528,7 @@ class User extends Authenticatable implements JWTSubject
 }
 ```
 
-### [](http://houdunren.gitee.io/note/laravel/API.html#配置验证守卫)配置验证守卫
+### 配置验证守卫
 
 修改 `config/auth.php` 文件以使用jwt保护来为接口身份验证提供支持。
 
@@ -553,7 +553,7 @@ class User extends Authenticatable implements JWTSubject
 ],
 ```
 
-### [](http://houdunren.gitee.io/note/laravel/API.html#验证操作)验证操作
+### 验证操作
 
 **路由定义**
 
@@ -631,7 +631,7 @@ Authorization: Bearer 令牌数据
 
 在postman 工具中可以使用以下方式简化操作
 
-../Image/Markdown/image-20200325191035622.png)
+![image-20200326130000403](../Image/Markdown/image-20200326130000403.png)
 
 
 
