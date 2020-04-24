@@ -183,6 +183,7 @@ API_SUBTYPE=myapp
 API_PREFIX=api
 #API_DOMAIN=api.myapp.com
 API_VERSION=v1
+API_DEBUG=false
 ```
 
 ### 接口路由
