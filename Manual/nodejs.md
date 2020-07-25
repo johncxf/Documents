@@ -1,3 +1,5 @@
+
+
 ## Node.js
 
 ### 安装配置
@@ -197,6 +199,7 @@ $ node
 #### 命令
 
 - **ctrl + c** - 退出当前终端。
+- **.exit ** 退出当前终端
 - **ctrl + c 按下两次** - 退出 Node REPL。
 - **ctrl + d** - 退出 Node REPL.
 - **向上/向下 键** - 查看输入的历史命令
@@ -206,4 +209,208 @@ $ node
 - **.clear** - 退出多行表达式
 - **.save \*filename\*** - 保存当前的 Node REPL 会话到指定文件
 - **.load \*filename\*** - 载入当前 Node REPL 会话的文件内容。
+
+### 回调函数
+
+```
+function foo1(name, age, callback) { }
+function foo2(value, callback1, callback2) { }
+```
+
+### 事件循环
+
+Node.js 是单进程单线程应用程序，但是因为 V8 引擎提供的异步执行回调接口，通过这些接口可以处理大量的并发，所以性能非常高。
+
+Node.js 几乎每一个 API 都是支持回调函数的。
+
+Node.js 基本上所有的事件机制都是用设计模式中观察者模式实现。
+
+Node.js 单线程类似进入一个while(true)的事件循环，直到没有事件观察者退出，每个异步事件都生成一个事件观察者，如果有事件发生就调用该回调函数.
+
+### Buffer
+
+JavaScript 语言自身只有字符串数据类型，没有二进制数据类型。
+
+但在处理像TCP流或文件流时，必须使用到二进制数据。因此在 Node.js中，定义了一个 Buffer 类，该类用来创建一个专门存放二进制数据的缓存区。
+
+#### buffer与字符串
+
+Buffer 实例一般用于表示编码字符的序列，比如 UTF-8 、 UCS2 、 Base64 、或十六进制编码的数据。 通过使用显式的字符编码，就可以在 Buffer 实例与普通的 JavaScript 字符串之间进行相互转换。
+
+```
+const buf = Buffer.from('runoob', 'ascii');
+
+// 输出 72756e6f6f62
+console.log(buf.toString('hex'));
+
+// 输出 cnVub29i
+console.log(buf.toString('base64'));
+```
+
+**Node.js 目前支持的字符编码包括：**
+
+- **ascii** - 仅支持 7 位 ASCII 数据。如果设置去掉高位的话，这种编码是非常快的。
+- **utf8** - 多字节编码的 Unicode 字符。许多网页和其他文档格式都使用 UTF-8 。
+- **utf16le** - 2 或 4 个字节，小字节序编码的 Unicode 字符。支持代理对（U+10000 至 U+10FFFF）。
+- **ucs2** - **utf16le** 的别名。
+- **base64** - Base64 编码。
+- **latin1** - 一种把 **Buffer** 编码成一字节编码的字符串的方式。
+- **binary** - **latin1** 的别名。
+- **hex** - 将每个字节编码为两个十六进制字符。
+
+### 创建 Buffer 类
+
+Buffer 提供了以下 API 来创建 Buffer 类：
+
+- **Buffer.alloc(size[, fill[, encoding]])：** 返回一个指定大小的 Buffer 实例，如果没有设置 fill，则默认填满 0
+- **Buffer.allocUnsafe(size)：** 返回一个指定大小的 Buffer 实例，但是它不会被初始化，所以它可能包含敏感的数据
+- **Buffer.allocUnsafeSlow(size)**
+- **Buffer.from(array)：** 返回一个被 array 的值初始化的新的 Buffer 实例（传入的 array 的元素只能是数字，不然就会自动被 0 覆盖）
+- **Buffer.from(arrayBuffer[, byteOffset[, length]])：** 返回一个新建的与给定的 ArrayBuffer 共享同一内存的 Buffer。
+- **Buffer.from(buffer)：** 复制传入的 Buffer 实例的数据，并返回一个新的 Buffer 实例
+- **Buffer.from(string[, encoding])：** 返回一个被 string 的值初始化的新的 Buffer 实例
+
+```go
+// 创建一个长度为 10、且用 0 填充的 Buffer。
+const buf1 = Buffer.alloc(10);
+
+// 创建一个长度为 10、且用 0x1 填充的 Buffer。 
+const buf2 = Buffer.alloc(10, 1);
+
+// 创建一个长度为 10、且未初始化的 Buffer。
+// 这个方法比调用 Buffer.alloc() 更快，
+// 但返回的 Buffer 实例可能包含旧数据，
+// 因此需要使用 fill() 或 write() 重写。
+const buf3 = Buffer.allocUnsafe(10);
+
+// 创建一个包含 [0x1, 0x2, 0x3] 的 Buffer。
+const buf4 = Buffer.from([1, 2, 3]);
+
+// 创建一个包含 UTF-8 字节 [0x74, 0xc3, 0xa9, 0x73, 0x74] 的 Buffer。
+const buf5 = Buffer.from('tést');
+
+// 创建一个包含 Latin-1 字节 [0x74, 0xe9, 0x73, 0x74] 的 Buffer。
+const buf6 = Buffer.from('tést', 'latin1');
+```
+
+...
+
+### Stream
+
+Stream 是一个抽象接口，Node 中有很多对象实现了这个接口。例如，对http 服务器发起请求的request 对象就是一个 Stream，还有stdout（标准输出）。
+
+Node.js，Stream 有四种流类型：
+
+- **Readable** - 可读操作。
+- **Writable** - 可写操作。
+- **Duplex** - 可读可写操作.
+- **Transform** - 操作被写入数据，然后读出结果。
+
+所有的 Stream 对象都是 EventEmitter 的实例。常用的事件有：
+
+- **data** - 当有数据可读时触发。
+- **end** - 没有更多的数据可读时触发。
+- **error** - 在接收和写入过程中发生错误时触发。
+- **finish** - 所有数据已被写入到底层系统时触发。
+
+...
+
+### 模块系统
+
+为了让Node.js的文件可以相互调用，Node.js提供了一个简单的模块系统。
+
+模块是Node.js 应用程序的基本组成部分，文件和模块是一一对应的。换言之，一个 Node.js 文件就是一个模块，这个文件可能是JavaScript 代码、JSON 或者编译过的C/C++ 扩展。
+
+### 函数
+
+```
+function say(word) {
+  console.log(word);
+}
+```
+
+### 路由
+
+们要为路由提供请求的 URL 和其他需要的 GET 及 POST 参数，随后路由需要根据这些数据来执行相应的代码。
+
+因此，我们需要查看 HTTP 请求，从中提取出请求的 URL 以及 GET/POST 参数。这一功能应当属于路由还是服务器（甚至作为一个模块自身的功能）确实值得探讨，但这里暂定其为我们的HTTP服务器的功能。
+
+### 全局对象
+
+JavaScript 中有一个特殊的对象，称为全局对象（Global Object），它及其所有属性都可以在程序的任何地方访问，即全局变量。
+
+在浏览器 JavaScript 中，通常 window 是全局对象， 而 Node.js 中的全局对象是 global，所有全局变量（除了 global 本身以外）都是 global 对象的属性。
+
+在 Node.js 我们可以直接访问到 global 的属性，而不需要在应用中包含它。
+
+#### 全局对象与全局变量
+
+global 最根本的作用是作为全局变量的宿主。按照 ECMAScript 的定义，满足以下条 件的变量是全局变量：
+
+- 在最外层定义的变量；
+- 全局对象的属性；
+- 隐式定义的变量（未定义直接赋值的变量）。
+
+当你定义一个全局变量时，这个变量同时也会成为全局对象的属性，反之亦然。需要注 意的是，在 Node.js 中你不可能在最外层定义变量，因为所有用户代码都是属于当前模块的， 而模块本身不是最外层上下文。
+
+### 文件系统
+
+Node.js 提供一组类似 UNIX（POSIX）标准的文件操作API。 Node 导入文件系统模块(fs)语法如下所示：
+
+```
+var fs = require("fs")
+```
+
+#### 异步和同步
+
+Node.js 文件系统（fs 模块）模块中的方法均有异步和同步版本，例如读取文件内容的函数有异步的 fs.readFile() 和同步的 fs.readFileSync()。
+
+异步的方法函数最后一个参数为回调函数，回调函数的第一个参数包含了错误信息(error)。
+
+建议大家使用异步方法，比起同步，异步方法性能更高，速度更快，而且没有阻塞。
+
+创建 input.txt 文件，内容如下：
+
+```
+个人网站地址：www.yqiesuifeng.cn
+文件读取实例
+```
+
+创建 file.js 文件, 代码如下：
+
+```
+var fs = require("fs");
+
+// 异步读取
+fs.readFile('input.txt', function (err, data) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("异步读取: " + data.toString());
+});
+
+// 同步读取
+var data = fs.readFileSync('input.txt');
+console.log("同步读取: " + data.toString());
+
+console.log("程序执行完毕。");
+```
+
+以上代码执行结果如下：
+
+```
+$ node file.js 
+同步读取: 个人网站地址：www.yqiesuifeng.cn
+文件读取实例
+
+程序执行完毕。
+异步读取: 个人网站地址：www.yqiesuifeng.cn
+文件读取实例
+```
+
+> 具体参考：https://www.runoob.com/nodejs/nodejs-fs.html
+
+### GET/POST请求
+
+
 
