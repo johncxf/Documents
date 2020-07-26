@@ -171,7 +171,7 @@ function Mirror(&$root)
 }
 ```
 
-##### 5.变态跳台阶
+#### 5.变态跳台阶
 
 ##### 题目描述
 
@@ -180,8 +180,44 @@ function Mirror(&$root)
 ##### 代码实现
 
 ```php
+<?php
 
+function jumpFloorII($number)
+{
+    if($number == 1) return 1;
+    return pow(2,($number - 1));
+}
 ```
+
+#### 6.用两个栈实现队列
+
+##### 题目描述
+
+> 用两个栈来实现一个队列，完成队列的Push和Pop操作。 队列中的元素为int类型。
+
+##### 代码实现
+
+```php
+<?php
+
+$queue = array();
+function mypush($node)
+{
+    global $queue;
+    return array_push($queue,$node);
+}
+function mypop()
+{
+    global $queue;
+    return array_shift($queue);
+}
+```
+
+
+
+
+
+
 
 
 
