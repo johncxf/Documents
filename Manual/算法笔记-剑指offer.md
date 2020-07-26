@@ -91,7 +91,99 @@ num1=2,num2=3
 | **`$a << $b`** | Shift left（左移）  | 将 $a 中的位向左移动 $b 次（每一次移动都表示“乘以 2”）。 |
 | **`$a >> $b`** | Shift right（右移） | 将 $a 中的位向右移动 $b 次（每一次移动都表示“除以 2”）。 |
 
-#### 3.
+#### 3.二叉树的深度
+
+##### 题目描述
+
+> 输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+
+##### 代码实现
+
+```php
+<?php
+
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function TreeDepth($pRoot)
+{
+    if($pRoot == null) return 0;
+    $left = TreeDepth($pRoot->left);
+    $right = TreeDepth($pRoot->right);
+    return $left > $right ? $left + 1 : $right +1;
+}
+```
+
+#### 4.二叉树的镜像
+
+##### 题目描述
+
+> 操作给定的二叉树，将其变换为源二叉树的镜像。
+
+##### 输入描述
+
+```
+二叉树的镜像定义：源二叉树 
+    	    8
+    	   /  \
+    	  6   10
+    	 / \  / \
+    	5  7 9 11
+    	镜像二叉树
+    	    8
+    	   /  \
+    	  10   6
+    	 / \  / \
+    	11 9 7  5
+```
+
+##### 代码实现
+
+```php
+<?php
+
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function Mirror(&$root)
+{
+    if(!$root)return;
+    $temp1 = $temp2 = NULL;
+    if($root->left){
+        $temp1 = Mirror($root->left);
+    }
+    if($root->right){
+        $temp2 = Mirror($root->right);
+    }
+    $root->left = $temp2;
+    $root->right = $temp1;
+    return $root;
+}
+```
+
+##### 5.变态跳台阶
+
+##### 题目描述
+
+> 一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+
+##### 代码实现
+
+```php
+
+```
+
+
 
 #### 1.二维数组中的查找
 
