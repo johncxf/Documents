@@ -332,11 +332,20 @@ gitlab-ctl restart
 - chinese：简体中文
 - vscode-icons：目录图标
 - Vscode-fesc-plugin：代码规范
-- Git History
+- Settings Sync：同步配置
+- Git History：git历史记录
 - GitLens—Git surpercharged：git提交记录
 - koroFileHeader：生成头文件
+- one Dark Pro：推荐主题
 - miniapp：微信小程序
 - vscode-swan：百度智能小程序高亮与补全插件
+- Bracket Pair Colorzer：括号匹配
+- Eslint：Eslint语法
+- Open in Brower：浏览器打开
+- php
+- python
+- Path Autocomplete
+- open in brower
 - ...
 
 
