@@ -1,14 +1,15 @@
-## 安装配置
+# Tools
 
-本文档记录平时开发配置环境时经常使用的，已经踩过的坑
+本文档记录一些软件工具的安装配置以及使用时，已经踩过的坑。
 
-#### MySQL
+### MySQL
 
-##### 安装
+#### 安装配置
 
-很多安装方式，这里不在讲解
+> 很多安装方式，这里不在讲解
+>
 
-##### 启动
+#### 开启关闭
 
 **源码安装**
 
@@ -25,7 +26,7 @@ $mysql_dir/bin/mysqld_safe &
 sh ${JUMBO_ROOT}/share/mysql/mysql.server start/stop
 ```
 
-##### 密码重置
+#### 密码重置
 
 在配置文件中 [mysqld] 下添加 `skip-grant-tables`，保存退出（忘记密码情况）
 重启 mysql服务
@@ -46,7 +47,7 @@ mysql > exit;
 
 **注意：**以上只是一种修改mysql密码的方法，而且不适用与高版本mysql
 
-##### 开启远程访问
+#### 开启远程访问
 
 ```
 进入 mysql 命令行模式
@@ -64,15 +65,15 @@ ss -tlnp
 显示*:3306则可以
 ```
 
-#### samba
+### samba
 
-##### 安装
+#### 安装
 
 ```
 yum install -y samba samba-client
 ```
 
-##### 配置
+#### 配置
 
 `以下/etc/samba/smb.conf`文件主要配置的讲解
 
@@ -138,7 +139,7 @@ global]
 
 再执行`smbpasswd -a work`添加帐户到`samba`
 
-##### 本地连接
+#### 本地连接
 
 **mac**
 
@@ -148,9 +149,9 @@ global]
 
 使用运行命令(`win+R`)，输入`//IP`可打开，也可以打开`我的电脑`右击选择`添加一个网络位置`，输入`//IP/work`可映射到本地为一个盘符
 
-#### GitLab
+### GitLab
 
-##### SSH
+#### SSH
 
 安装ssh，已经安装可以跳过
 
@@ -170,7 +171,7 @@ sudo systemctl enable sshd
 sudo systemctl start sshd
 ```
 
-##### 防火墙
+#### 防火墙
 
 > 设置防火墙，为了开放HTTP的端口 
 
@@ -198,7 +199,7 @@ sudo firewall-cmd --permanent --add-service=http
 sudo systemctl reload firewalld
 ```
 
-##### 邮件服务
+#### 邮件服务
 
 安装邮件服务，当gitlab想要通过邮件通知，也可以另外配置其它的邮件服务器
 
@@ -231,7 +232,7 @@ inet_protocols = ipv4
 inet_interfaces = all
 ```
 
-##### 下载安装
+#### 下载安装
 
 下载gitlab镜像
 
@@ -260,7 +261,7 @@ gitlab-ctl reconfigure
 gitlab-ctl restart
 ```
 
-##### 其他
+#### 其他
 
 查看已经开放的端口：
 
@@ -274,7 +275,7 @@ firewall-cmd --list-ports
 firewall-cmd --zone=public --add-port=80/tcp --permanent
 ```
 
-##### 邮件发送
+#### 邮件发送
 
 配置
 
@@ -304,5 +305,39 @@ gitlab-ctl restart
 
 执行 `gitlab-rails console`进入控制台。 然后在控制台提示符后输入下面的命令 发送一封测试邮件：`Notify.test_email('收件人邮箱', '邮件标题', '邮件正文').deliver_now` 
 
-#### crontab
+### crontab
+
+> 定时任务
+
+### IDE
+
+#### PHPStorm
+
+> 参考博客：https://blog.yiqiesuifeng.cn/archives/165/
+
+#### webStorm
+
+##### 插件推荐
+
+- Material Theme UI：主题插件
+- CodeGlance：右侧显示当前文件中代码的缩略图
+- GitToolBox：光标`focus`某行时,显示git纪录
+- .ignore：自动生成`.gitignore`文件
+- IdeaVim：支持vim语法
+
+#### VSCode
+
+##### 插件推荐
+
+- chinese：简体中文
+- vscode-icons：目录图标
+- Vscode-fesc-plugin：代码规范
+- Git History
+- GitLens—Git surpercharged：git提交记录
+- koroFileHeader：生成头文件
+- miniapp：微信小程序
+- vscode-swan：百度智能小程序高亮与补全插件
+- ...
+
+
 
