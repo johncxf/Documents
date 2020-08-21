@@ -1,0 +1,155 @@
+
+
+# Linux常用指令
+
+> 日常使用中的一些linux指令的记录
+
+#### 软连接
+
+```
+ln -s [被链接文件路径] [指向文件路径]
+ln -s /home/work/odp/app/newapp/ /home/work/code/app/newapp	#示例
+```
+
+#### 用户
+
+```
+//查看所有用户
+cat /etc/passwd
+// 格式化输出所有用户
+cat /etc/passwd|grep -v nologin|grep -v halt|grep -v shutdown|awk -F":" '{ print $1"|"$3"|"$4 }'|more
+//查看所有用户组
+cat /etc/group
+// 添加用户
+useradd chenxinfang
+// 添加用户并关联目录
+useradd -d "/home/users/work" work
+// 修改用户密码
+passwd work
+```
+
+##### 添加用户
+
+```shell
+useradd 参数 用户名
+```
+
+参数：
+
+- -c：指定一段注释性描述。
+- -d：指定用户主目录，如果此目录不存在，则同时使用-m选项，可以创建主目录。
+- -g：指定用户所属的用户组。
+- -G：指定用户所属的附加组。
+- -s：指定用户的登录Shell。
+- -u：指定用户的用户号，如果同时有-o选项，则可以重复使用其他用户的标识号。
+
+##### 删除用户
+
+```
+userdel 参数 用户名
+```
+
+参数：
+
+-  -r：把用户的主目录一起删除。
+
+##### 修改用户
+
+```
+usermod 参数 用户名
+```
+
+参数：
+
+与`useradd`参数类似
+
+##### 密码管理
+
+```
+passwd 参数 用户名
+```
+
+参数：
+
+- -l：锁定口令，即禁用账号。
+- -u：口令解锁。
+- -d：使账号无口令。
+- -f：强迫用户下次登录时修改口令。
+
+#### grep
+
+```
+grep [-abcEFGhHilLnqrsvVwxy][-A<显示列数>][-B<显示列数>][-C<显示列数>][-d<进行动作>][-e<范本样式>][-f<范本文件>][--help][范本样式][文件或目录...]
+```
+
+参数：
+
+- **-a 或 --text** : 不要忽略二进制的数据。
+- **-A<显示行数> 或 --after-context=<显示行数>** : 除了显示符合范本样式的那一列之外，并显示该行之后的内容。
+- **-b 或 --byte-offset** : 在显示符合样式的那一行之前，标示出该行第一个字符的编号。
+- **-B<显示行数> 或 --before-context=<显示行数>** : 除了显示符合样式的那一行之外，并显示该行之前的内容。
+- **-c 或 --count** : 计算符合样式的列数。
+- **-C<显示行数> 或 --context=<显示行数>或-<显示行数>** : 除了显示符合样式的那一行之外，并显示该行之前后的内容。
+- **-d <动作> 或 --directories=<动作>** : 当指定要查找的是目录而非文件时，必须使用这项参数，否则grep指令将回报信息并停止动作。
+- **-e<范本样式> 或 --regexp=<范本样式>** : 指定字符串做为查找文件内容的样式。
+- **-E 或 --extended-regexp** : 将样式为延伸的正则表达式来使用。
+- **-f<规则文件> 或 --file=<规则文件>** : 指定规则文件，其内容含有一个或多个规则样式，让grep查找符合规则条件的文件内容，格式为每行一个规则样式。
+- **-F 或 --fixed-regexp** : 将样式视为固定字符串的列表。
+- **-G 或 --basic-regexp** : 将样式视为普通的表示法来使用。
+- **-h 或 --no-filename** : 在显示符合样式的那一行之前，不标示该行所属的文件名称。
+- **-H 或 --with-filename** : 在显示符合样式的那一行之前，表示该行所属的文件名称。
+- **-i 或 --ignore-case** : 忽略字符大小写的差别。
+- **-l 或 --file-with-matches** : 列出文件内容符合指定的样式的文件名称。
+- **-L 或 --files-without-match** : 列出文件内容不符合指定的样式的文件名称。
+- **-n 或 --line-number** : 在显示符合样式的那一行之前，标示出该行的列数编号。
+- **-o 或 --only-matching** : 只显示匹配PATTERN 部分。
+- **-q 或 --quiet或--silent** : 不显示任何信息。
+- **-r 或 --recursive** : 此参数的效果和指定"-d recurse"参数相同。
+- **-s 或 --no-messages** : 不显示错误信息。
+- **-v 或 --revert-match** : 显示不包含匹配文本的所有行。
+- **-V 或 --version** : 显示版本信息。
+- **-w 或 --word-regexp** : 只显示全字符合的列。
+- **-x --line-regexp** : 只显示全列符合的列。
+- **-y** : 此参数的效果和指定"-i"参数相同。
+
+#### yum
+
+```
+yum [options] [command] [package ...]
+```
+
+**options：**可选，选项包括-h（帮助），-y（当安装过程提示选择全部为"yes"），-q（不显示安装的过程）等等
+
+- 安装：`yum install <package>`
+- 更新：`yum update`
+- 更新指定的软件：`yum update <package>`
+- 列出所有命令：`yum list`
+- 查找：`yum search <keyword>` 
+- 卸载：`yum remove php-common`
+- 安装包信息：`yum info <package>`
+
+#### rpm
+
+```
+rpm -qa			  				//列出所有已安装软件
+rpm -ql 软件名					  //显示软件安装路径
+rpm -qa | grep jenkins 			//列出所有安装的jenkins
+rpm -q | grep jenkins			//软件是否安装
+rpm -ql jenkins					//列出软件包安装的文件
+rpm -qal |grep jenkins 			//查看jenkins所有安装包的文件存储位置
+```
+
+#### find
+
+```
+find   path   -option   [   -print ]   [ -exec   -ok   command ]   {} \;
+```
+
+列出所有软连接
+
+```
+find /home/harris/debug/ -type l -ls 
+```
+
+#### 
+
