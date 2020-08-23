@@ -309,7 +309,52 @@ gitlab-ctl restart
 
 > 定时任务
 
-### IDE
+### IDEA
+
+#### sublim
+
+##### 安装
+
+官网下载安装：https://www.sublimetext.com/
+
+##### 包管理
+
+sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https://packagecontrol.io/
+
+###### 安装
+
+官网安装教程：https://packagecontrol.io/installation
+
+通过快捷键组合`ctrl+shift+P`唤出命令面板
+
+在面板中输入`install package`后回车
+
+##### 插件
+
+###### 插件安装
+
+`ctrl+shift+P`唤出命令面板输入相关插件命搜索安装即可
+
+###### 常用插件
+
+- emmet：快速编写html/css https://docs.emmet.io
+
+- docblockr：代码注释提示插件 https://packagecontrol.io/packages/DocBlockr
+- sideBarEnhancements ：扩展左侧面板 https://packagecontrol.io/packages/SideBarEnhancements
+- SideBarTools：扩展左侧面板 https://packagecontrol.io/packages/SideBarTools
+- AdvancedNewFile：快速创建文件 ，使用ctrl+alt+n就可以快速创建文件
+- Local History：本地历史记录 https://packagecontrol.io/packages/Local%20History
+- Laravel 5 Artisan：laravel命令行插件 https://packagecontrol.io/packages/Laravel%205%20Artisan 按 ctrol+shift+p 搜索并执行命令
+- Laravel 5 Snippets：laravel代码片段 https://packagecontrol.io/packages/Laravel%205%20Snippets
+- Laravel Blade Highlighter：laravel blade模板高亮 https://packagecontrol.io/packages/Laravel%20Blade%20Highlighter
+- Blade Snippets：blade 代码片段 https://packagecontrol.io/packages/Blade%20Snippets
+- Laravel Blade AutoComplete：自动识别blade父级模板内容 https://packagecontrol.io/packages/Laravel%20Blade%20AutoComplete
+- Bootstrap 3 Snippets：bootstrap 代码片段 https://github.com/JasonMortonNZ/bs3-sublime-plugin
+- Bootstrap 3 Autocomplete：bootstrap样式提示 https://packagecontrol.io/packages/Bootstrap%203%20Autocomplete
+- Bootstrap 4 Snippets：bootstrap代码提示 https://packagecontrol.io/packages/Bootstrap%204%20Snippets
+- Bootstrap 4 Autocomplete：bootstrap4 自动提示：https://packagecontrol.io/packages/Bootstrap%204%20Autocomplete
+- SCSS：scss代码提示 https://packagecontrol.io/packages/SCSS
+- Sass：scss语法高亮 https://packagecontrol.io/packages/Sass
 
 #### PHPStorm
 
