@@ -1,6 +1,6 @@
+# Linux
 
-
-# Linux常用指令
+## linux常用指令
 
 > 日常使用中的一些linux指令的记录
 
@@ -151,5 +151,41 @@ find   path   -option   [   -print ]   [ -exec   -ok   command ]   {} \;
 find /home/harris/debug/ -type l -ls 
 ```
 
-#### 
+## shell
+
+Shell 是一个用 C 语言编写的程序，它是用户使用 Linux 的桥梁。Shell 既是一种命令语言，又是一种程序设计语言。
+
+### 类型
+
+Linux 的 Shell 种类众多，常见的有：
+
+- Bourne Shell（/usr/bin/sh或/bin/sh）
+- Bourne Again Shell（/bin/bash）
+- C Shell（/usr/bin/csh）
+- K Shell（/usr/bin/ksh）
+- Shell for Root（/sbin/sh）
+- ......
+
+### 运行
+
+新建`hello.sh`
+
+```shell
+#!/bin/bash
+echo "Hello World !"
+```
+
+作为可执行程序执行
+
+```
+./hello.sh
+```
+
+作为解释器参数
+
+```
+sh hello.sh
+```
+
+### 变量
 
