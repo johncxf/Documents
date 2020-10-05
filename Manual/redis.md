@@ -24,8 +24,6 @@
 
 7. 在/usr/local/redis下生成bin目录，下面有五个目录，则安装成功
 
-   ![1554632484266](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\1554632484266.png)
-
 8. 将解压目录下的redis.conf配置文件复制到安转目录/usr/local/redis/下
 
 9. 修改redis.conf，将daemonize no改为daemonize yes
