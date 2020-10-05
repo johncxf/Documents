@@ -10,16 +10,21 @@ Nginx是lgor Sysoev为俄罗斯访问量第二的rambler.ru站点设计开发的
 
 ### 配置文件
 
-默认配置文件`nginx.config.default`
+默认配置文件`nginx.config.default`，下面对nginx配置文件进行补充并讲解
 
 ```nginx
-#user  nobody;
-worker_processes  1;
+#定义Nginx运行的用户和用户组，默认为nobody nobody。
+user www www;
 
+#nginx进程数，通常设置成和cpu的数量相等，默认为1
+worker_processes 4;
+
+#制定日志路径，级别。这个设置可以放入全局块，http块，server块，级别以此为：debug|info|notice|warn|error|crit|alert|emerg
 #error_log  logs/error.log;
 #error_log  logs/error.log  notice;
 #error_log  logs/error.log  info;
 
+#指定nginx进程运行文件存放地址
 #pid        logs/nginx.pid;
 
 
@@ -27,36 +32,141 @@ events {
     worker_connections  1024;
 }
 
+events {
+  	#设置网路连接序列化，防止惊群现象发生，默认为on
+  	accept_mutex on;
+  
+  	#设置一个进程是否同时接受多个网络连接，默认为off
+    multi_accept on;
+  
+ 	  #事件驱动模型，select|poll|kqueue|epoll|resig|/dev/poll|eventport
+    use epoll
+    
+    #单个进程最大连接数（最大连接数=连接数+进程数），默认为512。根据硬件调整，和前面工作进程配合使用，尽量大，但是别把cup跑满
+    worker_connections  1024;
+    
+    #keepalive 超时时间
+    keepalive_timeout 60;
 
+		#客户端请求头部的缓冲区大小。根据系统分页大小设置，一般一个请求头的大小不会超过1k，不过由于一般系统分页都要大于1k，所以这里设置为分页大小。分页大小可以用命令getconf PAGESIZE 取得。
+    #[root@web001 ~]# getconf PAGESIZE
+    #但也有client_header_buffer_size超过4k的情况，但是client_header_buffer_size该值必须设置为“系统分页大小”的整倍数。
+    client_header_buffer_size 4k;
+    
+    #这个将为打开文件指定缓存，默认是没有启用的，max指定缓存数量，建议和打开文件数一致，inactive是指经过多长时间文件没被请求后删除缓存。
+    open_file_cache max=65535 inactive=60s;
+    
+    
+    #这个是指多长时间检查一次缓存的有效信息。
+    #语法:open_file_cache_valid time 默认值:open_file_cache_valid 60 使用字段:http, server, location 这个指令指定了何时需要检查open_file_cache中缓存项目的有效信息.
+    open_file_cache_valid 80s;
+    
+    
+    #open_file_cache指令中的inactive参数时间内文件的最少使用次数，如果超过这个数字，文件描述符一直是在缓存中打开的，如上例，如果有一个文件在inactive时间内一次没被使用，它将被移除。
+    #语法:open_file_cache_min_uses number 默认值:open_file_cache_min_uses 1 使用字段:http, server, location  这个指令指定了在open_file_cache指令无效的参数中一定的时间范围内可以使用的最小文件数,如果使用更大的值,文件描述符在cache中总是打开状态.
+    open_file_cache_min_uses 1;
+    
+    #语法:open_file_cache_errors on | off 默认值:open_file_cache_errors off 使用字段:http, server, location 这个指令指定是否在搜索一个文件是记录cache错误.
+    open_file_cache_errors on;
+}
+
+#设定http服务器，利用它的反向代理功能提供负载均衡支持
 http {
+  	#文件扩展名与文件类型映射表
     include       mime.types;
+  
+  	#默认文件类型，默认为text/plain
     default_type  application/octet-stream;
 
+  	#默认编码
+    charset utf-8;
+  
+  	#日志格式
+  	#$remote_addr与$http_x_forwarded_for用以记录客户端的ip地址；
+    #$remote_user：用来记录客户端用户名称；
+    #$time_local： 用来记录访问时间与时区；
+    #$request： 用来记录请求的url与http协议
+    #$status： 用来记录请求状态；成功是200，
+    #$body_bytes_sent ：记录发送给客户端文件主体内容大小；
+    #$http_referer：用来记录从那个页面链接访问过来的；
+    #$http_user_agent：记录客户浏览器的相关信息；
     #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
     #                  '$status $body_bytes_sent "$http_referer" '
     #                  '"$http_user_agent" "$http_x_forwarded_for"';
 
+    #服务日志 
     #access_log  logs/access.log  main;
 
+  	#设定通过nginx上传文件的大小
+    client_max_body_size 8m;
+  
+  	#允许sendfile方式传输文件，默认为off，可以在http块，server块，location块。
     sendfile        on;
+  
+  	#此选项允许或禁止使用socke的TCP_CORK的选项，此选项仅在使用sendfile的时候使用
     #tcp_nopush     on;
+  
+  	#开启目录列表访问，合适下载服务器，默认关闭。
+    autoindex off;
+  
+  	#每个进程每次调用传输数量不能大于设定的值，默认为0，即不设上限。
+  	sendfile_max_chunk 100k;
 
-    #keepalive_timeout  0;
+  	#长连接超时时间，默认为75s，可以在http，server，location块。
     keepalive_timeout  65;
-
+    
+    #gzip模块设置，默认关闭
     #gzip  on;
 
+  	#开启限制IP连接数的时候需要使用
+    #limit_zone crawler $binary_remote_addr 10m;
+  
+  	#负载均衡配置
+    upstream www.yiqiesuifeng.cn {
+        #upstream的负载均衡，weight是权重，可以根据机器配置定义权重。weigth参数表示权值，权值越高被分配到的几率越大。
+        server IP:80 weight=3;
+        server IP:80 weight=2;
+        server IP:80 weight=3;
+				#nginx的upstream目前支持的分配:轮询|weight|ip_hash
+  	}
+  
+  	#虚拟主机的配置
     server {
+    		#监听端口
         listen       8080;
+    
+    		#监听地址，域名可以有多个，用空格隔开
         server_name  localhost;
-
+				
+    		#默认编码
         #charset koi8-r;
 
         #access_log  logs/host.access.log  main;
-
+    
+				#默认入口文件名称
         location / {
             root   html;
             index  index.html index.htm;
+        }
+    
+    		#对******进行负载均衡
+        location ~ .*.(php|php5)?$
+        {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            include fastcgi.conf;
+        }
+         
+        #图片缓存时间设置
+        location ~ .*.(gif|jpg|jpeg|png|bmp|swf)$
+        {
+            expires 10d;
+        }
+         
+        #JS和CSS缓存时间设置
+        location ~ .*.(js|css)?$
+        {
+            expires 1h;
         }
 
         #error_page  404              /404.html;
@@ -74,15 +184,15 @@ http {
         #    proxy_pass   http://127.0.0.1;
         #}
 
+    		# 开启php-fpm配置
         # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-        #
-        #location ~ \.php$ {
-        #    root           html;
-        #    fastcgi_pass   127.0.0.1:9000;
-        #    fastcgi_index  index.php;
-        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
-        #    include        fastcgi_params;
-        #}
+        location ~ \.php$ {
+            root           html;
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+            include        fastcgi_params;
+        }
 
         # deny access to .htaccess files, if Apache's document root
         # concurs with nginx's one
@@ -90,43 +200,11 @@ http {
         #location ~ /\.ht {
         #    deny  all;
         #}
+    		#定义本虚拟主机的访问日志
+        access_log  /www/wwwlogs/yiqiesuifeng.cn.log;
+    		error_log  /www/wwwlogs/yiqiesuifeng.cn.error.log;
     }
-
-
-    # another virtual host using mix of IP-, name-, and port-based configuration
-    #
-    #server {
-    #    listen       8000;
-    #    listen       somename:8080;
-    #    server_name  somename  alias  another.alias;
-
-    #    location / {
-    #        root   html;
-    #        index  index.html index.htm;
-    #    }
-    #}
-
-
-    # HTTPS server
-    #
-    #server {
-    #    listen       443 ssl;
-    #    server_name  localhost;
-
-    #    ssl_certificate      cert.pem;
-    #    ssl_certificate_key  cert.key;
-
-    #    ssl_session_cache    shared:SSL:1m;
-    #    ssl_session_timeout  5m;
-
-    #    ssl_ciphers  HIGH:!aNULL:!MD5;
-    #    ssl_prefer_server_ciphers  on;
-
-    #    location / {
-    #        root   html;
-    #        index  index.html index.htm;
-    #    }
-    #}
+		# 需要引入的配置，一般引入server模块的配置
     include servers/*;
 }
 ```
@@ -169,50 +247,6 @@ http      #http块
 - **server块**：配置虚拟主机的相关参数，一个http中可以有多个server。
 - **location块**：配置请求的路由，以及各种页面的处理情况。
 
-配置示例
-
-```nginx
-########### 每个指令必须有分号结束。#################
-#user administrator administrators;  #配置用户或者组，默认为nobody nobody。
-#worker_processes 2;  #允许生成的进程数，默认为1
-#pid /nginx/pid/nginx.pid;   #指定nginx进程运行文件存放地址
-error_log log/error.log debug;  #制定日志路径，级别。这个设置可以放入全局块，http块，server块，级别以此为：debug|info|notice|warn|error|crit|alert|emerg
-events {
-    accept_mutex on;   #设置网路连接序列化，防止惊群现象发生，默认为on
-    multi_accept on;  #设置一个进程是否同时接受多个网络连接，默认为off
-    #use epoll;      #事件驱动模型，select|poll|kqueue|epoll|resig|/dev/poll|eventport
-    worker_connections  1024;    #最大连接数，默认为512
-}
-http {
-    include       mime.types;   #文件扩展名与文件类型映射表
-    default_type  application/octet-stream; #默认文件类型，默认为text/plain
-    #access_log off; #取消服务日志    
-    log_format myFormat '$remote_addr–$remote_user [$time_local] $request $status $body_bytes_sent $http_referer $http_user_agent $http_x_forwarded_for'; #自定义格式
-    access_log log/access.log myFormat;  #combined为日志格式的默认值
-    sendfile on;   #允许sendfile方式传输文件，默认为off，可以在http块，server块，location块。
-    sendfile_max_chunk 100k;  #每个进程每次调用传输数量不能大于设定的值，默认为0，即不设上限。
-    keepalive_timeout 65;  #连接超时时间，默认为75s，可以在http，server，location块。
-
-    upstream mysvr {   
-      server 127.0.0.1:7878;
-      server 192.168.10.121:3333 backup;  #热备
-    }
-    error_page 404 https://www.baidu.com; #错误页
-    server {
-        keepalive_requests 120; #单连接请求上限次数。
-        listen       4545;   #监听端口
-        server_name  127.0.0.1;   #监听地址       
-        location  ~*^.+$ {       #请求的url过滤，正则匹配，~为区分大小写，~*为不区分大小写。
-           #root path;  #根目录
-           #index vv.txt;  #设置默认页
-           proxy_pass  http://mysvr;  #请求转向mysvr 定义的服务器列表
-           deny 127.0.0.1;  #拒绝的ip
-           allow 172.18.5.54; #允许的ip           
-        } 
-    }
-}
-```
-
 上面是nginx的基本配置，需要注意的有以下几点：
 
 几个常见配置项：
@@ -242,12 +276,12 @@ http {
 brew install nginx
 ```
 
-**常用指令**
+##### 常用指令
 
 ```
 # 启动|停止|重启 服务
 brew services start|stop|restart nginx
-# 查看配置文件
+# 测试配置是否有语法错误
 nginx -t
 # 快速停止nginx
 nginx -s quit
@@ -261,7 +295,7 @@ nginx -s reload|reopen|stop|quit
 nginx -h
 ```
 
-**常见问题**
+#### 常见问题
 
 - `sudo nginx -s reload`时报错：`nginx: [error] invalid PID number "" in "/usr/local/var/run/nginx.pid"`
 
@@ -270,9 +304,24 @@ nginx -h
   sudo nginx -s reload
   ```
 
-- 
+- 访问php文件报错：File not found
 
-## PHP
+  ```
+  更改配置文件nginx.conf 
+  fastcgi_param SCRIPT_FILENAME /scripts$fastcgi_script_name; 
+  替换成下面
+  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  ```
+
+
+
+## php
+
+### mac
+
+#### 安装配置
+
+##### 安装php
 
 **Homebrew安装**
 
@@ -284,4 +333,35 @@ brew search php
 # 安装指定版本php
 brew install php@7.3
 ```
+
+##### php-fpm配置
+
+php中自带了php-fpm，下面讲解下mac环境php-fpm的配置
+
+修改php-fpm.conf文件中的error_log项，默认该项被注释掉，这里需要去注释并且修改为error_log = /usr/local/var/log/php-fpm.log。如果不修改该值，运行php-fpm的时候会提示log文件输出路径不存在的错误。
+
+```
+sudo cp /private/etc/php-fpm.conf.default /private/etc/php-fpm.conf
+vim /private/etc/php-fpm.conf
+```
+
+启动php-fpm
+
+```
+sudo php-fpm
+# 干掉php进程()/pkill强制删除php
+sudo pkill php-fpm
+sudo php-fpm 
+```
+
+##### 常见问题
+
+- 启动报错：`WARNING: Nothing matches the include pattern '/private/etc/php-fpm.d/*.conf' from /private/etc/php-fpm.conf at line 143`
+
+  ```
+  cd /private/etc/php-fpm.d 
+  sudo cp www.conf.default www.conf
+  ```
+
+  
 
