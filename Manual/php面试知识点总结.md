@@ -32,17 +32,17 @@ $a = range(0, 1000);//对a进行修改，开辟空间变化不大
 var_dump(memory_get_usage());
 ```
 
-![1560752789933](../Image/markdown/1560752789933.png)
+<img src="image\oldimg\1560752789933.png" alt="1560752789933" style="zoom:50%;" />
 
 **unset删除引用**
 
-![1560753482200](../Image/markdown/1560753482200.png)
+<img src="image\oldimg\1560753482200.png" alt="1560753482200" style="zoom:50%;" />
 
 **注意：对象本身就是引用传递**
 
 **面试题**
 
-![1560754175983](../Image/markdown/1560754175983.png)
+<img src="image\oldimg\1560754175983.png" alt="1560754175983" style="zoom:50%;" />
 
 #### 2.常量及数据类型
 
@@ -54,11 +54,11 @@ var_dump(memory_get_usage());
 - 双引号：可以解析变量和所有转义字符
 - heredoc：类似双引号
 
-![1560945611922](../Image/markdown/1560945611922.png)
+<img src="image\oldimg\1560945611922.png" alt="1560945611922" style="zoom:50%;" />
 
 - newdoc：类似单引号
 
-![1560945620827](../Image/markdown/1560945620827.png)
+<img src="image\oldimg\1560945620827.png" alt="1560945620827" style="zoom:50%;" />
 
 ##### **2.1数据类型**
 
@@ -71,27 +71,27 @@ var_dump(memory_get_usage());
 
 false的七种情况：
 
-![1560945883197](../Image/markdown/1560945883197.png)
+<img src="image\oldimg\1560945883197.png" alt="1560945883197" style="zoom:50%;" />
 
-![1560945909744](../Image/markdown/1560945909744.png)
+<img src="image\oldimg\1560945909744.png" alt="1560945909744" style="zoom:50%;" />
 
 - 数组类型
 
-![1560946014861](../Image/markdown/1560946014861.png)
+<img src="image\oldimg\1560946014861.png" alt="1560946014861" style="zoom:50%;" />
 
 $_SERVER:
 
 <https://www.cnblogs.com/rendd/p/6182918.html>
 
-![1560946222980](../Image/markdown/1560946222980.png)
+<img src="image\oldimg\1560946222980.png" alt="1560946222980" style="zoom:50%;" />
 
 ##### **2.2常量**
 
-![1560946275704](../Image/markdown/1560946275704.png)
+<img src="image\oldimg\1560946275704.png" alt="1560946275704" style="zoom:50%;" />
 
-![1560946308956](../Image/markdown/1560946308956.png)
+<img src="image\oldimg\1560946308956.png" alt="1560946308956" style="zoom:50%;" />
 
-![1560946327877](../Image/markdown/1560946327877.png)
+<img src="image\oldimg\1560946327877.png" alt="1560946327877" style="zoom:50%;" />
 
 #### 3.运算符
 
@@ -107,53 +107,53 @@ foo()和@foo()之间的区别
 >
 > PHP转换的规则的是：**若字符串以数字开头，则取开头数字作为转换结果，若无则输出0**
 
-![1560947968223](../Image/markdown/1560947968223.png)
+<img src="image\oldimg\1560947968223.png" alt="1560947968223" style="zoom:50%;" />
 
 #### 4.流程控制
 
-![1560948227199](../Image/markdown/1560948227199.png)
+<img src="image\oldimg\1560948227199.png" alt="1560948227199" style="zoom:50%;" />
 
-![1560948340153](../Image/markdown/1560948340153.png)
+<img src="image\oldimg\1560948340153.png" alt="1560948340153" style="zoom:50%;" />
 
-![1560948387345](../Image/markdown/1560948387345.png)
+<img src="image\oldimg\1560948387345.png" alt="1560948387345" style="zoom:50%;" />
 
-![1560948680451](../Image/markdown/1560948680451.png)
+<img src="image\oldimg\1560948680451.png" alt="1560948680451" style="zoom:50%;" />
 
 #### 5.自定义函数和内部函数
 
 ##### 5.1变量
 
-![1560992542690](../Image/markdown/1560992542690.png)
+<img src="image\oldimg\1560992542690.png" alt="1560992542690" style="zoom:50%;" />
 
-![1560992603130](../Image/markdown/1560992603130.png)
+<img src="image\oldimg\1560992603130.png" alt="1560992603130" style="zoom:50%;" />
 
-![1560992751158](../Image/markdown/1560992751158.png)
+<img src="image\oldimg\1560992751158.png" alt="1560992751158" style="zoom:50%;" />
 
-![1560992968484](../Image/markdown/1560992968484.png)
+<img src="image\oldimg\1560992968484.png" alt="1560992968484" style="zoom:50%;" />
 
-![1560994555083](../Image/markdown/1560994555083.png)
+<img src="image\oldimg\1560994555083.png" alt="1560994555083" style="zoom:50%;" />
 
-![1560994604553](../Image/markdown/1560994604553.png)
+<img src="image\oldimg\1560994604553.png" alt="1560994604553" style="zoom:50%;" />
 
-![1560994640502](../Image/markdown/1560994640502.png)
+<img src="image\oldimg\1560994640502.png" alt="1560994640502" style="zoom:50%;" />
 
 ##### 2.内置函数
 
-![1560994909971](../Image/markdown/1560994909971.png)
+<img src="image\oldimg\1560994909971.png" alt="1560994909971" style="zoom:50%;" />
 
-![1560994928530](../Image/markdown/1560994928530.png)
+<img src="image\oldimg\1560994928530.png" alt="1560994928530" style="zoom:50%;" />
 
-![1560994939963](../Image/markdown/1560994939963.png)
+<img src="image\oldimg\1560994939963.png" alt="1560994939963" style="zoom:50%;" />
 
-![1560994960441](../Image/markdown/1560994960441.png)
+<img src="image\oldimg\1560994960441.png" alt="1560994960441" style="zoom:50%;" />
 
-![1560994994332](../Image/markdown/1560994994332.png)
+<img src="image\oldimg\1560994994332.png" alt="1560994994332" style="zoom:50%;" />
 
-![1560995033012](../Image/markdown/1560995033012.png)
+<img src="image\oldimg\1560995033012.png" alt="1560995033012" style="zoom:50%;" />
 
 例题：
 
-![1560995437809](../Image/markdown/1560995437809.png)
+<img src="image\oldimg\1560995437809.png" alt="1560995437809" style="zoom:50%;" />
 
 #### 6.正则表达式
 
@@ -165,11 +165,11 @@ foo()和@foo()之间的区别
 
 常见的PCRE函数
 
-![1561021119081](../Image/markdown/1561021119081.png)
+<img src="image\oldimg\1561021119081.png" alt="1561021119081" style="zoom:50%;" />
 
 中文匹配
 
-![1561021127142](../Image/markdown/1561021127142.png)
+<img src="image\oldimg\1561021127142.png" alt="1561021127142" style="zoom:50%;" />
 
 #### 7.文件目录操作
 
@@ -306,13 +306,13 @@ readfile(filename,include_path,context)
 
 ##### 例题：
 
-![1563502546543](../Image/markdown/1563502546543.png)
+<img src="image\oldimg\1563502546543.png" alt="1563502546543" style="zoom:50%;" />
 
-![1563502431174](../Image/markdown/1563502431174.png)
+![1563502431174](image\oldimg\1563502431174.png)
 
-![1563502561813](../Image/markdown/1563502561813.png)
+![1563502561813](image\oldimg\1563502561813.png)
 
-![1563504771562](../Image/markdown/1563504771562.png)
+![1563504771562](image\oldimg\1563504771562.png)
 
 #### 8.会话控制
 
@@ -386,7 +386,7 @@ session_destroy();
 
 ##### 魔术方法
 
-![1563524614613](../Image/markdown/1563524614613.png)
+<img src="image\oldimg\1563524614613.png" alt="1563524614613" style="zoom:50%;" />
 
 ##### 设计模式
 
@@ -398,17 +398,17 @@ session_destroy();
 
 ##### HTTP协议
 
-![1563525505953](../Image/markdown/1563525505953.png)
+<img src="image\oldimg\1563525505953.png" alt="1563525505953" style="zoom:50%;" />
 
-![1563526761557](../Image/markdown/1563526761557.png)
+<img src="image\oldimg\1563526761557.png" alt="1563526761557" style="zoom:50%;" />
 
 ##### HTTP请求方法
 
-![1563526876295](../Image/markdown/1563526876295.png)
+<img src="image\oldimg\1563526876295.png" alt="1563526876295" style="zoom:50%;" />
 
 ##### HTTPS
 
-![1563526918722](../Image/markdown/1563526918722.png)
+<img src="image\oldimg\1563526918722.png" alt="1563526918722" style="zoom:50%;" />
 
 #### 11.JavaScript和jQuery
 
@@ -474,17 +474,17 @@ session_destroy();
 
 一般模式、编辑模式、命令模式、视图模式
 
-![1564734527472](../Image/markdown/1564734527472.png)
+<img src="image\oldimg\1564734527472.png" alt="1564734527472" style="zoom:50%;" />
 
 ##### shell基础
 
-![1564734643989](../Image/markdown/1564734643989.png)
+<img src="image\oldimg\1564734643989.png" alt="1564734643989" style="zoom:50%;" />
 
-![1564734681037](../Image/markdown/1564734681037.png)
+<img src="image\oldimg\1564734681037.png" alt="1564734681037" style="zoom:50%;" />
 
-![1564734734899](../Image/markdown/1564734734899.png)
+<img src="image\oldimg\1564734734899.png" alt="1564734734899" style="zoom:50%;" />
 
-![1564734782387](../Image/markdown/1564734782387.png)
+<img src="image\oldimg\1564734782387.png" alt="1564734782387" style="zoom:50%;" />
 
 #### 14.mysql
 
@@ -502,39 +502,21 @@ session_destroy();
 
 #### 16.web资源防盗链
 
-![1565061905506](../../../Image/markdown/1565061905506.png)
-
-![1565061932553](../../../Image/markdown/1565061932553.png)
-
-![1565061968043](../../../Image/markdown/1565061968043.png)
-
 ##### Referer
-
-![1565061988611](../../../Image/markdown/1565061988611.png)
-
-![1565062007425](../../../Image/markdown/1565062007425.png)
-
-![1565062026928](../../../Image/markdown/1565062026928.png)
-
-![1565062038147](../../../Image/markdown/1565062038147.png)
 
 ##### 加密签名
 
-![1565061730529](../../../Image/markdown/1565061730529.png)![1565061759075](../../../Image/markdown/1565061759075.png)
-
 #### 17.减少HTTP请求次数
 
-![1565062158823](../../../Image/markdown/1565062158823.png)
+<img src="image\oldimg\1565359609044.png" alt="1565359609044" style="zoom:50%;" />
 
-![1565359609044](../Image/Markdown/1565359609044.png)
+<img src="image\oldimg\1565360302689.png" alt="1565360302688" style="zoom:50%;" />
 
-![1565360302688](../Image/Markdown/1565360302689.png)
+<img src="image\oldimg\15653603662001.png" alt="1565360366200" style="zoom:50%;" />
 
-![1565360366200](../Image/Markdown/15653603662001.png)
+<img src="image\oldimg\1565359609044.png" alt="1565359609044" style="zoom:50%;" />
 
-![1565599172028](../Image/Markdown/1565599172028.png)
-
-![1565599217322](../Image/Markdown/1565599217322.png)
+<img src="image\oldimg\1565599172028.png" alt="1565599172028" style="zoom:50%;" />
 
 #### 18.浏览器缓存和数据压缩
 
