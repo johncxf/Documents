@@ -17,6 +17,39 @@ brew install composer
 composer self-update
 ```
 
+### phpmyadmin
+
+> https://www.phpmyadmin.net
+
+#### 安装配置
+
+**mac**
+
+```
+brew search phpmyadmin
+```
+
+或者官网下载安装
+
+**nginx配置文件中配置**
+
+```nginx
+location /pma {
+    alias /usr/local/share/phpmyadmin/;
+    try_files $uri $uri/ /index.php;
+    disable_symlinks off;
+    index index.php;
+
+    location ~ ^/pma(.+\.php)$ {
+        alias /usr/local/share/phpmyadmin$1;
+    		fastcgi_pass 127.0.0.1:9000;
+    		include fastcgi_params;
+    		fastcgi_param SCRIPT_FILENAME /usr/local/share/phpmyadmin$1;
+    		fastcgi_intercept_errors        on;
+    }
+}
+```
+
 ### MySQL
 
 #### 安装配置
