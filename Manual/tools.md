@@ -2,6 +2,21 @@
 
 本文档记录一些软件工具的安装配置以及使用时，已经踩过的坑。
 
+### Composer
+
+> https://www.phpcomposer.com/
+
+#### 安装配置
+
+**mac**
+
+```
+# homebrew安装
+brew install composer
+# 更新
+composer self-update
+```
+
 ### MySQL
 
 #### 安装配置
@@ -309,7 +324,7 @@ gitlab-ctl restart
 
 > 定时任务
 
-### IDEA
+### IDE
 
 #### sublim
 

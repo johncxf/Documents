@@ -114,11 +114,33 @@ http {
 
   	#长连接超时时间，默认为75s，可以在http，server，location块。
     keepalive_timeout  65;
+  
+  	#FastCGI相关参数是为了改善网站的性能：减少资源占用，提高访问速度。下面参数看字面意思都能理解。
+    fastcgi_connect_timeout 300;
+    fastcgi_send_timeout 300;
+    fastcgi_read_timeout 300;
+    fastcgi_buffer_size 64k;
+    fastcgi_buffers 4 64k;
+    fastcgi_busy_buffers_size 128k;
+    fastcgi_temp_file_write_size 128k;
+  	fastcgi_intercept_errors on;
     
     #gzip模块设置，默认关闭
-    #gzip  on;
+  	#开启gzip压缩输出
+    gzip on;
+    gzip_min_length 1k;    #最小压缩文件大小
+    gzip_buffers 4 16k;    #压缩缓冲区
+    gzip_http_version 1.1; #压缩版本（默认1.1，前端如果是squid2.5请使用1.0）
+    gzip_comp_level 2;     #压缩等级
+  	#压缩类型，默认就已经包含textml，所以下面就不用再写了，写上去也不会有问题，但是会有一个warn。
+    gzip_types text/plain application/javascript application/x-javascript text/javascript text/css application/xml;
+    gzip_vary on;
+    gzip_proxied   expired no-cache no-store private auth;
+    gzip_disable   "MSIE [1-6]\.";
+		limit_conn_zone $binary_remote_addr zone=perip:10m;
+		limit_conn_zone $server_name zone=perserver:10m;
 
-  	#开启限制IP连接数的时候需要使用
+    #开启限制IP连接数的时候需要使用
     #limit_zone crawler $binary_remote_addr 10m;
   
   	#负载均衡配置
@@ -313,7 +335,107 @@ nginx -h
   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
   ```
 
+#### 个人配置
 
+`/usr/local/etc/nginx/nginx.conf`
+
+```nginx
+#user  nobody;
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    server {
+        listen       8080;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm index.php;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        location ~ \.php$ {
+            root           html;
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+
+    }
+    include servers/*.conf;
+}
+```
+
+`/usr/local/etc/nginx/servers/laradmin.com.conf`
+
+```nginx
+server {
+    #监听端口
+    listen    8088;
+
+    #虚拟主机域名
+    server_name  laradmin.com;
+
+    #网站根目录
+    root /Users/chenxinfang/person/code/laradmin/public;
+
+    #定义路径下默认访问的文件名
+    index index.php index.html index.htm default.php default.htm default.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+        #打开目录浏览功能，可以列出整个目录
+        #autoindex on;
+    }
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    location ~ \.php$ {
+        fastcgi_pass     127.0.0.1:9000;
+        fastcgi_index    index.php;
+        include          fastcgi_params;
+        fastcgi_param    SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+    }
+    #禁止访问的文件或目录
+    location ~ ^/(\.user.ini|\.htaccess|\.git|\.svn|\.project|LICENSE|README.md)
+    {
+        return 404;
+    }
+
+    location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
+    {
+        expires      30d;
+        error_log off;
+        access_log off;
+    }
+
+    location ~ .*\.(js|css)?$
+    {
+        expires      12h;
+        error_log off;
+        access_log off;
+    }
+}
+```
 
 ## php
 
@@ -362,6 +484,3 @@ sudo php-fpm
   cd /private/etc/php-fpm.d 
   sudo cp www.conf.default www.conf
   ```
-
-  
-
