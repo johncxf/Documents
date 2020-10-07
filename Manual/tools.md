@@ -31,7 +31,7 @@ brew search phpmyadmin
 
 或者官网下载安装
 
-**nginx配置文件中配置**
+**nginx配置文件中配**
 
 ```nginx
 location /pma {
