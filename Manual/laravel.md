@@ -168,7 +168,7 @@ public function boot()
 
 以下是安装laravel的初始目录截图，node_modules是composer安装的前端文件
 
-![1566652512566](../Image/Markdown/1566652512566.png)
+![1566652512566](image\oldimg\1566652512566.png)
 
 ### 快速创建文件
 
