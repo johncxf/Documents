@@ -420,13 +420,32 @@ function rectCover($number)
 
 ##### 代码实现
 
+示例1：
+
+```javascript
+function NumberOf1(n)
+{
+    let flag = 1;
+    let count = 0;
+    while(flag){
+        if (flag&n){
+            count++;}
+        flag <<= 1;
+         
+    }
+    return count
+}
+```
+
+示例2：
+
 ```php
 <?php
 
 function NumberOf1($n)
 {
     $count = 0;
-  	// 如果n小于0，则将最高位的符号位1变成0
+  	// 如果n小于0，php、python等需要做特殊处理
     if ($n < 0) {
         $n = $n & 0xffffffff;
     }
@@ -435,6 +454,18 @@ function NumberOf1($n)
         $n = $n & ($n - 1);
     }
     return $count;
+}
+```
+
+```javascript
+function NumberOf1(n)
+{
+    let count = 0;
+    while (n != 0) {
+        count++;
+        n = n & (n-1);
+    }
+    return count;
 }
 ```
 
@@ -472,6 +503,25 @@ function NumberOf1($n)
 位运算符知识
 
 [计算机组成原理](计算机组成原理.md)
+
+#### 13.数值的整数次方
+
+##### 题目描述
+
+给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+
+保证base和exponent不同时为0
+
+##### 代码实现
+
+```php
+function Power($base, $exponent)
+{
+    if ($exponent == 0) return 1;
+    if ($base == 0) return 0;
+    return pow($base, $exponent);
+}
+```
 
 #### 重建二叉树
 
