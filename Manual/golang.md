@@ -10,9 +10,17 @@
 2. 点击安装（选择安装位置）
 3. 设置环境变量（默认设置好了）
 
+#### mac
+
+> https://golang.google.cn/doc/install
+>
+> 下载安装即可
+
 ### IDE
 
 > jetbrain golang
+>
+> vscode：需要安装golang扩展
 
 ### 执行程序
 
