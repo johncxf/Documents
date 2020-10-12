@@ -428,10 +428,10 @@ function NumberOf1(n)
     let flag = 1;
     let count = 0;
     while(flag){
-        if (flag&n){
-            count++;}
+        if (flag & n) {
+            count++;
+        }
         flag <<= 1;
-         
     }
     return count
 }
