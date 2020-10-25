@@ -523,6 +523,67 @@ function Power($base, $exponent)
 }
 ```
 
+#### 14.左旋转字符串
+
+##### 题目描述
+
+汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。是不是很简单？OK，搞定它！
+
+##### 代码实现
+
+```php
+// php
+function LeftRotateString($str, $n)
+{
+    if(strlen($str) == 0) return $str;
+    $str1 = substr($str,0,$n);
+    $str2 = substr($str,$n);
+    return $str2.$str1;
+}
+```
+
+```javascript
+// js
+function LeftRotateString(str, n)
+{
+    if(!str || str.length === 0) return '';
+    let num = n % str.length;
+    return str.substr(num) + str.substr(0,num);
+}
+```
+
+#### 15.反转链表
+
+##### 题目描述
+
+输入一个链表，反转链表后，输出新链表的表头。
+
+##### 代码实现
+
+```php
+<?php
+/*class ListNode{
+    var $val;
+    var $next = NULL;
+    function __construct($x){
+        $this->val = $x;
+    }
+}*/
+function ReverseList($pHead)
+{
+    $head = null;
+    while ($pHead) {
+        $tmp = $pHead->next;
+        $pHead->next = $head;
+        $head = $pHead;
+        $pHead = $tmp;
+    }
+    return $head;
+}
+```
+
+
+
 #### 重建二叉树
 
 ##### 题目描述
