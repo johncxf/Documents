@@ -68,12 +68,6 @@ $mysql_dir/bin/mysqladmin -uroot -p shutdown
 $mysql_dir/bin/mysqld_safe &
 ```
 
-**jumbo**安装
-
-```
-sh ${JUMBO_ROOT}/share/mysql/mysql.server start/stop
-```
-
 #### 密码重置
 
 在配置文件中 [mysqld] 下添加 `skip-grant-tables`，保存退出（忘记密码情况）
