@@ -1,12 +1,14 @@
-## Python学习手册
+# Python
 
-#### 基础语法
+> Python是著名的“龟叔”Guido van Rossum在1989年圣诞节期间，为了打发无聊的圣诞节而编写的一个编程语言。
 
-##### 行和缩进
+### 基础语法
 
-> Python的代码块不使用大括号（{}）来控制类，函数以及其他逻辑判断。python最具特色的就是用缩进来写模块
+#### 行和缩进
 
-##### 注释
+Python的代码块不使用大括号（{}）来控制类，函数以及其他逻辑判断。python最具特色的就是用缩进来写模块
+
+#### 注释
 
 单行注释`#`开头
 
@@ -39,19 +41,15 @@ print "Hello, Python!"; # 第二个注释
 """
 ```
 
-##### 空行
+#### 空行
 
 函数之间或类的方法之间用空行分隔，表示一段新的代码的开始。类和函数入口之间也用一行空行分隔，以突出函数入口的开始。
 
 **注：**空行也是程序代码的一部分。
 
-#### 其他
+### 类库
 
-
-
-#### 类库
-
-##### urllib
+#### urllib
 
 > HTTP库
 
@@ -74,7 +72,7 @@ import urllib.request
 response = urllib.request.urlopen('https://www.baidu.com')
 ```
 
-##### Requests
+#### Requests
 
 > Python语言白编写，基于urllib，采用Apache2 Licensed 开源协议的HTTP库
 
@@ -112,7 +110,7 @@ import requests
  print(response.history);
 ```
 
-##### Selenium
+#### Selenium
 
 **基本使用**
 
