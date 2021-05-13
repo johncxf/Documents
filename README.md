@@ -22,6 +22,7 @@
   - [Node.js](./Manual/node.md)
   - [jQuery](./Manual/jQuery.md)
   - [ES6](./Manual/ES6.md)
+  - [webpack](./Manual/webpack.md)
   - [Mocha 测试框架](./Manual/mocha.md)
 - 数据库
   - [Redis](./Manual/Redis.md)
