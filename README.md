@@ -36,7 +36,7 @@
   - [计算机组成原理](./Manual/Computer-organization.md)
   - [计算机操作系统](./Manual/Computer-system.md)
 - 工具
-  - [Git](./Manual/Git.md)
+  - [Git](./Manual/git.md)
   - [vi/vim](./Manual/vim.md)
   - [Docker](./Manual/docker.md)
   - [工具环境](./Manual/tools.md)
