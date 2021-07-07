@@ -2,7 +2,9 @@
 
 推荐文档：
 
-- 入门文档：https://laravelacademy.org/books/golang-tutorials
+- 入门文档：
+  - https://laravelacademy.org/books/golang-tutorials
+  - https://www.runoob.com/go/go-tutorial.html
 - 资源文档：https://geekr.dev/awesome-golang
 
 ## 环境安装
@@ -1082,7 +1084,9 @@ Exit.
 
 ## 函数
 
-#### 定义
+### 函数入门使用
+
+#### 函数定义
 
 格式如下：
 
@@ -1117,7 +1121,9 @@ func max(num1, num2 int) int {
 }
 ```
 
-#### 调用
+#### 函数调用
+
+##### 同一包内调用：
 
 ```go
 package main
@@ -1150,7 +1156,34 @@ func max(num1, num2 int) int {
 }
 ```
 
-#### 返回值
+##### 不同包内调用：
+
+```go
+package mymath
+
+func Add(a, b int) int  {
+    return a + b
+}
+```
+
+```go
+package main
+
+import (
+    "fmt"
+    "mymath" //需要先导入了该函数所在的包
+)
+
+func main()  {
+    fmt.Println(mymath.Add(1, 2))   // 3
+}
+```
+
+**PS：在调用其他包定义的函数时，只有函数名首字母大写的函数才可以被访问**
+
+Go 语言中没有 `public`、`protected`、`private` 之类的关键字，它是通过首字母的大小写来区分可见性的：首字母小写的函数只能在同一个包中访问，首字母大写的函数才可以在其他包中调用，Go 文件中定义的全局变量也是如此。
+
+#### 函数返回值
 
 go语言函数可以return多个值
 
@@ -1166,6 +1199,38 @@ func swap(x, y string) (string, string) {
 func main() {
    a, b := swap("Google", "Runoob")
    fmt.Println(a, b)
+}
+```
+
+#### 变长参数
+
+##### 固定类型
+
+只需要在参数类型前加上 `...` 前缀，就可以将该参数声明为变长参数：
+
+```go
+func myfunc(numbers ...int) {
+    for _, number := range numbers {
+        fmt.Println(number)
+    }
+}
+```
+
+函数 `myfunc()` 接受任意数量的参数，这些参数的类型全部是 `int`，所以它可以通过如下方式调用：
+
+```go
+myfunc(1, 2, 3, 4, 5) 
+```
+
+注：形如 `...type` 格式的类型只能作为函数的参数类型存在，并且必须是函数的最后一个参数。
+
+##### 任意类型（泛型）
+
+Go 语言也可以支持传递任意类型的值作为变长参数，指定变长参数类型为 `interface{}`，下面是 Go 语言标准库中 `fmt.Printf()` 的函数原型：
+
+```go
+func Printf(format string, args ...interface{}) { 
+    // ...
 }
 ```
 
@@ -1211,5 +1276,462 @@ func swap(x *int, y *int) {
 交换前，b 的值 : 200
 交换后，a 的值 : 200
 交换后，b 的值 : 100
+```
+
+### 匿名函数与闭包
+
+#### 定义
+
+所谓闭包指的是引用了自由变量（未绑定到特定对象的变量，通常在函数外定义）的函数，被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的上下文环境也不会被释放（比如传递到其他函数或对象中）。简单来说，「闭」的意思是「封闭外部状态」，即使外部状态已经失效，闭包内部依然保留了一份从外部引用的变量。
+
+显然，闭包只能通过匿名函数实现，我们可以把闭包看作是**有状态的匿名函数**，反过来，如果匿名函数引用了外部变量，就形成了一个闭包（Closure）。
+
+闭包的价值在于可以作为持有外部变量的函数对象或者匿名函数，对于类型系统而言，这意味着不仅要表示数据还要表示代码。支持闭包的语言都将函数作为**第一类对象**（firt-class object，有的地方也译作第一级对象、一等公民等，都是一个意思），Go 语言也不例外，这意味 Go 函数和普通 Go 数据类型（整型、字符串、数组、切片、字典、结构体等）具有同等的地位，可以赋值给变量，也可以作为参数传递给其他函数，还能够被函数动态创建和返回。
+
+> 注：所谓第一类对象指的是运行期可以被创建并作为参数传递给其他函数或赋值给变量的实体，在绝大多数语言中，数值和基本类型都是第一类对象，在支持闭包的编程语言中（比如 Go、PHP、JavaScript、Python 等），函数也是第一类对象，而像 C、C++ 等不支持匿名函数的语言中，函数不能在运行期创建，所以在这些语言中，函数不是不是第一类对象。
+
+```go
+func(a, b int) int { 
+    return a + b
+}
+```
+
+#### 将匿名函数作为函数参数
+
+匿名函数除了可以赋值给普通变量外，还可以作为参数传递到函数中进行调用，就像普通数据类型一样：
+
+```go
+add := func(a, b int) int {
+    return a + b
+}
+
+// 将函数类型作为参数
+func(call func(int, int) int) {
+    fmt.Println(call(1, 2))
+}(add)
+```
+
+当我们将函数声明数据类型时，需要严格指定每个参数和返回值的类型，这才是一个完整的函数类型，因此 `add` 函数对应的函数类型是 `func(int, int) int`。
+
+也可以将第二个匿名函数提取到 `main` 函数外，成为一个具名函数 `handleAdd`，然后定义不同的加法算法实现函数，并将其作为参数传入 `handleAdd`：
+
+```go
+func main() {
+    ...
+
+    // 普通的加法操作
+    add1 := func(a, b int) int {
+        return a + b
+    }
+
+    // 定义多种加法算法
+    base := 10
+    add2 := func(a, b int) int {
+        return a * base + b
+    }
+
+    handleAdd(1, 2, add1)
+    handleAdd(1, 2, add2)
+}
+
+// 将匿名函数作为参数
+func handleAdd(a, b int, call func(int, int) int) {
+    fmt.Println(call(a, b))
+}
+```
+
+#### 将匿名函数作为函数返回值
+
+```go
+// 将函数作为返回值类型
+func deferAdd(a, b int) func() int {
+    return func() int {
+        return a + b
+    }
+}
+
+func main() {
+    ...
+
+    // 此时返回的是匿名函数
+    addFunc := deferAdd(1, 2)
+    // 这里才会真正执行加法操作
+    fmt.Println(addFunc())
+}
+```
+
+#### 装饰器
+
+装饰器模式（Decorator）是一种软件设计模式，其应用场景是为某个已经存在的功能模块（类或者函数）添加一些「装饰」功能，而又不会侵入和修改原有的功能模块。
+
+Go 语言的设计哲学就是简单，没有提供「注解」之类的语法糖，在函数式编程中，要实现装饰器模式，可以借助高阶函数来实现。
+
+```go
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+// 为函数类型设置别名提高代码可读性
+type MultiPlyFunc func(int, int) int
+
+// 乘法运算函数
+func multiply(a, b int) int {
+    return a * b
+}
+
+// 通过高阶函数在不侵入原有函数实现的前提下计算乘法函数执行时间
+func execTime(f MultiPlyFunc) MultiPlyFunc {
+    return func(a, b int) int {
+        start := time.Now() // 起始时间
+        c := f(a, b)  // 执行乘法运算函数
+        end := time.Since(start) // 函数执行完毕耗时
+        fmt.Printf("--- 执行耗时: %v ---\n", end)
+        return c  // 返回计算结果
+    }
+}
+
+func main() {
+    a := 2
+    b := 8
+    // 通过修饰器调用乘法函数，返回的是一个匿名函数
+    decorator := execTime(multiply)
+    // 执行修饰器返回函数
+    c := decorator(a, b)
+    fmt.Printf("%d x %d = %d\n", a, b, c)
+}
+```
+
+## 面向对象
+
+Go 语言并没有沿袭传统面向对象编程中的诸多概念，比如类的继承、接口的实现、构造函数和析构函数、隐藏的 this 指针等，也没有 `public`、`protected`、`private` 之类的访问修饰符。
+
+Go 语言对面向对象编程的支持是语言类型系统中的天然组成部分，整个类型系统通过接口串联，浑然一体。
+
+### 类型系统
+
+顾名思义，类型系统是指一个语言的类型体系结构。一个典型的类型系统通常包含如下基本内容：
+
+- 基本类型，如 `byte`、`int`、`bool`、`float`、`string` 等；
+- 复合类型，如数组、切片、字典、指针、结构体等；
+- 可以指向任意对象的类型（Any 类型）；
+- 值语义和引用语义；
+- 面向对象，即所有具备面向对象特征（比如成员方法）的类型；
+- 接口。
+
+Go 语言中的大多数类型都是值语义，包括：
+
+- 基本类型，如布尔类型、整型、浮点型、字符串等；
+- 复合类型，如数组、结构体等（切片、字典、指针和通道都是引用语义）；
+
+> 这里的值语义和引用语义等价于之前介绍类型时提到的值类型和引用类型。
+
+### 类
+
+#### 初始化
+
+Go 语言的面向对象编程与我们之前所熟悉的 PHP、Java 那一套完全不同，没有 `class`、`extends`、`implements` 之类的关键字和相应的概念，而是借助**结构体**来实现类的声明，比如要定义一个学生类：
+
+```go
+type Student struct {
+    id uint
+    name string
+    male bool
+    score float64
+}
+```
+
+Go 语言中也不支持构造函数、析构函数，取而代之地，可以通过定义形如 `NewXXX` 这样的全局函数（首字母大写）作为类的初始化函数：
+
+```go
+func NewStudent(id uint, name string, male bool, score float64) *Student {
+    return &Student{id, name, male, score}
+}
+```
+
+> 在 Go 语言中，未进行显式初始化的变量都会被初始化为该类型的零值，例如 `bool` 类型的零值为 `false`，`int` 类型的零值为 0，`string` 类型的零值为空字符串，`float` 类型的零值为 `0.0`。
+
+#### 成员方法
+
+##### 值方法
+
+```go
+func (s Student) GetName() string  {
+    return s.name
+}
+```
+
+##### 指针方法
+
+```go
+func (s *Student) SetName(name string) {
+    s.name = name
+}
+```
+
+我们可以把接收者类型为指针的成员方法叫做**指针方法**，把接收者类型为非指针的成员方法叫做**值方法**，二者的区别在于值方法传入的结构体变量是值类型（类型本身为指针类型除外），因此传入函数内部的是外部传入结构体实例的值拷贝，修改不会作用到外部传入的结构体实例。
+
+#### 继承
+
+Go 虽然没有直接提供继承相关的语法实现，但是我们通过**组合**的方式间接实现类似功能，所谓组合，就是将一个类型嵌入到另一个类型，从而构建新的类型结构。
+
+> 传统面向对象编程中，显式定义继承关系的弊端有两个：一个是导致类的层级越来越复杂，另一个是影响了类的扩展性，很多软件设计模式的理念就是通过组合来替代继承提高类的扩展性。
+
+Animal父类：
+
+```go
+type Animal struct {
+    Name string
+}
+
+func (a Animal) Call() string {
+    return "动物的叫声..."
+}
+
+func (a Animal) FavorFood() string {
+    return "爱吃的食物..."
+}
+
+func (a Animal) GetName() string  {
+    return a.Name
+}
+```
+
+Dog 子类：
+
+```go
+type Dog struct {
+    Animal
+}
+```
+
+我们在 `Dog` 结构体类型中，嵌入了 `Animal` 这个类型，这样一来，我们就可以在 `Dog` 实例上访问所有 `Animal` 类型包含的属性和方法：
+
+```go
+func main() {
+    animal := Animal{"中华田园犬"}
+    dog := Dog{animal}
+
+    fmt.Println(dog.GetName())
+    fmt.Println(dog.Call())
+    fmt.Println(dog.FavorFood())
+}
+```
+
+上述代码的打印结果如下：
+
+```
+中华田园犬
+动物的叫声...
+爱吃的食物...
+```
+
+#### 方法重写
+
+比如在上述 `Dog` 类型中，我们可以重写 `Call` 方法和 `FavorFood` 方法的实现如下：
+
+```go
+func (d Dog) FavorFood() string {
+    return "骨头"
+}
+
+func (d Dog) Call() string {
+    return "汪汪汪"
+}
+```
+
+当然，你可以可以像这样继续调用父类 `Animal` 中的方法：
+
+```go
+fmt.Print(dog.Animal.Call())
+fmt.Println(dog.Call())
+fmt.Print(dog.Animal.FavorFood())
+fmt.Println(dog.FavorFood())
+```
+
+#### 类属性和成员方法可见性
+
+Go 语言基于包为单位组织和管理源码，因此变量、类属性、函数、成员方法的可见性都是基于包这个维度的。包与文件系统的目录结构存在映射关系（和命名空间一样）：
+
+- 在引入 Go Modules 以前，Go 语言会基于 `GOPATH` 这个系统环境变量配置的路径为根目录（可能有多个），然后依次去对应路径下的 `src` 目录下根据包名查找对应的文件目录，如果目录存在，则再到该目录下的源文件中查找对应的变量、类属性、函数和成员方法；
+- 在启用 Go Modules 之后，不再依赖 `$GOPATH` 定位包，而是基于 `go.mod` 中 `module` 配置值作为根路径，在该模块路径下，根据包名查找对应目录，如果存在，则继续到该目录下的源文件中查找对应变量、类属性、函数和成员方法。
+
+在 Go 语言中，你可以通过 `import` 关键字导入官方提供的包、第三方包、以及自定义的包，导入第三方包时，还需要通过 `go get` 指令下载才能使用，如果基于 Go Modules 管理项目的话，这个依赖关系会自动维护到 `go.mod` 中。
+
+归属同一个包的 Go 代码具备以下特性：
+
+- 归属于同一个包的源文件包声明语句要一致，即同一级目录的源文件必须属于同一个包；
+- 在同一个包下不同的源文件中不能重复声明同一个变量、函数和类（结构体）
+
+##### 设置
+
+Go 语言没有提供这些关键字，不管是变量、函数，还是自定义类的属性和成员方法，它们的可见性都是根据其首字母的大小写来决定的，如果变量名、属性名、函数名或方法名首字母大写，就可以在包外直接访问这些变量、属性、函数和方法，否则只能在包内访问，因此 Go 语言类属性和成员方法的可见性都是包一级的，而不是类一级的。
+
+### 接口
+
+在 Go 语言中，类对接口的实现和子类对父类的继承一样，并没有提供类似 `implement` 这种关键字显式声明该类实现了哪个接口，**一个类只要实现了某个接口要求的所有方法，我们就说这个类实现了该接口**。
+
+#### 接口继承
+
+Go 语言也支持类似的「接口继承」特性，但是由于不支持 `extends` 关键字，所以其实现和类的继承一样，是通过组合来完成。
+
+```go
+type A interface {
+    Foo()
+}
+
+type B interface {
+    A
+    Bar()
+}
+```
+
+## 异常处理机制
+
+### error
+
+Go 语言错误处理机制非常简单明了，不需要学习了解复杂的概念、函数和类型，Go 语言为错误处理定义了一个标准模式，即 `error` 接口，该接口的定义非常简单：
+
+```go
+type error interface { 
+    Error() string 
+}
+```
+
+#### 使用
+
+将错误类型作为第二个参数返回
+
+```go
+func Foo(param int) (n int, err error) { 
+    // ...
+}
+```
+
+```go
+n, err := Foo(0)
+
+if err != nil { 
+    // 错误处理 
+} else {
+    // 使用返回值 n 
+}
+```
+
+#### 返回
+
+通过 Go 标准错误包 `errors` 提供的 `New()` 方法快速创建一个 `error` 类型的错误实例：
+
+```go
+func add(a, b int) (c int, err error) {
+    if (a < 0 || b < 0) {
+        err = errors.New("只支持非负整数相加")
+        return
+    }
+    a *= 2
+    b *= 3
+    c = a + b
+    return
+}
+```
+
+### defer
+
+Go 语言中的类没有构造函数和析构函数的概念，处理错误和异常时也没有提供 `try...catch...finally` 之类的语法，那当我们想要在某个资源使用完毕后将其释放（网络连接、文件句柄等），或者在代码运行过程中抛出错误时执行一段兜底逻辑时，就可以通过 `defer` 关键字声明兜底执行或者释放资源的语句可以轻松解决这个问题。
+
+- 一个函数/方法中可以存在多个 `defer` 语句
+- `defer` 语句的调用顺序遵循先进后出的原则，即最后一个 `defer` 语句将最先被执行，相当于「栈」
+- `defer` 后支持使用匿名函数来执行对应的兜底逻辑
+
+示例：
+
+```go
+package main
+
+import "fmt"
+
+func printError()  {
+    fmt.Println("兜底执行")
+}
+
+func main()  {
+    defer printError()
+    defer func() {
+        fmt.Println("除数不能是0!")
+    }()
+
+    var i = 1
+    var j = 1
+    var k = i / j
+
+    fmt.Printf("%d / %d = %d\n", i, j, k)
+}
+```
+
+在函数正常执行的情况下，这两个 `defer` 语句会在最后一条打印语句执行完成后先执行第二条 `defer` 语句，再执行第一条 `defer` 语句
+
+### panic
+
+当代码运行时出错，而又没有在编码时显式返回错误时，Go 语言会抛出 panic，中文译作「运行时恐慌」，我们也可以将其看作 Go 语言版的异常。
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    defer func() {
+        fmt.Println("代码清理逻辑")
+    }()
+
+    var i = 1
+    var j = 0
+    if j == 0 {
+        panic("除数不能为0！")
+    }
+    k := i / j
+    fmt.Printf("%d / %d = %d\n", i, j, k)
+}
+```
+
+`panic` 函数支持的参数类型是 `interface{}`，所以可以传入任意类型的参数：
+
+```go
+panic(500)   // 传入数字
+panic(errors.New("除数不能为0"))  // 传入 error 类型
+```
+
+无论是 Go 语言底层抛出 panic，还是我们在代码中显式抛出 panic，处理机制都是一样的：当遇到 panic 时，Go 语言会中断当前协程（即 `main` 函数）后续代码的执行，然后执行在中断代码之前定义的 `defer` 语句（按照先入后出的顺序），最后程序退出并输出 panic 错误信息，以及出现错误的堆栈跟踪信息。
+
+### recover
+
+我们还可以通过 `recover()` 函数对 panic 进行捕获和处理，从而避免程序崩溃然后直接退出，而是继续可以执行后续代码，实现类似 Java、PHP 中 `try...catch` 语句的功能。
+
+```go
+package main
+
+import (
+    "fmt"
+)
+
+func divide() {
+    defer func() {
+        if err := recover(); err != nil {
+            fmt.Printf("Runtime panic caught: %v\n", err)
+        }
+    }()
+
+    var i = 1
+    var j = 0
+    k := i / j
+    fmt.Printf("%d / %d = %d\n", i, j, k)
+}
+
+func main() {
+    divide()
+    fmt.Println("divide 方法调用完毕，回到 main 函数")
+}
 ```
 
