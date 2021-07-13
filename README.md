@@ -27,9 +27,10 @@
 - 数据库
   - [Redis](./Manual/Redis.md)
 - 算法
-  - [算法笔记](./Manual/Algorithm.md)
-  - [算法笔记-leetcode](./Manual/Algorithm-leetcode.md)
-  - [算法笔记-剑指offer](./Manual/Algorithm-offer.md)
+  - [算法笔记](./Manual/Algorithm/Algorithm.md)
+  - [Leetcode](./Manual/Algorithm/Algorithm-leetcode.md)
+  - [剑指offer](./Manual/Algorithm/Algorithm-offer.md)
+  - [剑指offer-go](./Manual/Algorithm/Algorithm-offer-go.md)
 - 原理
   - [linux](./Manual/linux.md)
   - [计算机网络](./Manual/Computer-network.md)
