@@ -42,7 +42,7 @@ var_dump(memory_get_usage());
 
 **面试题**
 
-<img src="image\oldimg\1560754175983.png" alt="1560754175983" style="zoom:50%;" />
+<img src="../image/oldimg/1560754175983.png" alt="1560754175983" style="zoom:50%;" />
 
 #### 2.常量及数据类型
 
