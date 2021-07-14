@@ -20,7 +20,7 @@ $a = range(0, 1000);//对a进行修改，开辟空间变化
 var_dump(memory_get_usage());
 ```
 
-![1560753307369](../Image/markdown/1560753307369.png)
+![1560753307369](../../Image/oldimg/1560753307369.png)
 
 ```php
 <?php
@@ -32,7 +32,7 @@ $a = range(0, 1000);//对a进行修改，开辟空间变化不大
 var_dump(memory_get_usage());
 ```
 
-<img src="image\oldimg\1560752789933.png" alt="1560752789933" style="zoom:50%;" />
+<img src="../../Image/oldimg/1560752789933.png" alt="1560752789933" style="zoom:50%;" />
 
 **unset删除引用**
 
