@@ -9,21 +9,21 @@
 ## 学习笔记
 
 - PHP
-  - [PHP 学习笔记](./Manual/PHP.md)
-  - [PHP 小知识](./Manual/PHP-knowledge.md)
-  - [PHP 面试知识点](./Manual/PHP-interview.md)
-  - [PHP 开发环境搭建](./Manual/NMP.md)
-  - [Laravel 框架学习笔记](./Manual/Laravel.md)
+  - [PHP 学习笔记](./Manual/PHP/PHP.md)
+  - [PHP 小知识](./Manual/PHP/PHP-knowledge.md)
+  - [PHP 面试知识点](./Manual/PHP/PHP-interview.md)
+  - [PHP 开发环境搭建](./Manual/PHP/NMP.md)
+  - [Laravel 框架学习笔记](./Manual/PHP/Laravel.md)
 - 后端
   - [API 开发](./Manual/api.md)
   - [Golang](./Manual/golang.md)
   - [Python](./Manual/Python.md)
 - 前端
-  - [Node.js](./Manual/node.md)
-  - [jQuery](./Manual/jQuery.md)
-  - [ES6](./Manual/ES6.md)
-  - [webpack](./Manual/webpack.md)
-  - [Mocha 测试框架](./Manual/mocha.md)
+  - [Node.js](./Manual/Front-end/node.md)
+  - [jQuery](./Manual/Front-end/jQuery.md)
+  - [ES6](./Manual/Front-end/ES6.md)
+  - [webpack](./Manual/Front-end/webpack.md)
+  - [Mocha 测试框架](./Manual/Front-end/mocha.md)
 - 数据库
   - [Redis](./Manual/Redis.md)
 - 算法
