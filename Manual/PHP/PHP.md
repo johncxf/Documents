@@ -1363,7 +1363,7 @@ function insertSort($arr) {
 第四趟：    13，04，27，38，49，49，55，65，76，97
 ```
 
-![](../Image/Markdown/1565338298541-1566894101826.png)
+![](../../Image/oldimg/1565338298541-1566894101826.png)
 
 
 
@@ -1646,7 +1646,7 @@ name=Professional%20Ajax&publisher=Wiley 第一部分：请求行，第一行明
 
 > 状态行、消息报头、空行和响应正文
 
-![img](https://upload-images.jianshu.io/upload_images/2964446-1c4cab46f270d8ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/683/format/webp)
+
 
 ```
 HTTP/1.1 200 OK

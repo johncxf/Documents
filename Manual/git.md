@@ -275,9 +275,9 @@ rebase
 
 为了完成以下示例，你需要在`GitHub` 创建好仓库。
 
-![1555992303663](../Image/Markdown/1555992303663.png)
+![1555992303663](../Image/oldimg/1555992303663.png)
 
-![1555992438008](../Image/Markdown/1555992438008.png)
+![1555992438008](../Image/oldimg/1555992438008.png)
 
 #### SSH
 
@@ -293,13 +293,13 @@ ssh-keygen -t rsa
 
 一直按回车键直到结束。系统会在`~/.ssh` 目录中生成 `id_rsa`和`id_rsa.pub`，即密钥`id_rsa`和公钥`id_rsa.pub`。
 
-![1556003264905](image/oldimg/1556003264905.png)
+![1556003264905](../Image/oldimg/1556003264905.png)
 
 **向GitHub添加秘钥**
 
-![1555992728666](image/oldimg/1555992728666.png)
+![1555992728666](../Image/oldimg/1555992728666.png)
 
-![1555992753070](image/oldimg/1555992753070.png)
+![1555992753070](../Image/oldimg/1555992753070.png)
 
 点击 `New SSH key` 按钮，添加上面生成的 `id_rsa.pub` 公钥内容。
 

@@ -328,8 +328,6 @@ class User extends Authenticatable
 }
 ```
 
-
-
 ### 控制器
 
 存放在`app/Http/Controllers`目录中
@@ -907,8 +905,3 @@ public function friendLinkLists()
 ```
 @friendLinks
 ```
-
-
-
-
-

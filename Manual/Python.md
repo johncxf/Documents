@@ -134,7 +134,6 @@ browser = webdriver.Firefox()
 browser = webdriver.Edge()
 browser = webdriver.Safari()
 browser = webdriver.Phantom.JS()
-
 ```
 
 
