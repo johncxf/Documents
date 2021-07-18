@@ -352,3 +352,72 @@ func FirstNotRepeatingChar(str string) int {
 
 先开一个map数组统计字符串每个元素出现的次数，再遍历字符串，如果map中的某个元素值为1，代表出现1次，直接返回
 
+#### [二分] 旋转数组的最小数字
+
+##### 描述
+
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+输入一个非递减排序数组的一个旋转，输出旋转数组的最小元素。
+NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
+
+##### 示例
+
+输入：
+
+```
+[3,4,5,1,2]
+```
+
+返回值：
+
+```
+1
+```
+
+##### 代码实现
+
+```go
+/**
+ * 旋转数组的最小数字
+ *
+ * @param rotateArray int整型一维数组
+ * @return int整型
+ */
+func minNumberInRotateArray(rotateArray []int) int {
+	// 边界值处理
+	if len(rotateArray) == 0 {
+		return 0
+	}
+	if len(rotateArray) == 1 {
+		return rotateArray[0]
+	}
+
+	// 初始化中间变量
+	var mid int
+	// 定义左右变量
+	left, right := 0, len(rotateArray) - 1
+	for rotateArray[left] >= rotateArray[right] {
+		// 退出条件
+		if (right - left) == 1 {
+			mid = right
+			break
+		}
+		// 中间变量
+		mid = (left + right) / 2
+		if rotateArray[mid] > rotateArray[right] {// 中间值大于最右侧值，说明最小值在右侧
+			left = mid
+		} else if rotateArray[mid] < rotateArray[right] {// 中间值小于最右侧值，说明最小值在左侧
+			right = mid
+		} else {
+			right--
+		}
+	}
+	return rotateArray[mid]
+}
+```
+
+##### 思路
+
+由题意，非递减排序的数组即为递增数组，所以本题输入是一个递增数组的旋转
+
+第一种做法比较简单，可以使用暴力法，更优的解法是二分法
