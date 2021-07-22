@@ -142,6 +142,14 @@ Go 语言中变量的声明必须使用空格隔开，如：
 var age int;
 ```
 
+#### 导包
+
+- `import "fmt"`：最常用导如包方式
+- `import "./test"`：导入同一目录下 test 包中的内容
+- `import f "fmt"`：导入fmt，并给他启别名ｆ
+- `import . "fmt"`：将fmt启用别名"."，这样就可以直接使用，如fmt.Println可以直接写成Println
+- `import _ "fmt"`： 引入该包，而不直接使用包里面的函数，而是调用了该包里面的init函数
+
 ## 数据类型
 
 ### 变量、常量
@@ -813,6 +821,55 @@ func main() {
 ```
 
 因为这次，我们是通过指针传值的（`&a`、`&b` 都是指针，只不过我们没有显示声明而已），直接会对内存地址存储变量值进行交换操作，而主函数中的 `a`、`b` 变量仅仅是对应内存存储空间的别名而已，所以调用完 `swap` 函数后，它们所对应的内存空间存储值已经交换过来了。
+
+### 结构体
+
+结构体是由一系列具有相同类型或不同类型的数据构成的数据集合。
+
+#### 定义
+
+通过`type`和`struct`语句来声明结构体。
+
+```go
+type struct_variable_type struct {
+   member definition
+   member definition
+   ...
+   member definition
+}
+```
+
+#### 初始化、访问
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type Students struct {
+	name string
+	age int
+	sno int
+}
+
+func main() {
+	/* 声明 Student1 为 Student 类型 */
+	var Student1 Students
+
+	/* 初始化 */
+	Student1.name = "john"
+	Student1.age = 23
+	Student1.sno = 1606915082
+
+
+	/* 打印 Students1 信息 */
+	fmt.Printf( "Student 1 name : %s\n", Student1.name)
+	fmt.Printf( "Student 1 age : %d\n", Student1.age)
+	fmt.Printf( "Student 1 sno : %d\n", Student1.sno)
+}
+```
 
 ## 流程控制
 
