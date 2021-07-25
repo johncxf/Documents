@@ -372,7 +372,7 @@ function jumpFloor($number)
 
 比如n=3时，2 * 3的矩形块有3种覆盖方法：
 
-<img src="image/image-20201011192132838.png" alt="image-20201011192132838" style="zoom:50%;" />
+<img src="../../Image/image-20201011192132838.png" alt="image-20201011192132838" style="zoom:50%;" />
 
 ##### 代码实现
 

@@ -236,7 +236,7 @@ func multiply(A []int) []int {
 3
 ```
 
-##### 代码实现1
+##### 代码实现
 
 ```go
 /**
@@ -455,8 +455,132 @@ func minNumberInRotateArray(rotateArray []int) int {
 ##### 代码实现
 
 ```go
+// 定义节点
+type ListNode struct {
+	Val int
+	Next *ListNode
+}
 
+/**
+ * 从尾到头打印链表
+ *
+ * @param head ListNode类
+ * @return int整型一维数组
+ */
+func printListFromTailToHead(head *ListNode) []int {
+	ret := make([]int, 0)
+	
+	// 遍历链表
+	tmp := make([]int, 0)
+	for head != nil {
+		tmp = append(tmp, head.Val)
+		head = head.Next
+	}
+
+	// 遍历数组，倒序处理
+	tmpLen := len(tmp) - 1
+	for tmpLen >= 0 {
+		ret = append(ret, tmp[tmpLen])
+		tmpLen--
+	}
+
+	return ret
+}
 ```
 
 ##### 思路
+
+先遍历链表一次存入数组中，再倒序处理数组
+
+#### [链表] 链表中倒数最后k个结点
+
+##### 描述
+
+输入一个链表，输出一个链表，该输出链表包含原链表中从倒数第k个结点至尾节点的全部节点。
+
+如果该链表长度小于k，请返回一个长度为 0 的链表。
+
+##### 示例
+
+```go
+// 输入
+{1,2,3,4,5}, 1 
+
+// 返回
+{5} 
+```
+
+##### 代码实现
+
+**方法一：**
+
+1. 先遍历统计链表长度，记为 n；
+2. 设置一个指针走 (n-k) 步，即可找到链表倒数第 k个节点。
+
+```go
+/**
+ * 链表中倒数最后k个结点
+ *
+ * @param pHead ListNode类
+ * @param k int整型
+ * @return ListNode类
+ */
+func FindKthToTail(pHead *ListNode,  k int) *ListNode {
+		current, res := pHead, pHead
+    n := 0
+    for current != nil {
+			current = current.Next
+			n++
+		}
+    if (k > n) {
+        return nil
+    }
+		// current 指针先走 k 步
+    for i := 1; i <= (n - k); i++ {
+			res = res.Next
+		}
+		return res
+}
+```
+
+**方法二（快慢指针）：**
+
+初始化： 当前指针 current 、后指针 prev ，双指针都指向头节点 head 
+构建双指针距离： current 指针先向前走 k 步（结束后，双指针 current 和 prev 间相距 k 步）
+双指针共同移动： 循环中，current 和 prev 每轮都向前走一步，直至 current 走过链表 尾节点 时跳出（跳出后， prev 与尾节点距离为 k-1，即 prev 指向倒数第 k 个节点）。
+返回值： 返回 prev 即可。
+
+```go
+/**
+ * 链表中倒数最后k个结点
+ *
+ * @param pHead ListNode类
+ * @param k int整型
+ * @return ListNode类
+ */
+func FindKthToTail(pHead *ListNode,  k int) *ListNode {
+	// 边界值
+	if pHead == nil || k <= 0 {
+		return nil
+	}
+
+	current, prev := pHead, pHead
+
+	// current 指针先走 k 步
+	for i := 0; i < k; i++ {
+		if current == nil {
+			return nil
+		}
+		current = current.Next
+	}
+
+	// 双指针每轮都向前走一步，直至 current 走过链表 尾节点 时跳出
+	// 跳出后，prev 与尾节点距离为 k-1，即 prev 指向倒数第 k 个节点
+	for current != nil {
+		current = current.Next
+		prev = prev.Next
+	}
+	return prev
+}
+```
 

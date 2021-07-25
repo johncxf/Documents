@@ -871,6 +871,76 @@ func main() {
 }
 ```
 
+#### 结构体作为函数参数
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type Students struct {
+	name string
+	age int
+	sno int
+}
+
+func main() {
+	/* 声明 Student1 为 Student 类型 */
+	var Student1 Students
+
+	/* 初始化 */
+	Student1.name = "john"
+	Student1.age = 23
+	Student1.sno = 1606915082
+
+  printStudent(Student1)
+}
+
+func printStudent(student Students) {
+   /* 打印 Students 信息 */
+	fmt.Printf( "Student 1 name : %s\n", Student.name)
+	fmt.Printf( "Student 1 age : %d\n", Student.age)
+	fmt.Printf( "Student 1 sno : %d\n", Student.sno)
+}
+```
+
+#### 结构体指针
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type Students struct {
+	name string
+	age int
+	sno int
+}
+
+func main() {
+	/* 声明 Student1 为 Student 类型 */
+	var Student1 Students
+
+	/* 初始化 */
+	Student1.name = "john"
+	Student1.age = 23
+	Student1.sno = 1606915082
+
+  printStudent(&Student1)
+}
+
+func printStudent(student Students) {
+   /* 打印 Students 信息 */
+	fmt.Printf( "Student 1 name : %s\n", Student.name)
+	fmt.Printf( "Student 1 age : %d\n", Student.age)
+	fmt.Printf( "Student 1 sno : %d\n", Student.sno)
+}
+```
+
 ## 流程控制
 
 Golang支持如下几种流程控制语句：
