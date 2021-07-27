@@ -526,7 +526,7 @@ func printListFromTailToHead(head *ListNode) []int {
  * @return ListNode类
  */
 func FindKthToTail(pHead *ListNode,  k int) *ListNode {
-		current, res := pHead, pHead
+	current, res := pHead, pHead
     n := 0
     for current != nil {
 			current = current.Next
@@ -583,4 +583,95 @@ func FindKthToTail(pHead *ListNode,  k int) *ListNode {
 	return prev
 }
 ```
+
+#### [链表] 合并两个排序的链表
+
+##### 描述
+
+输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
+
+##### 示例
+
+```
+// 输入
+{1,3,5},{2,4,6}
+// 返回值
+{1,2,3,4,5,6}
+```
+
+##### 代码实现
+
+**方法一（递归）：**
+
+```go
+/**
+ * 合并两个排序的链表（递归）
+ *
+ * @param pHead1 ListNode类
+ * @param pHead2 ListNode类
+ * @return ListNode类
+ */
+func Merge(pHead1 *ListNode , pHead2 *ListNode) *ListNode {
+	if pHead1 == nil {
+		return pHead2
+	}
+	if pHead2 == nil {
+		return pHead1
+	}
+
+	if pHead1.Val <= pHead2.Val {
+		pHead1.Next = Merge(pHead1.Next, pHead2)
+		return pHead1
+	}
+	if pHead1.Val > pHead2.Val {
+		pHead2.Next = Merge(pHead1, pHead2.Next)
+		return pHead2
+	}
+	return nil
+}
+```
+
+时间复杂度：O(m+n)
+空间复杂度：O(m+n),每一次递归，递归栈都会保存一个变量，最差情况会保存(m+n)个变量
+
+**方法二（递归）：**
+
+```go
+/**
+ * 合并两个排序的链表（递归）
+ *
+ * @param pHead1 ListNode类
+ * @param pHead2 ListNode类
+ * @return ListNode类
+ */
+func Merge(pHead1 *ListNode , pHead2 *ListNode) *ListNode {
+	// 初始化
+    ret := &ListNode{}
+	current := ret
+    
+    // 遍历链表，比较大小
+	for pHead1 != nil && pHead2 != nil {
+		if pHead1.Val <= pHead2.Val {
+			current.Next = pHead1
+			pHead1 = pHead1.Next
+		} else {
+			current.Next = pHead2
+			pHead2 = pHead2.Next
+		}
+		current = current.Next
+	}
+    
+    // 尾节点
+	if pHead1 != nil {
+		current.Next = pHead1
+	}
+	if pHead2 != nil {
+		current.Next = pHead2
+	}
+	return ret.Next
+}
+```
+
+时间复杂度：O(m+n),m，n分别为两个单链表的长度
+空间复杂度：O(1)
 
