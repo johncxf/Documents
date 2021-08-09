@@ -77,6 +77,10 @@ adb push <local> <remote>
 adb pull <remote> <local>
 #查看 bug 报告
 adb bugreport
+# 查看 android 版本
+adb shell getprop ro.build.version.release
+# 查看 SDK 版本
+adb shell getprop ro.build.version.sdk
 ```
 
 #### adb shell
