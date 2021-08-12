@@ -32,56 +32,30 @@
 
 #### 常用指令集
 
-```shell
-#查看连接设备
-adb devices
-#查看ADB 帮助
-adb help
-# 指定连接设备使用命令
-adb -s ${devices_id} shell
-# 安装应用
-adb install test.apk
-#卸载应用，需要指定包
-adb uninstall cn.com.test.mobile 
-#卸载app 但保留数据和缓存文件
-adb uninstall -k cn.com.test.mobile
-#列出手机装的所有app 的包名
-adb shell pm list packages
-#列出除了系统应用的第三方应用包名
-adb shell pm list packages -3
-#清除应用数据与缓存
-adb shell pm clear cn.com.test.mobile
-#启动应用
-adb shell am start -ncn.com.test.mobile/.ui.SplashActivity
-#包信息Package Information
-adb shell dumpsys package
-#内存使用情况Memory Usage
-adb shell dumpsys meminfo
-#强制停止应用
-adb shell am force-stop cn.com.test.mobile
-#查看日志
-adb logcat
-#清除log 缓存
-adb logcat -c
-#重启
-adb reboot
-#获取序列号
-adb get-serialno
-#查看Android 系统版本
-adb shell getprop ro.build.version.release
-#查看占用内存前10 的app
-adb shell top -s 10
-#从本地复制文件到设备
-adb push <local> <remote>
-#从设备复制文件到本地
-adb pull <remote> <local>
-#查看 bug 报告
-adb bugreport
-# 查看 android 版本
-adb shell getprop ro.build.version.release
-# 查看 SDK 版本
-adb shell getprop ro.build.version.sdk
-```
+- 查看连接设备：`adb devices`
+- 安装应用：`adb install test.apk`
+- 指定连接设备使用命令：`adb -s ${devices_id} shell`
+- 卸载应用，需要指定包：`adb uninstall cn.com.test.mobile `
+- 卸载app 但保留数据和缓存文件：`adb uninstall -k cn.com.test.mobile`
+- 列出手机装的所有app 的包名：`adb shell pm list packages`
+- 列出除了系统应用的第三方应用包名：`adb shell pm list packages -3`
+- 查看 android 版本：`adb shell getprop ro.build.version.release`
+- 查看 SDK 版本：`adb shell getprop ro.build.version.sdk`
+- 终止adb服务：`adb kill-server`
+- 重启adb服务：`adb start-server`
+- 清除应用数据与缓存：`adb shell pm clear cn.com.test.mobile`
+- 启动应用：`adb shell am start -ncn.com.test.mobile/.ui.SplashActivity`
+- 包信息：`adb shell dumpsys package`
+- 内存使用情况：`adb shell dumpsys meminfo`
+- 强制停止应用：`adb shell am force-stop cn.com.test.mobile`
+- 查看日志：`adb logcat`
+- 清除 log 缓存：`adb logcat -c`
+- 重启：`adb reboot`
+- 获取序列号：`adb get-serialno`
+- 查看占用内存前10 的app：`adb shell top -s 10`
+- 从本地复制文件到设备：`adb push <local> <remote>`
+- 从设备复制文件到本地：`adb pull <remote> <local>`
+- 查看 bug 报告：`adb bugreport`
 
 #### adb shell
 
