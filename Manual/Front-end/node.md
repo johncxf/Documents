@@ -1,8 +1,12 @@
 # Node.js
 
-### 安装配置
+Node.js 是一个开源与跨平台的 JavaScript 运行时环境
 
-> https://www.runoob.com/nodejs/nodejs-install-setup.html
+## 安装配置
+
+参考：https://www.runoob.com/nodejs/nodejs-install-setup.html
+
+## 开始使用
 
 ### 运行程序
 
@@ -34,7 +38,7 @@ node server.js
 
 浏览器地址栏输入：http://127.0.0.1:8888/ 看到运行结果
 
-### NPM
+## NPM
 
 NPM是随同NodeJS一起安装的包管理工具，能解决NodeJS代码部署上的很多问题，常见的使用场景有以下几种：
 
@@ -44,7 +48,7 @@ NPM是随同NodeJS一起安装的包管理工具，能解决NodeJS代码部署�
 
 由于新版的nodejs已经集成了npm，所以之前npm也一并安装好了。同样可以通过输入 **"npm -v"** 来测试是否成功安装
 
-#### 使用NPM安装模块
+### 使用NPM安装模块
 
 npm 安装 Node.js 模块语法格式如下：
 
@@ -64,7 +68,7 @@ $ npm install express
 var express = require('express');
 ```
 
-#### 全局安装和本地安装
+### 全局安装和本地安装
 
 npm 的包安装分为本地安装（local）、全局安装（global）两种，从敲的命令行来看，差别只是有没有-g而已，比如
 
@@ -85,21 +89,21 @@ npm err! Error: connect ECONNREFUSED 127.0.0.1:8087
 $ npm config set proxy null
 ```
 
-##### 本地安装
+#### 本地安装
 
 - 将安装包放在 ./node_modules 下（运行 npm 命令时所在的目录），如果没有 node_modules 目录，会在当前执行 npm 命令的目录下生成 node_modules 目录。
 - 可以通过 require() 来引入本地安装的包。
 
-##### 全局安装
+#### 全局安装
 
 - 将安装包放在 /usr/local 下或者你 node 的安装目录。
 - 可以直接在命令行里使用。
 
-#### 使用package.json
+### 使用package.json
 
 package.json 位于模块的目录下，用于定义包的属性。
 
-##### 属性说明
+### 属性说明
 
 - **name** - 包名。
 - **version** - 包的版本号。
@@ -112,7 +116,7 @@ package.json 位于模块的目录下，用于定义包的属性。
 - **main** - main 字段指定了程序的主入口文件，require('moduleName') 就会加载这个文件。这个字段的默认值是模块根目录下面的 index.js。
 - **keywords** - 关键字
 
-#### 卸载模块
+### 卸载模块
 
 我们可以使用以下命令来卸载 Node.js 模块。
 
@@ -128,7 +132,7 @@ $ npm ls
 
 ------
 
-#### 更新模块
+### 更新模块
 
 我们可以使用以下命令更新模块：
 
@@ -138,7 +142,7 @@ $ npm update express
 
 ------
 
-#### 搜索模块
+### 搜索模块
 
 使用以下来搜索模块：
 
@@ -148,11 +152,11 @@ $ npm search express
 
 ------
 
-#### 创建模块
+### 创建模块
 
 创建模块，package.json 文件是必不可少的。我们可以使用 NPM 生成 package.json 文件，生成的文件包含了基本的结果。
 
-#### 常用指令
+### 常用指令
 
 - `npm help`可查看所有命令。
 - 使用`npm help <command>`可查看某条命令的详细帮助，例如`npm help install`。
@@ -162,7 +166,7 @@ $ npm search express
 - 使用`npm cache clear`可以清空NPM本地缓存，用于对付使用相同版本号发布新版本代码的人。
 - 使用`npm unpublish <package>@<version>`可以撤销发布自己发布过的某个版本代码。
 
-#### 使用中国镜像
+### 使用中国镜像
 
 你可以使用淘宝定制的 cnpm (gzip 压缩支持) 命令行工具代替默认的 npm:
 
@@ -177,6 +181,8 @@ $ cnpm install [name]
 ```
 
 > 更多信息可以查阅：http://npm.taobao.org/
+
+## 语法
 
 ### REPL
 
