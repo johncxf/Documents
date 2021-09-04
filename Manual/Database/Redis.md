@@ -46,7 +46,7 @@ redis-server redis.conf（带目录）
 netstat -tunpl | grep 6379
 ```
 
-![1554633282932](../image/oldimg/1554633282932.png)
+![1554633282932](../../Image/oldimg/1554633282932.png)
 
 ##### 打开
 
