@@ -28,7 +28,7 @@
 
 9. 修改redis.conf，将daemonize no改为daemonize yes
 
-   ![1554633072851](../Image/oldimg/1554633072851.png)
+   ![1554633072851](../../Image/oldimg/1554633072851.png)
 
 #### 使用
 
