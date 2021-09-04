@@ -28,7 +28,8 @@
   - [Android](./Manual/Android.md)
   - [iOS](./Manual/iOS.md)
 - 数据库
-  - [Redis](./Manual/Redis.md)
+  - [Mysql](./Manual/Database/Mysql.md)
+  - [Redis](./Manual/Database/Redis.md)
 - 算法
   - [算法笔记](./Manual/Algorithm/Algorithm.md)
   - [Leetcode](./Manual/Algorithm/Algorithm-leetcode.md)
