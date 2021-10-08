@@ -188,6 +188,137 @@ void print(int n) {
 
 #### 二叉树
 
+二叉树每个节点最多有两个「分叉」，即两个子节点，分别是左子节点和右子节点，不过，二叉树并不要求每个节点都有两个子节点，有的节点只有左子结点，有的节点只有右子节点。
+
+根据左右子节点的饱和度，又从二叉树中分出两种特殊的二叉树：
+
+- 满二叉树：所有分支节点都有左右子节点，并且所有叶子节点都在同一层上
+- 完全二叉树：一棵深度为k的有n个结点的二叉树，对树中的结点按从上至下、从左到右的顺序进行编号，如果编号为i（1≤i≤n）的结点与满二叉树中编号为i的结点在二叉树中的位置相同，则这棵二叉树称为完全二叉树
+
+##### 二叉树的特性
+
+- 在第 `i` 层最多有 2i-1 个节点。
+- 深度为 `k` 的二叉树最多有 2k-1 个节点。
+- 对于任何一个二叉树，叶子节点数为 n0，度为 2 的节点数为 n2，则 n0 = n2+1。
+
+##### 二叉树的存储
+
+- 通过数组存储
+- 通过链表存储
+
+##### 二叉树的遍历
+
+二叉树的遍历指的是从根节点出发，按照某种次序依次访问二叉树中的所有节点，使得每个节点被访问一次且仅被访问一次。
+
+- 前序遍历：从根节点开始，先遍历左子树，再遍历右子树
+- 中序遍历：中序遍历会从左子树最左侧的节点开始，然后从左到右依次遍历左子树，根节点，最后是右子树
+- 后序遍历：后序遍历也是从左子树最左侧的节点开始，不过会从左到右先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点
+
+代码示例：
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+// 通过链表存储二叉树节点信息
+type Node struct {
+	Data  interface{}
+	Left  *Node
+	Right *Node
+}
+
+// 初始化根节点
+func NewNode(data interface{}) *Node {
+	return &Node{
+		Data:  data,
+		Left:  nil,
+		Right: nil,
+	}
+}
+
+// 实现接口方法
+func (node *Node) GetData() string {
+	return fmt.Sprintf("%v", node.Data)
+}
+
+// 前序遍历
+func preOrderTraverse(treeNode *Node) {
+	// 节点为空则退出当前递归
+	if treeNode == nil {
+		return
+	}
+	// 否则先打印当前节点值
+	fmt.Printf("%s ", treeNode.GetData())
+	// 然后依次对左子树和右子树做前序遍历
+	preOrderTraverse(treeNode.Left)
+	preOrderTraverse(treeNode.Right)
+}
+
+// 中序遍历
+func midOrderTraverse(treeNode *Node) {
+	// 节点为空则退出当前递归
+	if treeNode == nil {
+		return
+	}
+	// 否则先从左子树最左侧节点开始遍历
+	midOrderTraverse(treeNode.Left)
+	// 打印位于中间的根节点
+	fmt.Printf("%s ", treeNode.GetData())
+	// 最后按照和左子树一样的逻辑遍历右子树
+	midOrderTraverse(treeNode.Right)
+}
+
+// 后序遍历
+func postOrderTraverse(treeNode *Node) {
+	// 节点为空则退出当前递归
+	if treeNode == nil {
+		return
+	}
+	// 否则先遍历左子树
+	postOrderTraverse(treeNode.Left)
+	// 再遍历右子树
+	postOrderTraverse(treeNode.Right)
+	// 最后访问根节点
+	fmt.Printf("%s ", treeNode.GetData())
+}
+
+// 测试代码
+func main() {
+	// 初始化一个简单的二叉树
+	node1 := NewNode(0) // 根节点
+	node2 := NewNode("1")
+	node3 := NewNode(2.0)
+	node1.Left = node2
+	node1.Right = node3
+
+	// 前序遍历这个二叉树
+	fmt.Print("前序遍历: ")
+	preOrderTraverse(node1)
+	fmt.Println()
+
+	// 中序遍历这个二叉树
+	fmt.Print("中序遍历: ")
+	midOrderTraverse(node1)
+	fmt.Println()
+
+	// 后序遍历这个二叉树
+	fmt.Print("后序遍历: ")
+	postOrderTraverse(node1)
+	fmt.Println()
+}
+```
+
+结果：
+
+```
+前序遍历: 0 1 2 
+中序遍历: 1 0 2 
+后序遍历: 1 2 0
+```
+
 ### 递归
 
 **三要素**
