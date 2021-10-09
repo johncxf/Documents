@@ -775,6 +775,81 @@ func FindFirstCommonNode(pHead1 *ListNode,  pHead2 *ListNode) *ListNode {
 ##### 代码实现
 
 ```go
+type TreeNode struct {
+    Val int
+    Left *TreeNode
+    Right *TreeNode
+}
+
+/**
+ * 二叉树的深度
+ * 
+ * @param pRoot TreeNode 类 
+ * @return int 整型
+*/
+func TreeDepth( pRoot *TreeNode ) int {
+    if (pRoot == nil) {
+        return 0
+    }
+
+    left,right := 0,0
+    left = TreeDepth(pRoot.Left)
+    right = TreeDepth(pRoot.Right)
+    
+    depth := left
+    if (right > left) {
+        depth = right
+    }
+    return depth + 1
+}
+```
+
+#### [树]按之字形顺序打印二叉树
+
+##### 描述
+
+给定一个二叉树，返回该二叉树的之字形层序遍历，（第一层从左向右，下一层从右向左，一直这样交替）
+
+数据范围：![img](https://www.nowcoder.com/equation?tex=0%20%5Cle%20n%20%5Cle%201500%20%5C),树上每个节点的 val 满足 ![img](https://www.nowcoder.com/equation?tex=%7Cval%7C%20%3C%3D%20100%20%5C)
+要求：空间复杂度：![img](https://www.nowcoder.com/equation?tex=O(n)%20%20%5C)，时间复杂度：![img](https://www.nowcoder.com/equation?tex=O(n)%20%5C)
+
+例如：
+给定的二叉树是{1,2,3,#,#,4,5}
+
+![img](../../Image/image-202110092115.png)
+
+该二叉树之字形层序遍历的结果是
+
+```
+[
+[1],
+[3,2],
+[4,5]
+]
+```
+
+##### 示例
+
+```
+// 输入1
+{1,2,3,#,#,4,5}
+// 返回值1
+[[1],[3,2],[4,5]]
+
+// 输入2
+{8,6,10,5,7,9,11}
+// 返回值2
+[[8],[10,6],[5,7,9,11]]
+
+// 输入3
+{1,2,3,4,5}
+// 返回值3
+[[1],[3,2],[4,5]]
+```
+
+##### 代码实现
+
+```go
 
 ```
 
