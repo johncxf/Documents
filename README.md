@@ -22,6 +22,7 @@
   - [Node.js](./Manual/Front-end/node.md)
   - [jQuery](./Manual/Front-end/jQuery.md)
   - [ES6](./Manual/Front-end/ES6.md)
+  - [TypeScript](./Manual/Front-end/TypeScript.md)
   - [webpack](./Manual/Front-end/webpack.md)
   - [Mocha 测试框架](./Manual/Front-end/mocha.md)
 - 客户端
