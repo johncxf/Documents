@@ -111,7 +111,7 @@ $ adb shell pm clear <packageName>
 
 ### 常用权限
 
-```json
+```go
 android.permission.READ_CALENDAR // 日历
 android.permission.ACCESS_FINE_LOCATION // 定位
 android.permission.READ_EXTERNAL_STORAGE // 存储
@@ -123,7 +123,7 @@ android.permission.READ_CONTACTS // 读取联系人
 
 ### 权限列表
 
-```json
+```go
 android.permission.SYSTEM_ALERT_WINDOW // 显示系统窗口 
 android.permission.ACCESS_CHECKIN_PROPERTIES // 访问登记属性，读取或写入登记check-in数据库属性表的权限 
 android.permission.ACCESS_COARSE_LOCATION //获取错略位置，通过WiFi或移动基站的方式获取用户错略的经纬度信息，定位精度大概误差在30~1500米 
