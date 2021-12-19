@@ -2282,6 +2282,10 @@ select {
 
 ### Socket
 
+Socket是应用层与TCP/IP协议簇通讯的中间抽象层，Socket是一组接口，在设计模式中，Socket的设计就是门面模式，它把复杂的TCP/IP协议簇的内容隐藏在套接字接口后面，用户无需关心协议的实现，只需使用Socket提供的接口即可。
+
+Socket的类型有两种，一种是面向连接的TCP应用服务，一种是面向无连接的UDP（User Data Package）应用服务。通俗的理解就是，TCP方式是打电话（连接性），UDP方式是发短信（无连接）。
+
 #### Dial()
 
 `Dial()` 函数的原型如下：
@@ -2313,19 +2317,48 @@ func Dial(network, address string) (Conn, error) {
 
 通过 `net.Dial` 或 `net.DialTimeout` 函数来访问基于 HTTP 协议的网络服务是完全没有问题的，因为 HTTP 协议是基于 TCP/IP 协议栈的。不过没问题不代表很方便，如果通过 `net.Dial` 函数进行 HTTP 编程，HTTP 状态码、报文头部和实体部分处理起来是相当繁琐的，因此 Go 语言标准库内置了 [net/http](https://golang.org/pkg/net/http/) 包来涵盖 HTTP 客户端和服务端的具体实现，通过 `net/http` 包我们可以更方便快捷地编写 HTTP 客户端和服务端程序。
 
-> 学院君注：这里的 HTTP 客户端编程类似 PHP 里面使用 [curl](https://www.php.net/manual/zh/book.curl.php) 或者 [Guzzle](https://github.com/guzzle/guzzle) 扩展包发起 HTTP 请求，HTTP 服务端编程类似实现 PHP 里面的 PHP-FPM 或者 Swoole HTTP 服务器对客户端请求进行响应。
+> 注：这里的 HTTP 客户端编程类似 PHP 里面使用 [curl](https://www.php.net/manual/zh/book.curl.php) 或者 [Guzzle](https://github.com/guzzle/guzzle) 扩展包发起 HTTP 请求，HTTP 服务端编程类似实现 PHP 里面的 PHP-FPM 或者 Swoole HTTP 服务器对客户端请求进行响应。
 
 #### http.Client
 
-##### http.Get
+我们可以通过 `net/http` 包里面的 `Client` 类提供的如下方法发起 HTTP 请求：
 
-##### http.Post
+```go
+func (c *Client) Do(req *Request) (*Response, error)
+func (c *Client) Get(url string) (resp *Response, err error)
+func (c *Client) Head(url string) (resp *Response, err error)
+func (c *Client) Post(url, contentType string, body io.Reader) (resp *Response, err error)
+func (c *Client) PostForm(url string, data url.Values) (resp *Response, err error)
+```
 
-##### http.PostForm
+#### http.Get
 
-##### http.Head
+要发起一个 GET 请求，只需调用 `http.Get()` 方法并传入请求 URL 即可，示例代码如下：
 
-##### (*http.Client).Do
+```go
+resp, err1 := http.Get(url)
+if err1 != nil {
+  err = err1
+  return
+}
+defer resp.Body.Close()
+```
+
+ `http.Get()` 方法返回值有两个，第一个是响应对象，第二个是 `error` 对象，如果请求过程中出现错误，则 `error` 对象不为空，否则，可以通过响应对象获取状态码、响应头、响应实体等信息，响应对象所属的类是 `http.Response`，我们可以通过 `resp.Body` 获取响应实体，通过 `resp.Header` 获取响应头，通过 `resp.StatusCode` 获取响应状态码。
+
+获取响应成功后记得调用 `resp.Body` 上的 `Close` 方法结束网络请求释放资源。
+
+#### http.Post
+
+```go
+
+```
+
+#### http.PostForm
+
+#### http.Head
+
+#### (*http.Client).Do
 
 ### RPC
 
