@@ -19,11 +19,12 @@
   - [Golang](./Manual/golang.md)
   - [Python](./Manual/Python.md)
 - 前端
+  - [JavaScript](./Manual/Front-end/JavaScript.md)
   - [Node.js](./Manual/Front-end/node.md)
   - [jQuery](./Manual/Front-end/jQuery.md)
   - [ES6](./Manual/Front-end/ES6.md)
   - [TypeScript](./Manual/Front-end/TypeScript.md)
-  - [webpack](./Manual/Front-end/webpack.md)
+  - [Webpack](./Manual/Front-end/webpack.md)
   - [Mocha 测试框架](./Manual/Front-end/mocha.md)
 - 客户端
   - [Android](./Manual/Android.md)
@@ -37,13 +38,13 @@
   - [剑指offer](./Manual/Algorithm/Algorithm-offer.md)
   - [剑指offer-go](./Manual/Algorithm/Algorithm-offer-go.md)
 - 原理
-  - [linux](./Manual/linux.md)
+  - [Linux](./Manual/linux.md)
   - [计算机网络](./Manual/Computer-network.md)
   - [计算机组成原理](./Manual/Computer-organization.md)
   - [计算机操作系统](./Manual/Computer-system.md)
 - 工具
   - [Git](./Manual/git.md)
-  - [vi/vim](./Manual/vim.md)
+  - [Vi/Vim](./Manual/vim.md)
   - [Docker](./Manual/docker.md)
   - [工具环境](./Manual/tools.md)
 
