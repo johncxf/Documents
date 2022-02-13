@@ -245,6 +245,3 @@ android.permission.WRITE_SETTINGS // 允许读写系统设置项
 android.permission.WRITE_SMS // 允许编写短信 
 android.permission.WRITE_SYNC_SETTINGS // 写入Google在线同步设置
 ```
-
-
-

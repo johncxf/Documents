@@ -2,36 +2,40 @@
 
 本文档记录一些软件工具的安装配置以及使用时，已经踩过的坑。
 
-### Composer
+## Composer
 
-> https://www.phpcomposer.com/
+官网：https://www.phpcomposer.com/
 
-#### 安装配置
+### 安装
 
-**mac**
+- mac：
 
-```
-# homebrew安装
-brew install composer
-# 更新
-composer self-update
-```
+  ```shell
+  # homebrew安装
+  brew install composer
+  # 更新
+  composer self-update
+  ```
 
-### phpmyadmin
+## Phpmyadmin
 
-> https://www.phpmyadmin.net
+官网：https://www.phpmyadmin.net
 
-#### 安装配置
+### 安装
 
-**mac**
+- mac：
 
-```
-brew search phpmyadmin
-```
+  ```shell
+  brew search phpmyadmin
+  ```
 
-或者官网下载安装
 
-**nginx配置文件中配**
+- 或者官网下载安装
+
+
+### 配置
+
+修改`nginx`配置文件：
 
 ```nginx
 location /pma {
@@ -50,72 +54,15 @@ location /pma {
 }
 ```
 
-### MySQL
+## Samba
 
-#### 安装配置
-
-> 很多安装方式，这里不在讲解
->
-
-#### 开启关闭
-
-**源码安装**
-
-```
-//关闭MySQL
-$mysql_dir/bin/mysqladmin -uroot -p shutdown
-//启动MySQL的命令
-$mysql_dir/bin/mysqld_safe &
-```
-
-#### 密码重置
-
-在配置文件中 [mysqld] 下添加 `skip-grant-tables`，保存退出（忘记密码情况）
-重启 mysql服务
-进入mysql `mysql -uroot -p`
-
-执行改密码
-
-```
-mysql > use mysql;
-mysql >  update user set password=password('root') where user='root';   
-mysql > flush privileges;
-mysql > exit;
-```
-
-在配置文件中 [mysqld] 下删除 `skip-grant-tables`，保存退出
-
-重启 mysql 服务
-
-**注意：**以上只是一种修改mysql密码的方法，而且不适用与高版本mysql
-
-#### 开启远程访问
-
-```
-进入 mysql 命令行模式
-mysql > use mysql;
-mysql > update user set host='%' where host='localhost' and user='root';
-mysql > grant all privileges on *.* to 'root'@'localhost' identified by 'root';
-mysql > flush privileges;
-mysql > exit
-```
-
-查看状态
-
-```
-ss -tlnp
-显示*:3306则可以
-```
-
-### samba
-
-#### 安装
+### 安装
 
 ```
 yum install -y samba samba-client
 ```
 
-#### 配置
+### 配置
 
 `以下/etc/samba/smb.conf`文件主要配置的讲解
 
@@ -181,7 +128,7 @@ global]
 
 再执行`smbpasswd -a work`添加帐户到`samba`
 
-#### 本地连接
+### 连接
 
 **mac**
 
@@ -191,9 +138,9 @@ global]
 
 使用运行命令(`win+R`)，输入`//IP`可打开，也可以打开`我的电脑`右击选择`添加一个网络位置`，输入`//IP/work`可映射到本地为一个盘符
 
-### GitLab
+## GitLab
 
-#### SSH
+### SSH
 
 安装ssh，已经安装可以跳过
 
@@ -213,7 +160,7 @@ sudo systemctl enable sshd
 sudo systemctl start sshd
 ```
 
-#### 防火墙
+### 防火墙
 
 > 设置防火墙，为了开放HTTP的端口 
 
@@ -241,7 +188,7 @@ sudo firewall-cmd --permanent --add-service=http
 sudo systemctl reload firewalld
 ```
 
-#### 邮件服务
+### 邮件服务
 
 安装邮件服务，当gitlab想要通过邮件通知，也可以另外配置其它的邮件服务器
 
@@ -274,7 +221,7 @@ inet_protocols = ipv4
 inet_interfaces = all
 ```
 
-#### 下载安装
+### 下载安装
 
 下载gitlab镜像
 
@@ -303,7 +250,7 @@ gitlab-ctl reconfigure
 gitlab-ctl restart
 ```
 
-#### 其他
+### 其他
 
 查看已经开放的端口：
 
@@ -317,7 +264,7 @@ firewall-cmd --list-ports
 firewall-cmd --zone=public --add-port=80/tcp --permanent
 ```
 
-#### 邮件发送
+### 邮件发送
 
 配置
 
@@ -347,23 +294,19 @@ gitlab-ctl restart
 
 执行 `gitlab-rails console`进入控制台。 然后在控制台提示符后输入下面的命令 发送一封测试邮件：`Notify.test_email('收件人邮箱', '邮件标题', '邮件正文').deliver_now` 
 
-### crontab
+## IDE
 
-> 定时任务
+### Sublim
 
-### IDE
-
-#### sublim
-
-##### 安装
+#### 安装
 
 官网下载安装：https://www.sublimetext.com/
 
-##### 包管理
+#### 包管理
 
 sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https://packagecontrol.io/
 
-###### 安装
+##### 安装
 
 官网安装教程：https://packagecontrol.io/installation
 
@@ -371,13 +314,13 @@ sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https:
 
 在面板中输入`install package`后回车
 
-##### 插件
+#### 插件
 
-###### 插件安装
+##### 插件安装
 
 `ctrl+shift+P`唤出命令面板输入相关插件命搜索安装即可
 
-###### 常用插件
+##### 常用插件
 
 - emmet：快速编写html/css https://docs.emmet.io
 
@@ -398,11 +341,11 @@ sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https:
 - SCSS：scss代码提示 https://packagecontrol.io/packages/SCSS
 - Sass：scss语法高亮 https://packagecontrol.io/packages/Sass
 
-#### PHPStorm
+### PHPStorm
 
 > 参考博客：https://blog.yiqiesuifeng.cn/archives/165/
 
-#### webStorm
+### WebStorm
 
 ##### 插件推荐
 
@@ -412,7 +355,7 @@ sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https:
 - .ignore：自动生成`.gitignore`文件
 - IdeaVim：支持vim语法
 
-#### VSCode
+### VSCode
 
 ##### 插件推荐
 
@@ -435,5 +378,71 @@ sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https:
 - open in brower
 - ...
 
+## Homebrew
 
+官网：https://brew.sh/
 
+### 常用指令
+
+- 查看镜像源：
+
+  ```shell
+  git -C "$(brew --repo)" remote get-url origin
+  git -C "$(brew --repo homebrew/core)" remote get-url origin
+  git -C "$(brew --repo homebrew/cask)" remote get-url origin
+  ```
+
+- 修改镜像源：
+
+  ```shell
+  # 修改配置
+  git -C "$(brew --repo)" remote set-url origin 'https://github.com/Homebrew/brew.git'
+  git -C "$(brew --repo homebrew/core)" remote set-url origin 'https://github.com/Homebrew/homebrew-core.git'
+  git -C "$(brew --repo homebrew/cask)" remote set-url origin 'https://github.com/Homebrew/homebrew-cask.git'
+  
+  # 替换后更新
+  brew update
+  
+  # 替换 Homebrew-bottles
+  # 对于 bash 用户：
+  echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
+  source ~/.bash_profile
+  # 对于 zsh 用户：
+  echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc
+  source ~/.zshrc
+  ```
+
+  - 官方：`https://github.com/Homebrew/`
+  - 中科大：`https://mirrors.ustc.edu.cn/`
+  - 清华：`https://mirrors.tuna.tsinghua.edu.cn/`
+
+## PM2
+
+PM2是一个守护进程管理器，它将帮助您全天候管理和保持应用程序在线。
+
+- 官网：https://pm2.keymetrics.io/
+
+### 安装
+
+```shell
+npm install pm2 -g
+```
+
+### 常用指令
+
+```shell
+# 启动服务
+pm2 start app.js
+# 列出所有 PM2 管理的所有应用
+pm2 list
+# 显示应用进程详细信息
+pm2 describe ${id}
+# 删除应用进程
+pm2 delete ${id}
+# 停止应用进程
+pm2 stop ${id}
+# 重启应用进程
+pm2 restart ${id}
+```
+
+更多：https://pm2.keymetrics.io/docs/usage/quick-start/

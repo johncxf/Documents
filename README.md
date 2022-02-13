@@ -26,9 +26,9 @@
   - [TypeScript](./Manual/Front-end/TypeScript.md)
   - [Webpack](./Manual/Front-end/webpack.md)
   - [Mocha 测试框架](./Manual/Front-end/mocha.md)
-- 客户端
-  - [Android](./Manual/Android.md)
-  - [iOS](./Manual/iOS.md)
+- 自动化
+  - [Android](./Manual/Automation/Android.md)
+  - [iOS](./Manual/Automation/iOS.md)
 - 数据库
   - [Mysql](./Manual/Database/Mysql.md)
   - [Redis](./Manual/Database/Redis.md)
