@@ -182,6 +182,19 @@ $ cnpm install [name]
 
 > 更多信息可以查阅：http://npm.taobao.org/
 
+### 使用双重验证
+
+npm 推出了5.5.1版的双重身份验证（2FA），它可以防止他人未经授权访问您的帐户。
+
+#### 安装客户端
+
+需要一个可以生成一次性验证码OTP的应用程序。在应用商店搜索 authy 进行安装。
+
+#### 账号设置
+
+- 在 npm 官网登录账号：https://www.npmjs.com/
+- 点击右上角头像 -> 点击「Account」-> 点击开启「Two Factor Authentication」-> 依次按照提示进行设置
+
 ## 语法
 
 ### REPL
