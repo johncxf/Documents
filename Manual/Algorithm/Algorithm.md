@@ -1,5 +1,7 @@
 # 数据结构
 
+## 概况
+
 ![](../../Image/201911202024.png)
 
 ## 复杂度
@@ -14,16 +16,17 @@
 
 ```
 int cal(int n) {
-   int sum = 0;
-   int i = 1;
-   for (; i <= n; ++i) {
-     sum = sum + i;
-   }
-   return sum;
+	int sum = 0;
+	int i = 1;
+	for (i; i <= n; ++i) {
+	  sum = sum + i;
+	}
+	return sum
+	
 }
 ```
 
-第 2、3 行代码分别需要 1 个 unit_time 的执行时间，第 4、5 行都运行了 n 遍，所以需要 2n*unit_time 的执行时间，所以这段代码总的执行时间就是 `(2n+2)*unit_time`。可以看出来，**所有代码的执行时间 T(n) 与每行代码的执行次数成正比**。
+第 2、3 行代码分别需要 1 个 unit_time 的执行时间，第 4、5 行都运行了 n 遍，所以需要 2n unit_time 的执行时间，所以这段代码总的执行时间就是 `(2n+2)*unit_time`。可以看出来，**所有代码的执行时间 T(n) 与每行代码的执行次数成正比**。
 
 **例2：**
 
@@ -130,19 +133,123 @@ void print(int n) {
 
 ### 数组
 
->  数组（Array）是一种线性表数据结构。它用一组连续的内存空间，来存储一组具有相同类型的数据。
->
-> 数组不仅仅是一种编程语言中的数据类型，还是一种最基础的数据结构 
+- 数组（Array）是一种线性表数据结构。它用一组连续的内存空间，来存储一组具有相同类型的数据。
+- 数组不仅仅是一种编程语言中的数据类型，还是一种最基础的数据结构 
 
  **为什么大多数编程语言中，数组要从 0 开始编号，而不是从 1 开始呢？** 
 
-> 从数组存储的内存模型上来看，“下标”最确切的定义应该是“偏移（offset）”。前面也讲到，如果用 a 来表示数组的首地址，a[0] 就是偏移为 0 的位置，也就是首地址 
+- 从数组存储的内存模型上来看，“下标”最确切的定义应该是“偏移（offset）”。前面也讲到，如果用 a 来表示数组的首地址，a[0] 就是偏移为 0 的位置，也就是首地址 
 
 ###  链表
 
 #### 单链表
 
->  通过指针将一组零散的内存块串联在一起 ， 把内存块称为链表的“**结点**”。  记录下个结点地址的指针叫作**后继指针 next** ， 一个结点叫作**头结点**，把最后一个结点叫作**尾结点** 。
+通过指针将一组零散的内存块串联在一起 ， 把内存块称为链表的“**结点**”。  记录下个结点地址的指针叫作**后继指针 next** ， 一个结点叫作**头结点**，把最后一个结点叫作**尾结点** 。
+
+```go
+// 单链表
+package main
+
+import (
+	"fmt"
+)
+
+// 定义节点
+type Node struct {
+	Value int
+	Next  *Node
+}
+
+// 初始化头结点
+var head = new(Node)
+
+// 添加节点
+func addNode(t *Node, v int) int {
+	if head == nil {
+		t = &Node{v, nil}
+		head = t
+		return 0
+	}
+
+	if v == t.Value {
+		fmt.Println("节点已存在:", v)
+		return -1
+	}
+
+	// 如果当前节点下一个节点为空
+	if t.Next == nil {
+		t.Next = &Node{v, nil}
+		return -2
+	}
+
+	// 如果当前节点下一个节点不为空
+	return addNode(t.Next, v)
+}
+
+// 遍历链表
+func traverse(t *Node) {
+	if t == nil {
+		fmt.Println("-> 空链表!")
+		return
+	}
+	for t != nil {
+		fmt.Printf("%d -> ", t.Value)
+		t = t.Next
+	}
+	fmt.Println()
+}
+
+// 查找节点
+func searchNode(t *Node, v int) bool {
+	if head == nil {
+		t = &Node{v, nil}
+		head = t
+		return false
+	}
+	if v == t.Value {
+		return true
+	}
+	if t.Next == nil {
+		return false
+	}
+	return searchNode(t.Next, v)
+}
+
+// 获取链表长度
+func size(t *Node) int {
+	if t == nil {
+		fmt.Println("-> 空链表!")
+		return 0
+	}
+	i := 0
+	for t != nil {
+		i++
+		t = t.Next
+	}
+	return i
+}
+
+func main() {
+	fmt.Println(head)
+	head = nil
+	// 遍历链表
+	traverse(head)
+	// 添加节点
+	addNode(head, 1)
+	addNode(head, -1)
+	// 再次遍历
+	traverse(head)
+	// 添加更多节点
+	addNode(head, 10)
+	addNode(head, 5)
+	addNode(head, 45)
+	// 添加已存在节点
+	addNode(head, 5)
+	// 再次遍历
+	traverse(head)
+}
+
+```
 
 #### 循环链表
 
@@ -153,6 +260,134 @@ void print(int n) {
 #### 双向链表
 
  支持两个方向，每个结点不止有一个后继指针 next 指向后面的结点，还有一个前驱指针 prev 指向前面的结点 
+
+```go
+// 双向链表
+package main
+
+import "fmt"
+
+type Node struct {
+	Value    int
+	Previous *Node
+	Next     *Node
+}
+
+// 初始化头节点
+var head = new(Node)
+
+// 添加节点
+func addNode(t *Node, v int) int {
+	if head == nil {
+		t = &Node{v, nil, nil}
+		head = t
+		return 0
+	}
+	if v == t.Value {
+		fmt.Println("节点已存在:", v)
+		return -1
+	}
+	// 如果当前节点下一个节点为空
+	if t.Next == nil {
+		// 与单链表不同的是每个节点还要维护前驱节点指针
+		temp := t
+		t.Next = &Node{v, temp, nil}
+		return -2
+	}
+	// 如果当前节点下一个节点不为空
+	return addNode(t.Next, v)
+}
+
+// 遍历链表
+func traverse(t *Node) {
+	if t == nil {
+		fmt.Println("-> 空链表!")
+		return
+	}
+	for t != nil {
+		fmt.Printf("%d -> ", t.Value)
+		t = t.Next
+	}
+	fmt.Println()
+}
+
+// 反向遍历链表
+func reverse(t *Node) {
+	if t == nil {
+		fmt.Println("-> 空链表!")
+		return
+	}
+	temp := t
+	for t != nil {
+		temp = t
+		t = t.Next
+	}
+	for temp.Previous != nil {
+		fmt.Printf("%d -> ", temp.Value)
+		temp = temp.Previous
+	}
+	fmt.Printf("%d -> ", temp.Value)
+	fmt.Println()
+}
+
+// 获取链表长度
+func size(t *Node) int {
+	if t == nil {
+		fmt.Println("-> 空链表!")
+		return 0
+	}
+	n := 0
+	for t != nil {
+		n++
+		t = t.Next
+	}
+	return n
+}
+
+// 查找节点
+func lookupNode(t *Node, v int) bool {
+	if head == nil {
+		return false
+	}
+	if v == t.Value {
+		return true
+	}
+	if t.Next == nil {
+		return false
+	}
+	return lookupNode(t.Next, v)
+}
+
+func main() {
+	fmt.Println(head)
+	head = nil
+	// 遍历链表
+	traverse(head)
+	// 新增节点
+	addNode(head, 1)
+	// 再次遍历
+	traverse(head)
+	// 继续添加节点
+	addNode(head, 10)
+	addNode(head, 5)
+	addNode(head, 100)
+	// 再次遍历
+	traverse(head)
+	// 添加已存在节点
+	addNode(head, 100)
+	fmt.Println("链表长度:", size(head))
+	// 再次遍历
+	traverse(head)
+	// 反向遍历
+	reverse(head)
+	// 查找已存在节点
+	if lookupNode(head, 5) {
+		fmt.Println("该节点已存在!")
+	} else {
+		fmt.Println("该节点不存在!")
+	}
+}
+```
 
 ## 栈
 
