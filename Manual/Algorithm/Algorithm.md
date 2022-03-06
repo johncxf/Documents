@@ -570,6 +570,33 @@ func main() {
 
 **代码实现**
 
+Go：
+
+```go
+// 冒泡排序
+func bubbleSort(arr []int) []int {
+	count := len(arr)
+	if 1 >= count {
+		return arr
+	}
+	for i := 0; i < count; i++ {
+		for j := 0; j < count-1; j++ {
+			// 从小到大
+			if arr[j] > arr[j+1] {
+				arr[j], arr[j+1] = arr[j+1], arr[j]
+			}
+			// 从大到小
+			// if arr[j] < arr[j+1] {
+			// 	arr[j], arr[j+1] = arr[j+1], arr[j]
+			// }
+		}
+	}
+	return arr
+}
+```
+
+PHP：
+
 ```php
 <?php
 /**
@@ -607,24 +634,58 @@ function bubblesort($arr) {
 
 **代码实现**
 
+Go：
+
+```go
+// 快速排序
+func quickSort(arr []int, left int, right int) {
+	if left > right {
+		return
+	}
+	temp := arr[left]
+	i := left
+	j := right
+	for i != j {
+		// 哨兵 j 向左移动，查找小于基准数 temp 时停下
+		for arr[j] >= temp && i < j {
+			j--
+		}
+		// 哨兵 i 向右移动，查找大于基准数 temp 时停下
+		for arr[i] <= temp && i < j {
+			i++
+		}
+		// 交换 i、j 位置
+		if i < j {
+			arr[i], arr[j] = arr[j], arr[i]
+		}
+	}
+	// 将基准数归位
+	arr[left], arr[i] = arr[i], arr[left]
+	quickSort(arr, left, i-1)
+	quickSort(arr, j+1, right)
+}
+```
+
+PHP：
+
 ```php
 <?php
 /**
-  * 快速排序.
+  * 快速排序
+  *
   * @param  array $value 待排序数组
   * @param  array $left  左边界
   * @param  array $right 右边界
   * @return array
   */
-function quicksort(&$value, $left, $right) {
-	//左右重合，跳出
+function quickSort(&$value, $left, $right) {
+	// 左右重合，跳出
 	if ($left >= $right) {
 		return;
 	}
 	$base = $left;
 	do {
-		//最右边开始找第一个小于基准点的值，然后互换位置
-		//找到为止
+		// 最右边开始找第一个小于基准点的值，然后互换位置
 		for ($i = $right; $i > $base; --$i) {
 			if ($value[$base] > $value[$i]) {
 				$tmp = $value[$i];
@@ -632,13 +693,10 @@ function quicksort(&$value, $left, $right) {
 				$value[$base] = $tmp;
 				$base = $i;
 				break;
-			
 			}
 		}
 		
-		//最左边开始找第一个大于基准点的值，互换位置
-		//找到为止
-
+		// 最左边开始找第一个大于基准点的值，互换位置
 		for ($j = $left; $j < $base; ++$j) {
 			if ($value[$base] < $value[$j]) {
 				$tmp = $value[$j];
@@ -646,21 +704,19 @@ function quicksort(&$value, $left, $right) {
 				$value[$base] = $tmp;
 				$base = $j;
 				break;
-			
 			}
 		}
-	} while ($i > $j);//直到索引重合
-	//开始递归
-	//以当前索引为分界
-	//开始排序左部分
+	} while ($i > $j);// 直到索引重合
+	// 开始递归
+	// 以当前索引为分界
+	// 开始排序左部分
 	quicksort($value, $left, $i - 1);
 	quicksort($value, $i + 1, $right);
-
 }
-// $value = [1,4,2,7,6,4,2];
-// quicksort($value,0,count($value) - 1);
-// print_r($value);
 
+// $value = [1,4,2,7,6,4,2];
+// quickSort($value,0,count($value) - 1);
+// print_r($value);
 ```
 
 #### 选择排序

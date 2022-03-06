@@ -54,6 +54,8 @@
 - 从本地复制文件到设备：`adb push <local> <remote>`
 - 从设备复制文件到本地：`adb pull <remote> <local>`
 - 查看 bug 报告：`adb bugreport`
+- 获取 pageSource：`adb shell uiautomator dump --compressed /sdcard/uidump.xml`
+- 拉取文件本本地：`adb pull /sdcard/uidump.xml > ./uidump.xml`
 
 ### adb shell
 

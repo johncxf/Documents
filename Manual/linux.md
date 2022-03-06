@@ -279,6 +279,25 @@ df [选项]... [FILE]...
 - 文件--help 显示这个帮手并且离开
 - 文件--version 输出版本资讯并且离开
 
+### alias
+
+设置指令别名
+
+**语法：**
+
+```shell
+alias[别名]=[指令名称]
+```
+
+**示例：**
+
+```shell
+// 设置
+alias ll='ls -l --color=auto'
+// 查看所有别名设置
+alias -p
+```
+
 ## Shell
 
 Shell 是一个用 C 语言编写的程序，它是用户使用 Linux 的桥梁。Shell 既是一种命令语言，又是一种程序设计语言。
