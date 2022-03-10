@@ -1,4 +1,15 @@
-## ES6
+# ES6
+
+## 知识点
+
+#### ES5 和 ES6 分别几种方式声明变量？
+
+ES5 有俩种：`var` 和 `function`
+ES6 有六种：增加四种，`let`、`const`、`class` 和 `import`
+
+注意：`let`、`const`、`class`声明的全局变量再也不会和全局对象的属性挂钩
+
+## 语法
 
 ES6， 全称 ECMAScript 6.0 ，是 JavaScript 的下一个版本标准，2015.06 发版。
 

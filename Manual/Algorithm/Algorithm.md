@@ -733,10 +733,32 @@ function quickSort(&$value, $left, $right) {
 
 **代码实现**
 
+Go：
+
+```go
+// 选择排序
+func selectSort(arr []int) []int {
+	length := len(arr)
+	for i := 0; i < length-1; i++ {
+		min := i
+		for j := i + 1; j < length; j++ {
+			if arr[min] > arr[j] {
+				min = j
+			}
+		}
+		arr[i], arr[min] = arr[min], arr[i]
+	}
+	return arr
+}
+```
+
+PHP：
+
 ```php
 <?php
 /**
-  * 选择排序.
+  * 选择排序
+  *
   * @param  array $arr 待排序数组
   * @return array
   */
@@ -754,8 +776,8 @@ function selectSort($arr) {
 		//已经确定了当前的最小值的位置，如果发现最小值的位置与当前假设的位置$i不同，则位置互换即可
 		if ($min != $i) {
 			$tmp = $arr[$min];
-            $arr[$min] = $arr[$i];
-            $arr[$i] = $tmp;
+       $arr[$min] = $arr[$i];
+       $arr[$i] = $tmp;
 		}
 	}
 	return $arr;
@@ -783,7 +805,8 @@ function selectSort($arr) {
 
 ```php
 /**
-  * 插入排序.
+  * 插入排序
+  *
   * @param  array $arr 待排序数组
   * @return array
   */

@@ -632,7 +632,7 @@ Authorization: Bearer 令牌数据
 
 在postman 工具中可以使用以下方式简化操作
 
-![image-20200326130000403](../Image/Markdown/image-20200326130000403.png)
+![image-20200326130000403](../Image/oldimg/image-20200326130000403.png)
 
 
 

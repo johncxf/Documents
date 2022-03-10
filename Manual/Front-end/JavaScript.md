@@ -1,5 +1,32 @@
 # JavaScript
 
+## 知识点
+
+#### 怎么判断js的数据类型？
+
+- typeof
+
+  可以判断出'string','number','boolean','undefined','symbol'
+  但判断 typeof(null) 时值为 'object'; 判断数组和对象时值均为 'object'
+
+- instanceof
+
+  原理是 构造函数的 prototype 属性是否出现在对象的原型链中的任何位置
+
+  ```
+  function A() {}
+  let a = new A();
+  a instanceof A     //true,因为 Object.getPrototypeOf(a) === A.prototype;
+  ```
+
+- Object.prototype.toString.call()
+
+  常用于判断浏览器内置对象，对于所有基本的数据类型都能进行判断，即使是 null 和 undefined
+
+- Array.isArray()
+
+  用于判断是否为数组
+
 ## 简介
 
 ### JavaScript 起源
