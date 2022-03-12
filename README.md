@@ -14,11 +14,13 @@
   - [PHP 面试知识点](./Manual/PHP/PHP-interview.md)
   - [PHP 开发环境搭建](./Manual/PHP/NMP.md)
   - [Laravel 框架学习笔记](./Manual/PHP/Laravel.md)
-- 后端
+- 后端开发
   - [API 开发](./Manual/api.md)
+  - [Nginx](./Manual/Server/Nginx.md)
   - [Golang](./Manual/golang.md)
   - [Python](./Manual/Python.md)
-- 前端
+- 前端开发
+  - [Css](./Manual/Front-end/Css.md)
   - [JavaScript](./Manual/Front-end/JavaScript.md)
   - [Node.js](./Manual/Front-end/node.md)
   - [jQuery](./Manual/Front-end/jQuery.md)
@@ -26,23 +28,23 @@
   - [TypeScript](./Manual/Front-end/TypeScript.md)
   - [Webpack](./Manual/Front-end/webpack.md)
   - [Mocha 测试框架](./Manual/Front-end/mocha.md)
-- 自动化
+- 自动化测试
   - [Android](./Manual/Automation/Android.md)
   - [iOS](./Manual/Automation/iOS.md)
 - 数据库
   - [Mysql](./Manual/Database/Mysql.md)
   - [Redis](./Manual/Database/Redis.md)
-- 算法
+- 数据结构&算法
   - [算法笔记](./Manual/Algorithm/Algorithm.md)
   - [Leetcode](./Manual/Algorithm/Algorithm-leetcode.md)
   - [剑指offer](./Manual/Algorithm/Algorithm-offer.md)
   - [剑指offer-go](./Manual/Algorithm/Algorithm-offer-go.md)
-- 原理
+- 计算机原理
   - [Linux](./Manual/linux.md)
   - [计算机网络](./Manual/Computer-network.md)
   - [计算机组成原理](./Manual/Computer-organization.md)
   - [计算机操作系统](./Manual/Computer-system.md)
-- 工具
+- 基础工具
   - [Git](./Manual/git.md)
   - [Vi/Vim](./Manual/vim.md)
   - [Docker](./Manual/docker.md)
