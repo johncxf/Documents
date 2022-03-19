@@ -991,6 +991,8 @@ class Merge_sort{
 
 **代码实现**
 
+PHP：
+
 ```php
 <?php
  /**
@@ -1002,12 +1004,12 @@ class Merge_sort{
 function binarySearch($data, $search){
     $low = 0;
     $high = count($data) - 1;
-    while( $low <= $high ){
-        $mid = floor( ($low + $high) / 2 );
-        if( $data[$mid] == $search ){
+    while($low <= $high){
+        $mid = floor(($low + $high) / 2);
+        if($data[$mid] == $search){
             return $mid;
         }
-        if( $data[$mid] > $search ){
+        if($data[$mid] > $search){
             $high = $mid - 1;
         }
         if($data[$mid] < $search){
@@ -1015,6 +1017,27 @@ function binarySearch($data, $search){
         }
     }
     return -1;
+}
+```
+
+GO：
+
+```go
+// 二分查找 - 针对递增数组
+func binarySearch(data []int, search int) int {
+	low := 0
+	height := len(data) - 1
+	for low < height {
+		mid := (height + low) / 2
+		if data[mid] == search {
+			return mid
+		} else if data[mid] > search {
+			height = mid - 1
+		} else {
+			low = height + 1
+		}
+	}
+	return -1
 }
 ```
 
