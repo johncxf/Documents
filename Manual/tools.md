@@ -382,39 +382,66 @@ sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https:
 
 官网：https://brew.sh/
 
+### 安装配置
+
+可以安装官网方式进行安装，不过国内安装多数情况下都会安装失败
+
+解决方案：更换镜像安装
+
+#### 安装：
+
+```shell
+export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
+export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
+/bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"
+```
+
+#### 配置：
+
+```shell
+# 对于 bash 用户：
+echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
+source ~/.bash_profile
+# 对于 zsh 用户：
+echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc
+source ~/.zshrc
+```
+
+参考：https://brew.idayer.com/guide/change-source/
+
 ### 常用指令
 
-- 查看镜像源：
+查看镜像源：
 
-  ```shell
-  git -C "$(brew --repo)" remote get-url origin
-  git -C "$(brew --repo homebrew/core)" remote get-url origin
-  git -C "$(brew --repo homebrew/cask)" remote get-url origin
-  ```
+```shell
+git -C "$(brew --repo)" remote get-url origin
+git -C "$(brew --repo homebrew/core)" remote get-url origin
+git -C "$(brew --repo homebrew/cask)" remote get-url origin
+```
 
-- 修改镜像源：
+修改镜像源：
 
-  ```shell
-  # 修改配置
-  git -C "$(brew --repo)" remote set-url origin 'https://github.com/Homebrew/brew.git'
-  git -C "$(brew --repo homebrew/core)" remote set-url origin 'https://github.com/Homebrew/homebrew-core.git'
-  git -C "$(brew --repo homebrew/cask)" remote set-url origin 'https://github.com/Homebrew/homebrew-cask.git'
-  
-  # 替换后更新
-  brew update
-  
-  # 替换 Homebrew-bottles
-  # 对于 bash 用户：
-  echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
-  source ~/.bash_profile
-  # 对于 zsh 用户：
-  echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc
-  source ~/.zshrc
-  ```
+```shell
+# 修改配置
+git -C "$(brew --repo)" remote set-url origin 'https://github.com/Homebrew/brew.git'
+git -C "$(brew --repo homebrew/core)" remote set-url origin 'https://github.com/Homebrew/homebrew-core.git'
+git -C "$(brew --repo homebrew/cask)" remote set-url origin 'https://github.com/Homebrew/homebrew-cask.git'
 
-  - 官方：`https://github.com/Homebrew/`
-  - 中科大：`https://mirrors.ustc.edu.cn/`
-  - 清华：`https://mirrors.tuna.tsinghua.edu.cn/`
+# 替换后更新
+brew update
+
+# 替换 Homebrew-bottles
+# 对于 bash 用户：
+echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
+source ~/.bash_profile
+# 对于 zsh 用户：
+echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc
+source ~/.zshrc
+```
+
+- 官方：`https://github.com/Homebrew/`
+- 中科大：`https://mirrors.ustc.edu.cn/`
+- 清华：`https://mirrors.tuna.tsinghua.edu.cn/`
 
 ## PM2
 
@@ -446,3 +473,65 @@ pm2 restart ${id}
 ```
 
 更多：https://pm2.keymetrics.io/docs/usage/quick-start/
+
+## NVM
+
+ - nvm 是 Mac 下的 node 管理工具
+ - github：https://github.com/nvm-sh/nvm
+
+### 安装配置
+#### 卸载
+没有安装过`node`的跳过此步骤
+
+```shell
+$ sudo npm uninstall npm -g
+$ sudo rm -rf /usr/local/lib/node /usr/local/lib/node_modules /var/db/receipts/org.nodejs.*
+$ sudo rm -rf /usr/local/include/node /Users/$USER/.npm
+$ sudo rm /usr/local/bin/node
+```
+
+#### 安装
+
+##### 自动安装
+
+```shell
+// 安装
+$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+
+// 或者 wget 安装
+$ wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+```
+
+##### 手动安装（如果自动安装失败，可以尝试手动安装）
+
+```shell
+// 拉取代码
+cd ~/ && git clone https://github.com/nvm-sh/nvm.git .nvm && cd ~/.nvm
+// 切换指定版本
+git checkout v0.39.1
+// 安装
+. ./nvm.sh
+```
+
+### 常用指令
+
+可以通过`nvm --help`查看所有指令
+
+```shell
+nvm --help                          显示所有信息
+nvm --version                       显示当前安装的nvm版本
+nvm install [-s] <version>          安装指定的版本，如果不存在.nvmrc,就从指定的资源下载安装
+nvm install [-s] <version>  -latest-npm 安装指定的版本，平且下载最新的npm
+nvm uninstall <version>             卸载指定的版本
+nvm use [--silent] <version>        使用已经安装的版本  切换版本
+nvm current                         查看当前使用的node版本
+nvm ls                              查看已经安装的版本
+nvm ls  <version>                   查看指定版本
+nvm ls-remote                       显示远程所有可以安装的nodejs版本
+nvm ls-remote --lts                 查看长期支持的版本
+nvm install --latest-npm              安装最新的npm
+nvm reinstall-packages <version>    重新安装指定的版本
+nvm cache dir                       显示nvm的cache
+nvm cache clear                     清空nvm的cache
+```
+
