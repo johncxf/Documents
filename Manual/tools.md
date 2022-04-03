@@ -529,9 +529,157 @@ nvm ls                              查看已经安装的版本
 nvm ls  <version>                   查看指定版本
 nvm ls-remote                       显示远程所有可以安装的nodejs版本
 nvm ls-remote --lts                 查看长期支持的版本
-nvm install --latest-npm              安装最新的npm
+nvm install --latest-npm            安装最新的npm
 nvm reinstall-packages <version>    重新安装指定的版本
 nvm cache dir                       显示nvm的cache
 nvm cache clear                     清空nvm的cache
 ```
 
+## Gitbook
+
+- 官网：https://www.gitbook.com/#PersonalNotes
+- npm：https://www.npmjs.com/package/gitbook-cli
+
+### 安装配置
+
+安装 node.js（安装方式）
+
+- gitbook 貌似对高版本 node 不兼容，亲测 node14.0 不行，node12.0 可以
+
+- 在 [Node.js 历史版本下载网站](https://nodejs.org/zh-cn/download/releases/) 下载合适版本 pkg 安装包，直接点击安装即可。
+
+gitbook 命令行工具使用 npm 进行安装（依赖 node.js 环境）：
+
+```shell
+$ npm install -g gitbook-cli
+```
+
+检查是否安装成功：
+
+```shell
+$ gitbook -V
+```
+
+### 创建一本书
+
+#### 初始化
+
+自定义项目目录，在目录中执行以下指令：
+
+```shell
+$ gitbook init
+```
+
+初始化会生成 `README.md` 、 `SUMMARY.md` 两个文件
+
+#### 预览
+
+```shell
+$ gitbook serve
+```
+
+#### 构建
+
+```shell
+$ gitbook build
+```
+
+构建完成会生成 `_book` 静态资源目录文件
+
+### 目录结构
+
+```json
+.
+├── book.json 	// 配置文件
+├── README.md 	// 首页文档
+├── SUMMARY.md 	// 目录导航
+├── chapter1		// 章节分类
+|   ├── README.md
+|   └── something.md
+└── chapter2
+    ├── README.md
+    └── something.md
+```
+
+#### README.md
+
+首页文档
+
+#### SUMMARY.md
+
+目录导航，编写格式如下：
+
+```markdown
+# Summary
+- [Introduction](README.md)
+- [Git](git/README.md)
+  - [安装配置](git/install.md)
+  - [指令全集](git/commend.md)
+- [Vim](vim/README.md)
+  - [启动指令](vim/start.md)
+  - [常用指令](vim/command.md)
+```
+
+部分内容对应目录：http://note.yiqiesuifeng.cn/
+
+#### book.json
+
+配置文件，配置如下：
+
+| 变量          | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| root          | 包含所有图书文件的根文件夹的路径，除了 book.json             |
+| structure     | 指定自述文件，摘要，词汇表等的路径                           |
+| title         | 您的书名，默认值是从 README 中提取出来的。在 GitBook.com 上，这个字段是预填的。 |
+| description   | 您的书籍的描述，默认值是从 README 中提取出来的。在 GitBook.com 上，这个字段是预填的。 |
+| author        | 作者名。在GitBook.com上，这个字段是预填的。                  |
+| isbn          | 国际标准书号 ISBN                                            |
+| language      | 本书的语言类型 —— [ISO code](https://links.jianshu.com/go?to=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FList_of_ISO_639-1_codes) 。默认值是 `en` |
+| direction     | 文本阅读顺序。可以是 rtl （从右向左）或 ltr （从左向右），默认值依赖于 language 的值。 |
+| gitbook       | 应该使用的GitBook版本，并接受类似于 `>=3.0.0` 的条件。       |
+| links         | 在左侧导航栏添加链接信息                                     |
+| plugins       | 要加载的插件列表([官网插件列表](https://links.jianshu.com/go?to=https%3A%2F%2Fdocs.gitbook.com%2Fv2-changes%2Fimportant-differences%23plugins)) |
+| pluginsConfig | 插件的配置                                                   |
+
+### 常用指令
+
+```shell
+// 列出 gitbook 所有的命令
+gitbook help
+// 输出 gitbook-cli 的帮助信息
+gitbook --help
+// 生成静态网页
+gitbook build
+// 生成静态网页并运行服务器
+gitbook serve
+// 生成时指定gitbook的版本, 本地没有会先下载
+gitbook build --gitbook=2.0.1
+// 列出本地所有的gitbook版本
+gitbook ls
+// 列出远程可用的gitbook版本
+gitbook ls-remote
+// 安装对应的gitbook版本
+gitbook fetch 标签/版本号
+// 更新到gitbook的最新版本
+gitbook update
+// 卸载对应的gitbook版本
+gitbook uninstall 2.0.1
+// 指定log的级别
+gitbook build --log=debug
+// 输出错误信息
+gitbook builid --debug
+```
+
+### FAQ
+
+#### Q：`gitbook init` 报错执行报错：
+
+```shell
+warn: no summary file in this book
+info: create README.md
+info: create SUMMARY.md
+
+TypeError [ERR_INVALID_ARG_TYPE]: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received an instance of Promise
+```
+
+解决方法：node.js  版本过高，将 node.js 版本降到 12.0

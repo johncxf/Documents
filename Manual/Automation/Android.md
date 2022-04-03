@@ -24,6 +24,37 @@
 
 服务器与所有设备均建立连接后，您便可以使用 adb 命令访问这些设备。由于服务器管理与设备的连接，并处理来自多个 adb 客户端的命令，因此您可以从任意客户端（或从某个脚本）控制任意设备。
 
+### 安装配置
+
+#### Homebrew 安装
+
+```shell
+brew cask install android-platform-tools
+// 新版 homebrew 使用该指令
+brew install --cask android-platform-tools
+```
+
+#### 手动安装
+
+##### 下载对应工具并解压
+
+- 官方下载地址：https://developer.android.com/studio/releases/platform-tools?hl=zh-cn
+
+##### 将解压文件存放自定义目录下
+
+- 我这里存放在：`~/.android-sdk-macosx` 目录下
+
+##### 配置
+
+```shell
+# 环境变量设置
+echo 'export PATH=$PATH:~/.android-sdk-macosx/platform-tools/' >> ~/.bash_profile
+# 更新配置文件
+source ~/.bash_profile
+# 测试是否正常安装
+adb devices
+```
+
 ### 开启adb调试
 
 如要在通过 USB 连接的设备上使用 adb，您必须在设备的系统设置中启用 **USB 调试**（位于**开发者选项**下）
