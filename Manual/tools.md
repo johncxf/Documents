@@ -58,7 +58,7 @@ location /pma {
 
 ### 安装
 
-```
+```shell
 yum install -y samba samba-client
 ```
 
@@ -66,7 +66,7 @@ yum install -y samba samba-client
 
 `以下/etc/samba/smb.conf`文件主要配置的讲解
 
-```
+```shell
 # 全局配置
 global]
 				# 定义工作组
@@ -115,7 +115,7 @@ global]
 
 在配置文件中加入
 
-```
+```shell
 # 这下是配置work
 [work]
    comment = home work
@@ -127,6 +127,14 @@ global]
 ```
 
 再执行`smbpasswd -a work`添加帐户到`samba`
+
+### 启动
+
+```shell
+/etc/init.d/smb start
+/etc/init.d/smb stop
+/etc/init.d/smb restart
+```
 
 ### 连接
 
