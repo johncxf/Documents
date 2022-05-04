@@ -109,7 +109,7 @@ func printListFromTailToHead(head *ListNode) []int {
  * @param k int整型
  * @return ListNode类
  */
-func FindKthToTail(pHead *ListNode,  k int) *ListNode {
+func findKthToTail(pHead *ListNode,  k int) *ListNode {
 	current, res := pHead, pHead
     n := 0
     for current != nil {
@@ -341,13 +341,29 @@ func FindFirstCommonNode(pHead1 *ListNode,  pHead2 *ListNode) *ListNode {
 时间复杂度：O(m+n)
 空间复杂度：O(1)
 
-#### [简单]反转链表
+#### [JZ24-简单]反转链表
 
 ##### 题目描述
 
 输入一个链表，反转链表后，输出新链表的表头。
 
+##### 示例
+
+```
+// 输入
+{1,2,3}
+// 返回值
+{3,2,1}
+
+// 输入
+{}
+// 返回值
+{}
+```
+
 ##### 代码实现
+
+PHP
 
 ```php
 <?php
@@ -358,7 +374,7 @@ func FindFirstCommonNode(pHead1 *ListNode,  pHead2 *ListNode) *ListNode {
         $this->val = $x;
     }
 }*/
-function ReverseList($pHead)
+function reverseList($pHead)
 {
     $head = null;
     while ($pHead) {
@@ -371,7 +387,34 @@ function ReverseList($pHead)
 }
 ```
 
-#### [简单]删除链表的节点
+Golang
+
+```golang
+/**
+ * [JZ24-简单]反转链表
+ *
+ * @param head Node类
+ * @return Node类
+ */
+func reverseList(head *Node) *Node {
+	var newHead *Node
+	var tmp *Node
+	for head != nil {
+		// 暂存下一个节点
+		tmp = head.Next
+		// 把新链表挂到原链表后面
+		head.Next = newHead
+		// 更新新链表
+		newHead = head
+		// 移动指针
+		head = tmp
+	}
+
+	return newHead
+}
+```
+
+#### [JZ18-简单]删除链表的节点
 
 ##### 题目描述
 
@@ -411,10 +454,111 @@ function ReverseList($pHead)
 给定你链表中值为 1 的第三个节点，那么在调用了你的函数之后，该链表应变为 2 -> 5 -> 9   
 ```
 
+##### 解题思路
+
+删除节点，需要把下一个节点的值移动到当前删除节点，然后更改当前节点的 Next
+
+```
+node.Val = node.Next.Val
+node.Next = node.Next.Next
+```
+
 ##### 代码实现
 
 ```go
+/**
+ * [JZ18]删除链表的节点
+ *
+ * @param head Node类
+ * @param val int整型
+ * @return Node类
+ */
+func deleteNode(head *Node, val int) *Node {
+	if head.Value == val {
+		return head.Next
+	}
+	pre := head
+	for nil != head {
+		if head.Value == val {
+			head.Value = head.Next.Value
+			head.Next = head.Next.Next
+			break
+		}
+		head = head.Next
+	}
+	return pre
+}
 
+// 简化版 - 直接从 head 的 Next 节点开始遍历
+func deleteNodeSimplify(head *Node, val int) *Node {
+	if head.Value == val {
+		return head.Next
+	}
+	pre := head
+	for head.Next.Value != val {
+		head = head.Next
+	}
+	head.Next = head.Next.Next
+	return pre
+}
+```
+
+#### [JZ76-中等]删除链表中重复的结点
+
+##### 题目描述
+
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表 1->2->3->3->4->4->5 处理后为 1->2->5
+
+数据范围：链表长度满足 0 \le n \le 1000 \0≤*n*≤1000 ，链表中的值满足 1 \le val \le 1000 \1≤*v**a**l*≤1000 
+
+进阶：空间复杂度 O(n)\*O*(*n*) ，时间复杂度 O(n) \*O*(*n*) 
+
+例如输入{1,2,3,3,4,4,5}时，对应的输出为{1,2,5}
+
+##### 示例
+
+```
+// 输入：
+{1,2,3,3,4,4,5}
+// 返回值：
+{1,2,5}
+
+// 输入：
+{1,1,1,8}
+// 返回值：
+{8}
+```
+
+##### 代码实现
+
+```go
+/**
+ * [JZ76-简单]删除链表中重复的结点
+ *
+ * @param pHead Node类
+ * @return Node类
+ */
+func deleteDuplication(pHead *Node) *Node {
+	// 定义一个空链表
+	var res = new(Node)
+	// 给新链表添加表头
+	res.Next = pHead
+	cur := res
+	// 从 next 节点开始遍历（前面加了一个表头）
+	for nil != cur.Next && nil != cur.Next.Next {
+		if cur.Next.Value == cur.Next.Next.Value {
+			// 遇到前后节点相同情况，进行遍历，跳过所有相同节点
+			tmp := cur.Next.Value
+			for nil != cur.Next && cur.Next.Value == tmp {
+				cur.Next = cur.Next.Next
+			}
+		} else {
+			// 循环链表
+			cur = cur.Next
+		}
+	}
+	return res.Next
+}
 ```
 
 ### 树
