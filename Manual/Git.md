@@ -16,11 +16,29 @@
 > 配置文件为 `~/.gitconfig` ，执行任何Git配置命令后文件将自动创建
 
 ```shell
-git config --global user.name 'johncxf'
-```
+# 默认配置，如果当前地址中仓库信息不存在则查看全局而后再读取系统配置
+$ git config --list
 
-```shell
+# 本地仓库配置 高优先级
+$ git config --local --list
+
+# 全局用户配置 中优先级
+$ git config --global --list
+
+# 系统配置 低优先级
+$ git config --system --list
+
+# 配置全局用户、邮箱
+git config --global user.name 'johncxf'
 git config --global user.email 'johncxf@163.com'
+
+# 配置当前仓库用户、邮箱
+git config user.name 'johncxf'
+git config user.email 'johncxf@163.com'
+
+# 查看当前仓库用户、邮箱
+git config user.name
+git config user.email
 ```
 
 ## 常用指令
@@ -447,7 +465,7 @@ update.sample
 
 -  `applypatch-msg` 钩子： 它接收单个参数：包含请求合并信息的临时文件的名字。 如果脚本返回非零值，Git 将放弃该补丁。 你可以用该脚本来确保提交信息符合格式，或直接用脚本修正格式错误。
 -  `pre-applypatch` 。 在 `git am` 运行期间被调用，它正好运行于应用补丁之后，产生提交之前，所以你可以用它在提交前检查快照。 你可以用这个脚本运行测试或检查工作区。 如果有什么遗漏，或测试未能通过，脚本会以非零值退出，中断 `git am` 的运行，这样补丁就不会被提交。
-- `post-applypatch` 运行于提交产生之后，是在 `git am` 运行期间最后被调用的钩子。 你可以用它把结果通知给一个小组或所拉取的补丁的作者。 但你没办法用它停止打补丁的过程。
+-  `post-applypatch` 运行于提交产生之后，是在 `git am` 运行期间最后被调用的钩子。 你可以用它把结果通知给一个小组或所拉取的补丁的作者。 但你没办法用它停止打补丁的过程。
 
 ##### 其它钩子
 
@@ -457,7 +475,7 @@ update.sample
 - `post-checkout` 钩子：在 `git checkout` 成功运行后被调用。你可以根据你的项目环境用它调整你的工作目录。 其中包括放入大的二进制文件、自动生成文档或进行其他类似这样的操作。
 - `post-merge` 钩子：在 `git merge` 成功运行后被调用。 你可以用它恢复 Git 无法跟踪的工作区数据，比如权限数据。 这个钩子也可以用来验证某些在 Git 控制之外的文件是否存在，这样你就能在工作区改变时，把这些文件复制进来。
 - `pre-push` 钩子：在 `git push` 运行期间， 更新了远程引用但尚未传送对象时被调用。 它接受远程分支的名字和位置作为参数，同时从标准输入中读取一系列待更新的引用。 你可以在推送开始之前，用它验证对引用的更新操作（一个非零的退出码将终止推送过程）。
--  `pre-auto-gc` 钩子：Git 的一些日常操作在运行时，偶尔会调用 `git gc --auto` 进行垃圾回收。这个钩子会在垃圾回收开始之前被调用，可以用它来提醒你现在要回收垃圾了，或者依情形判断是否要中断回收。
+- `pre-auto-gc` 钩子：Git 的一些日常操作在运行时，偶尔会调用 `git gc --auto` 进行垃圾回收。这个钩子会在垃圾回收开始之前被调用，可以用它来提醒你现在要回收垃圾了，或者依情形判断是否要中断回收。
 
 ##### 服务端钩子
 

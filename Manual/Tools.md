@@ -1,6 +1,20 @@
 # Tools
 
-本文档记录一些软件工具的安装配置以及使用时，已经踩过的坑。
+## Mac
+
+#### 设置快捷命令启动 APP
+
+```shell
+# 修改配置，zsh 为例（bash 修改 ~/.bash_profile）
+vim ～/.zshrc
+
+# 添加需要快捷打开的应用路径，以 typora 和 sublim 为例
+alias typ='open -a /Applications/Typora.app'
+alias subl='open -a /Applications/Sublime\ Text.app'
+
+# 生效
+source ～/.zshrc
+```
 
 ## Composer
 
@@ -634,20 +648,20 @@ $ gitbook build
 
 配置文件，配置如下：
 
-| 变量          | 描述                                                         |
-| :------------ | :----------------------------------------------------------- |
-| root          | 包含所有图书文件的根文件夹的路径，除了 book.json             |
-| structure     | 指定自述文件，摘要，词汇表等的路径                           |
+| 变量            | 描述                                       |
+| :------------ | :--------------------------------------- |
+| root          | 包含所有图书文件的根文件夹的路径，除了 book.json            |
+| structure     | 指定自述文件，摘要，词汇表等的路径                        |
 | title         | 您的书名，默认值是从 README 中提取出来的。在 GitBook.com 上，这个字段是预填的。 |
 | description   | 您的书籍的描述，默认值是从 README 中提取出来的。在 GitBook.com 上，这个字段是预填的。 |
-| author        | 作者名。在GitBook.com上，这个字段是预填的。                  |
-| isbn          | 国际标准书号 ISBN                                            |
+| author        | 作者名。在GitBook.com上，这个字段是预填的。              |
+| isbn          | 国际标准书号 ISBN                              |
 | language      | 本书的语言类型 —— [ISO code](https://links.jianshu.com/go?to=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FList_of_ISO_639-1_codes) 。默认值是 `en` |
 | direction     | 文本阅读顺序。可以是 rtl （从右向左）或 ltr （从左向右），默认值依赖于 language 的值。 |
-| gitbook       | 应该使用的GitBook版本，并接受类似于 `>=3.0.0` 的条件。       |
-| links         | 在左侧导航栏添加链接信息                                     |
+| gitbook       | 应该使用的GitBook版本，并接受类似于 `>=3.0.0` 的条件。     |
+| links         | 在左侧导航栏添加链接信息                             |
 | plugins       | 要加载的插件列表([官网插件列表](https://links.jianshu.com/go?to=https%3A%2F%2Fdocs.gitbook.com%2Fv2-changes%2Fimportant-differences%23plugins)) |
-| pluginsConfig | 插件的配置                                                   |
+| pluginsConfig | 插件的配置                                    |
 
 ### 常用指令
 
