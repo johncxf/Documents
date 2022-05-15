@@ -12,7 +12,7 @@
 
 如输入{1,2,3}的链表如下图:
 
-![image-202107222309](/Users/chenxinfang/person/Documents/Image/image-202107222309.png)
+![image-202107222309](../../Image/image-202107222309.png)
 
 返回一个数组为 [3,2,1]
 
@@ -300,7 +300,7 @@ func Merge(pHead1 *ListNode , pHead2 *ListNode) *ListNode {
 
 由题意可知，我们要找的公共节点就是如下图所示的 8
 
-![image-20210728231444867](/Users/chenxinfang/person/Documents/Image/image-20210728231444867.png)
+![image-20210728231444867](../../Image/image-20210728231444867.png)
 
 可以利用双指针法，设 A 链表长度为 a，B链表长度为 b，则得：`a+b=b+a`，所以将`a+b`作为 A 链表的新长度，`b+a`作为 B 链表的新长度
 
@@ -573,7 +573,7 @@ func deleteDuplication(pHead *Node) *Node {
 
 例如，输入{1,2},{3,4,5}时，对应的环形链表如下图所示：
 
-<img src="/Users/chenxinfang/person/Documents/Image/image-202205082211.png" alt="image-202205082211" style="zoom:50%;" />
+<img src="../../Image/image-202205082211.png" alt="image-202205082211" style="zoom:50%;" />
 
 可以看到环的入口结点的结点值为3，所以返回结点值为3的结点。
 
@@ -611,7 +611,7 @@ func deleteDuplication(pHead *Node) *Node {
 
 那么，怎么使用快慢指针找到环的入口呢？
 
-<img src="/Users/chenxinfang/person/Documents/Image/image-202205082311.png" alt="image-202205082311" style="zoom:50%;" />
+<img src="../../Image/image-202205082311.png" alt="image-202205082311" style="zoom:50%;" >
 
 在慢指针 slow 进入链表环之前，快指针 fast 已经进入了环，且在里面循环，这才能在慢指针进入环之后，快指针追到了慢指针（第一次相遇）
 
@@ -818,7 +818,7 @@ function Mirror(&$root)
 例如：
 给定的二叉树是{1,2,3,#,#,4,5}
 
-![img](/Users/chenxinfang/person/Documents/Image/image-202110092115.png)
+![img](../../Image/image-202110092115.png)
 
 该二叉树之字形层序遍历的结果是
 
@@ -1333,12 +1333,12 @@ func duplicate(numbers []int) int {
 
 位运算符简介：
 
-| 例子           | 名称                | 结果                                                     |
-| :------------- | :------------------ | :------------------------------------------------------- |
-| **`$a & $b`**  | And（按位与）       | 将把 $a 和 $b 中都为 1 的位设为 1。                      |
-| **`$a | $b`**  | Or（按位或）        | 将把 $a 和 $b 中任何一个为 1 的位设为 1。                |
-| **`$a ^ $b`**  | Xor（按位异或）     | 将把 $a 和 $b 中一个为 1 另一个为 0 的位设为 1。         |
-| **`~ $a`**     | Not（按位取反）     | 将 $a 中为 0 的位设为 1，反之亦然。                      |
+| 例子             | 名称              | 结果                                 |
+| :------------- | :-------------- | :--------------------------------- |
+| **`$a & $b`**  | And（按位与）        | 将把 $a 和 $b 中都为 1 的位设为 1。           |
+| **`$a | $b`**  | Or（按位或）         | 将把 $a 和 $b 中任何一个为 1 的位设为 1。        |
+| **`$a ^ $b`**  | Xor（按位异或）       | 将把 $a 和 $b 中一个为 1 另一个为 0 的位设为 1。   |
+| **`~ $a`**     | Not（按位取反）       | 将 $a 中为 0 的位设为 1，反之亦然。             |
 | **`$a << $b`** | Shift left（左移）  | 将 $a 中的位向左移动 $b 次（每一次移动都表示“乘以 2”）。 |
 | **`$a >> $b`** | Shift right（右移） | 将 $a 中的位向右移动 $b 次（每一次移动都表示“除以 2”）。 |
 
