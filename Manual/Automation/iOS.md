@@ -273,3 +273,66 @@ Alternatively, manually download them from:
   https://developer.apple.com/download/all/.
 You should download the Command Line Tools for Xcode 12.4.
 ```
+
+## tidevice
+
+阿里开源的 iOS 自动化工具，python 编写，跨平台，支持 mac、win、linux
+
+- github：https://github.com/alibaba/taobao-iphone-device
+
+以下以 mac 为例，进行安装使用
+
+### 安装
+
+> 依赖 Python 3.6+
+
+```shell
+$ pip3 install -U tidevice
+```
+
+### 常用指令
+
+```shell
+# 查看版本号
+$ tidevice version
+
+# 列出连接设备
+$ tidevice list
+$ tidevice list --json
+
+# 指定设备
+$ tidevice --udid $UDID 操作
+
+# 安装 ipa
+$ tidevice install xxx.ipa
+
+# 卸载
+$ tidevice uninstall com.example.demo
+
+# 启动
+$ tidevice launch com.example.demo
+
+# 停止
+$ tidevice kill com.example.demo
+
+# 查看已安装应用
+$ tidevice applist
+
+# 查看运行中的应用
+$ tidevice ps
+$ tidevice ps --json output as json
+
+# 查看设备信息
+$ tidevice info
+
+# 查看设备电源信息
+$ tidevice info --domain com.apple.mobile.battery --json
+
+# 重启
+$ tidevice reboot
+
+# 截图
+$ tidevice screenshot screenshot.jpg
+```
+
+更多见：https://github.com/alibaba/taobao-iphone-device/tree/main/tidevice
