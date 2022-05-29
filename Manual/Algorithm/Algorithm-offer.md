@@ -341,7 +341,7 @@ func FindFirstCommonNode(pHead1 *ListNode,  pHead2 *ListNode) *ListNode {
 时间复杂度：O(m+n)
 空间复杂度：O(1)
 
-#### [JZ24-简单]反转链表
+#### [JZ24-简单] 反转链表
 
 ##### 题目描述
 
@@ -414,7 +414,7 @@ func reverseList(head *Node) *Node {
 }
 ```
 
-#### [JZ18-简单]删除链表的节点
+#### [JZ18-简单] 删除链表的节点
 
 ##### 题目描述
 
@@ -503,7 +503,7 @@ func deleteNodeSimplify(head *Node, val int) *Node {
 }
 ```
 
-#### [JZ76-中等]删除链表中重复的结点
+#### [JZ76-中等] 删除链表中重复的结点
 
 ##### 题目描述
 
@@ -561,7 +561,7 @@ func deleteDuplication(pHead *Node) *Node {
 }
 ```
 
-#### [JZ23-中等]链表中环的入口结点
+#### [JZ23-中等] 链表中环的入口结点
 
 ##### 题目描述
 
@@ -672,7 +672,7 @@ func entryNodeOfLoop(pHead *Node) *Node {
 }
 ```
 
-#### [JZ35-较难]复杂链表的复制
+#### [JZ35-较难] 复杂链表的复制
 
 ##### 题目描述
 
@@ -706,9 +706,9 @@ func entryNodeOfLoop(pHead *Node) *Node {
 
 ### 树
 
-#### [简单]二叉树的深度
+#### [简单] 二叉树的深度
 
-##### 描述
+##### 题目描述
 
 输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
 
@@ -777,9 +777,9 @@ func TreeDepth( pRoot *TreeNode ) int {
 }
 ```
 
-#### [简单] 二叉树的镜像
+#### [JZ27-简单] 二叉树的镜像
 
-##### 描述
+##### 题目描述
 
 操作给定的二叉树，将其变换为源二叉树的镜像。
 
@@ -813,7 +813,6 @@ PHP
 
 ```php
 <?php
-
 /*class TreeNode{
     var $val;
     var $left = NULL;
@@ -822,6 +821,7 @@ PHP
         $this->val = $val;
     }
 }*/
+
 function Mirror(&$root)
 {
     if(!$root)return;
@@ -835,6 +835,272 @@ function Mirror(&$root)
     $root->left = $temp2;
     $root->right = $temp1;
     return $root;
+}
+```
+
+Golang
+
+```go
+/**
+ * 二叉树的镜像
+ *
+ * @param pRoot TreeNode 类 
+ * @return TreeNode 类
+*/
+func Mirror(pRoot *TreeNode) *TreeNode {
+    if nil == pRoot {
+        return pRoot
+    }
+    pRoot.Left, pRoot.Right = Mirror(pRoot.Right), Mirror(pRoot.Left)
+    return pRoot
+}
+```
+
+#### [JZ32-简单] 从上往下打印二叉树
+
+##### 题目描述
+
+不分行从上往下打印出二叉树的每个节点，同层节点从左至右打印。例如输入{8,6,10,#,#,2,1}，如以下图中的示例二叉树，则依次打印8,6,10,2,1(空节点不打印，跳过)，请你将打印的结果存放到一个数组里面，返回。
+
+```
+    8
+   /  \
+  6   10
+      / \
+     2   1
+```
+
+数据范围:
+
+0<=节点总数<=1000
+
+-1000<=节点值<=1000
+
+##### 示例
+
+```
+// 输入：
+{8,6,10,#,#,2,1}
+// 返回值：
+[8,6,10,2,1]
+
+// 输入：
+{5,4,#,3,#,2,#,1}
+// 返回值：
+[5,4,3,2,1]
+```
+
+##### 解题思路
+
+层次遍历
+
+##### 代码实现
+
+```go
+/**
+ * [JZ32-简单]从上往下打印二叉树
+ * 
+ * @param root TreeNode类 
+ * @return int 整型一维数组
+*/
+func printFromTopToBottom(root *TreeNode) []int {
+    res := []int{}
+    if nil == root {
+        return res
+    }
+    
+    tmp := []*TreeNode{root}
+    for i := 0; i < len(tmp); i++ {
+        current := tmp[i]
+        res = append(res, current.Val)
+        if nil != current.Left {
+            tmp = append(tmp, current.Left)
+        }
+        if nil != current.Right {
+            tmp = append(tmp, current.Right)
+        }
+    }
+    return res
+}
+```
+
+#### [JZ68-简单] 二叉搜索树的最近公共祖先
+
+##### 题目描述
+
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+
+1.对于该题的最近的公共祖先定义:对于有根树T的两个节点p、q，最近公共祖先LCA(T,p,q)表示一个节点x，满足x是p和q的祖先且x的深度尽可能大。在这里，一个节点也可以是它自己的祖先.
+
+2.二叉搜索树是若它的左子树不空，则左子树上所有节点的值均小于它的根节点的值； 若它的右子树不空，则右子树上所有节点的值均大于它的根节点的值
+
+3.所有节点的值都是唯一的。
+
+4.p、q 为不同节点且均存在于给定的二叉搜索树中。
+
+数据范围:
+
+3<=节点总数<=10000
+
+0<=节点值<=10000
+
+如果给定以下搜索二叉树: {7,1,12,0,4,11,14,#,#,3,5}，如下:
+
+```
+ 	     7
+ 	   /   \
+ 	1	     12
+   /  \     /  \
+  0    4   11   14
+      / \
+     3   5
+```
+
+##### 示例
+
+```
+// 输入：
+{7,1,12,0,4,11,14,#,#,3,5},1,12
+// 返回值：
+7
+// 说明：节点1 和 节点12的最近公共祖先是7 
+
+// 输入：
+{7,1,12,0,4,11,14,#,#,3,5},12,11
+// 返回值：
+12
+// 说明：因为一个节点也可以是它自己的祖先.所以输出12
+```
+
+##### 解题思路
+
+二叉搜索树每个节点值大于它的左子节点，且大于全部左子树的节点值，小于它右子节点，且小于全部右子树的节点值。
+
+递归思路：
+
+对于某一个节点若是p与q都小于等于这个这个节点值，说明p、q都在这个节点的左子树，而最近的公共祖先也一定在这个节点的左子树；若是p与q都大于等于这个节点，说明p、q都在这个节点的右子树，而最近的公共祖先也一定在这个节点的右子树。而若是对于某个节点，p与q的值一个大于等于节点值，一个小于等于节点值，说明它们分布在该节点的两边，而这个节点就是最近的公共祖先，因此从上到下的其他祖先都将这个两个节点放到同一子树，只有最近公共祖先会将它们放入不同的子树，每次进入一个子树又回到刚刚的问题，因此可以使用递归。
+
+##### 代码实现
+
+```go
+/**
+ * [JZ68-简单]二叉搜索树的最近公共祖先
+ *
+ * @param root TreeNode类 
+ * @param p int整型 
+ * @param q int整型 
+ * @return int整型
+*/
+func lowestCommonAncestor(root *TreeNode, p int, q int) int {
+    if nil == root {
+        return 0
+    }
+    
+    // p q 都小于等于这个节点值，则 p q 都在左子树
+    if root.Val > p && root.Val > q {
+        return lowestCommonAncestor(root.Left, p, q)
+    }
+
+    // p q 都大于等于这个节点值，则 p q 都在右子树
+    if root.Val < p && root.Val < q {
+        return lowestCommonAncestor(root.Right, p, q)
+    }
+
+    return root.Val
+}
+```
+
+#### [JZ79 -简单] 判断是不是平衡二叉树
+
+##### 题目描述
+
+输入一棵节点数为 n 二叉树，判断该二叉树是否是平衡二叉树。
+
+在这里，我们只需要考虑其平衡性，不需要考虑其是不是排序二叉树
+
+**平衡二叉树**（Balanced Binary Tree），具有以下性质：它是一棵空树或它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。
+
+样例解释：
+
+```
+ 		 1
+ 	   /   \
+ 	2	     3
+   /  \     /  \
+  4    5   6    7
+```
+
+样例二叉树如图，为一颗平衡二叉树
+
+注：我们约定空树是平衡二叉树。
+
+数据范围：n ≤ 100,树上节点的val值满足 0 10000 ≤ n ≤ 1000
+
+要求：空间复杂度O(1)，时间复杂度 O(n)
+
+- 输入描述：输入一棵二叉树的根节点
+- 返回值描述：输出一个布尔类型的值
+
+##### 示例
+
+```
+// 输入：
+{1,2,3,4,5,6,7}
+// 返回值：
+true
+
+// 输入：
+{}
+// 返回值：
+true
+```
+
+##### 解题思路
+
+通过判断左右子树深度差（高度差）不大于1
+
+因此，分别求解左右子树高度差即可
+
+##### 代码实现
+
+```go
+/**
+ * [JZ79-简单] 判断是否是平衡二叉树
+ *
+ * @param pRoot TreeNode类 
+ * @return bool布尔型
+*/
+func isBalancedBinaryTree(pRoot *TreeNode) bool {
+    return treeDepth(pRoot) > -1
+}
+
+func treeDepth(root *TreeNode) int {
+	if nil == root {
+		return 0
+	}
+
+	leftLength := treeDepth(root.Left);
+	rightLength := treeDepth(root.Right);
+
+	if -1 == leftLength || -1 == rightLength || 1 < abs(leftLength - rightLength) {
+		return -1
+	}
+
+	return max(leftLength, rightLength) + 1
+}
+
+func abs(a int) int {
+    if 0 > a {
+        return -a
+    }
+    return a
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 ```
 

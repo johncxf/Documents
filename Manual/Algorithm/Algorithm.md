@@ -409,6 +409,140 @@ func main() {
 
  用数组实现的队列叫作**顺序队列**，用链表实现的队列叫作**链式队列** 
 
+### 链式队列
+
+Golang
+
+```go
+// 链式队列
+package main
+
+import (
+    "fmt"
+)
+
+// 定义链表节点
+type QueueNode struct {
+    Value int
+    Next  *QueueNode
+}
+
+// 初始化队列
+var size = 0
+var queue = new(QueueNode)
+
+// 入队（从队头插入）
+func Push(t *QueueNode, v int) bool {
+    if queue == nil {
+        queue = &QueueNode{v, nil}
+        size++
+        return true
+    }
+
+    t = &QueueNode{v, nil}
+    t.Next = queue
+    queue = t
+    size++
+
+    return true
+}
+
+// 出队（从队尾删除）
+func Pop(t *QueueNode) (int, bool) {
+    if size == 0 {
+        return 0, false
+    }
+
+    if size == 1 {
+        queue = nil
+        size--
+        return t.Value, true
+    }
+
+    // 迭代队列，直到队尾
+    temp := t
+    for (t.Next) != nil {
+        temp = t
+        t = t.Next
+    }
+
+    v := (temp.Next).Value
+    temp.Next = nil
+
+    size--
+    return v, true
+}
+
+// 遍历队列所有节点
+func traverse(t *QueueNode) {
+    if size == 0 {
+        fmt.Println("空队列!")
+        return
+    }
+    for t != nil {
+        fmt.Printf("%d -> ", t.Value)
+        t = t.Next
+    }
+    fmt.Println()
+}
+
+func main() {
+    queue = nil
+    // 入队
+    Push(queue, 10)
+    fmt.Println("Size:", size)
+    // 遍历
+    traverse(queue)
+
+    // 出队
+    v, b := Pop(queue)
+    if b {
+        fmt.Println("Pop:", v)
+    }
+    fmt.Println("Size:", size)
+
+    // 批量入队
+    for i := 0; i < 5; i++ {
+        Push(queue, i)
+    }
+    // 再次遍历
+    traverse(queue)
+    fmt.Println("Size:", size)
+
+    // 出队
+    v, b = Pop(queue)
+    if b {
+        fmt.Println("Pop:", v)
+    }
+    fmt.Println("Size:", size)
+
+    // 再次出队
+    v, b = Pop(queue)
+    if b {
+        fmt.Println("Pop:", v)
+    }
+    fmt.Println("Size:", size)
+    // 再次遍历
+    traverse(queue)
+}
+```
+
+输出：
+
+```
+Size: 1
+10 -> 
+Pop: 10
+Size: 0
+4 -> 3 -> 2 -> 1 -> 0 ->
+Size: 5
+Pop: 0
+Size: 4
+Pop: 1
+Size: 3
+4 -> 3 -> 2 ->
+```
+
 ## 树
 
 树这种数据结构模拟了自然界中树的概念，自然界中的树有根、叶子、枝干，数据结构中的树也是如此，只不过是倒过来。
@@ -428,18 +562,40 @@ func main() {
 根据左右子节点的饱和度，又从二叉树中分出两种特殊的二叉树：
 
 - 满二叉树：所有分支节点都有左右子节点，并且所有叶子节点都在同一层上
-- 完全二叉树：一棵深度为k的有n个结点的二叉树，对树中的结点按从上至下、从左到右的顺序进行编号，如果编号为i（1≤i≤n）的结点与满二叉树中编号为i的结点在二叉树中的位置相同，则这棵二叉树称为完全二叉树
+- 完全二叉树：一棵深度为 k 的有 n 个结点的二叉树，对树中的结点按从上至下、从左到右的顺序进行编号，如果编号为i（1≤i≤n）的结点与满二叉树中编号为i的结点在二叉树中的位置相同，则这棵二叉树称为完全二叉树
 
 #### 二叉树的特性
 
-- 在第 `i` 层最多有 2i-1 个节点。
-- 深度为 `k` 的二叉树最多有 2k-1 个节点。
-- 对于任何一个二叉树，叶子节点数为 n0，度为 2 的节点数为 n2，则 n0 = n2+1。
+- 在第 `i` 层最多有 `2i-1` 个节点。
+- 深度为 `k` 的二叉树最多有` 2k-1` 个节点。
+- 对于任何一个二叉树，叶子节点数为 n0，度为 2 的节点数为 n2，则 `n0 = n2+1`。
 
 #### 二叉树的存储
 
 - 通过数组存储
 - 通过链表存储
+
+##### 链表存储
+
+Golang 示例：
+
+```go
+// 二叉树
+type TreeNode struct {
+    Val int
+    Left *TreeNode
+    Right *TreeNode
+}
+
+// 初始化节点
+func NewTreeNode(data int) *TreeNode {
+    return &TreeNode{
+        Val: data,
+        Left: nil,
+        Right: nil,
+    }
+}
+```
 
 #### 二叉树的遍历
 
@@ -448,6 +604,26 @@ func main() {
 - 前序遍历：从根节点开始，先遍历左子树，再遍历右子树
 - 中序遍历：中序遍历会从左子树最左侧的节点开始，然后从左到右依次遍历左子树，根节点，最后是右子树
 - 后序遍历：后序遍历也是从左子树最左侧的节点开始，不过会从左到右先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点
+- 层次遍历：从根节点开始按层次遍历
+
+示例：
+
+```
+二叉树：
+		 1
+ 	   /   \
+ 	 2	    3
+    /  \      \
+   4    5      6
+       / \
+      7   8
+
+遍历结果：
+ - 前序遍历：1 2 4 5 7 8 3 6
+ - 中序遍历：4 2 7 5 8 1 6 3
+ - 后序遍历：4 7 8 5 2 6 3 1
+ - 层次遍历：1 2 3 4 5 6 7 8
+```
 
 代码示例：
 
@@ -455,93 +631,123 @@ func main() {
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
-// 通过链表存储二叉树节点信息
-type Node struct {
-	Data  interface{}
-	Left  *Node
-	Right *Node
+// 二叉树
+type TreeNode struct {
+    Val int
+    Left *TreeNode
+    Right *TreeNode
 }
 
-// 初始化根节点
-func NewNode(data interface{}) *Node {
-	return &Node{
-		Data:  data,
-		Left:  nil,
-		Right: nil,
-	}
-}
-
-// 实现接口方法
-func (node *Node) GetData() string {
-	return fmt.Sprintf("%v", node.Data)
+// 初始化节点
+func NewTreeNode(data int) *TreeNode {
+    return &TreeNode{
+        Val: data,
+        Left: nil,
+        Right: nil,
+    }
 }
 
 // 前序遍历
-func preOrderTraverse(treeNode *Node) {
+func PreOrderTraverseTreeNode(treeNode *TreeNode) {
 	// 节点为空则退出当前递归
 	if treeNode == nil {
 		return
 	}
-	// 否则先打印当前节点值
-	fmt.Printf("%s ", treeNode.GetData())
+
+	// 先打印当前节点值
+	fmt.Printf("%v ", treeNode.Val)
+
 	// 然后依次对左子树和右子树做前序遍历
-	preOrderTraverse(treeNode.Left)
-	preOrderTraverse(treeNode.Right)
+	PreOrderTraverseTreeNode(treeNode.Left)
+	PreOrderTraverseTreeNode(treeNode.Right)
 }
 
 // 中序遍历
-func midOrderTraverse(treeNode *Node) {
+func MidOrderTraverseTreeNode(treeNode *TreeNode) {
 	// 节点为空则退出当前递归
 	if treeNode == nil {
 		return
 	}
-	// 否则先从左子树最左侧节点开始遍历
-	midOrderTraverse(treeNode.Left)
+
+	// 先从左子树最左侧节点开始遍历
+	MidOrderTraverseTreeNode(treeNode.Left)
 	// 打印位于中间的根节点
-	fmt.Printf("%s ", treeNode.GetData())
+	fmt.Printf("%v ", treeNode.Val)
 	// 最后按照和左子树一样的逻辑遍历右子树
-	midOrderTraverse(treeNode.Right)
+	MidOrderTraverseTreeNode(treeNode.Right)
 }
 
 // 后序遍历
-func postOrderTraverse(treeNode *Node) {
+func PostOrderTraverseTreeNode(treeNode *TreeNode) {
 	// 节点为空则退出当前递归
 	if treeNode == nil {
 		return
 	}
-	// 否则先遍历左子树
-	postOrderTraverse(treeNode.Left)
+
+	// 先遍历左子树
+	PostOrderTraverseTreeNode(treeNode.Left)
 	// 再遍历右子树
-	postOrderTraverse(treeNode.Right)
+	PostOrderTraverseTreeNode(treeNode.Right)
 	// 最后访问根节点
-	fmt.Printf("%s ", treeNode.GetData())
+	fmt.Printf("%v ", treeNode.Val)
 }
 
-// 测试代码
+// 层次遍历
+func LevelOrderTraverseTreeNode(treeNode *TreeNode) {
+    if nil == treeNode {
+        return
+    }
+    
+    tmp := []*TreeNode{treeNode}
+    for i := 0; i < len(tmp); i++ {
+        current := tmp[i]
+
+		fmt.Printf("%v ", current.Val)
+
+		if nil != current.Left {
+            tmp = append(tmp, current.Left)
+        }
+        if nil != current.Right {
+            tmp = append(tmp, current.Right)
+        }
+    }
+}
+
 func main() {
-	// 初始化一个简单的二叉树
-	node1 := NewNode(0) // 根节点
-	node2 := NewNode("1")
-	node3 := NewNode(2.0)
-	node1.Left = node2
+    node1 := NewTreeNode(1) // 根节点
+	node2 := NewTreeNode(2)
+	node3 := NewTreeNode(3)
+	node4 := NewTreeNode(4)
+	node5 := NewTreeNode(5)
+	node6 := NewTreeNode(6)
+	node7 := NewTreeNode(7)
+	node8 := NewTreeNode(8)
+
+    node1.Left = node2
 	node1.Right = node3
+	node2.Left = node4
+	node2.Right = node5
+	node3.Left = node6
+	node4.Left = node7
+	node4.Right = node8
 
-	// 前序遍历这个二叉树
 	fmt.Print("前序遍历: ")
-	preOrderTraverse(node1)
+	PreOrderTraverseTreeNode(node1)
 	fmt.Println()
 
-	// 中序遍历这个二叉树
 	fmt.Print("中序遍历: ")
-	midOrderTraverse(node1)
+	MidOrderTraverseTreeNode(node1)
 	fmt.Println()
 
-	// 后序遍历这个二叉树
 	fmt.Print("后序遍历: ")
-	postOrderTraverse(node1)
+	PostOrderTraverseTreeNode(node1)
+	fmt.Println()
+    
+	fmt.Print("层次遍历: ")
+	LevelOrderTraverseTreeNode(node1)
 	fmt.Println()
 }
 ```
@@ -549,9 +755,10 @@ func main() {
 运行结果：
 
 ```
-前序遍历: 0 1 2 
-中序遍历: 1 0 2 
-后序遍历: 1 2 0
+前序遍历: 1 2 4 7 8 5 3 6 
+中序遍历: 7 4 8 2 5 1 6 3
+后序遍历: 7 8 4 5 2 6 3 1
+层次遍历: 1 2 3 4 5 6 7 8
 ```
 
 ## 排序
