@@ -1104,6 +1104,261 @@ func max(a, b int) int {
 }
 ```
 
+#### [JZ28 -简单] 对称的二叉树
+
+##### 描述
+
+给定一棵二叉树，判断其是否是自身的镜像（即：是否对称）
+例如：下面这棵二叉树是对称的
+
+```
+ 		 1
+ 	   /   \
+ 	2	     2
+   /  \     /  \
+  3    4   4    3
+```
+
+下面这棵二叉树不对称的：
+
+```
+ 		 1
+ 	   /   \
+ 	  2	    2
+       \     \
+        3     3
+```
+
+数据范围：节点数满足 0≤*n*≤1000，节点上的值满足∣*v**a**l*∣≤1000
+
+要求：空间复杂度 O(n)，时间复杂度 O(n)
+
+##### 示例
+
+```
+// 输入：
+{1,2,2,3,4,4,3}
+// 返回值：
+true
+
+// 输入：
+{8,6,9,5,7,7,5}
+// 返回值
+false
+```
+
+##### 解题思路
+
+递归
+
+##### 代码实现
+
+```go
+func recursion(root1 *TreeNode, root2 *TreeNode) bool {
+	if nil == root1 && nil == root2 {
+		return true
+	}
+	if nil == root1 || nil == root2 || root1.Val != root2.Val {
+		return false
+	}
+	return recursion(root1.Left, root2.Right) && recursion(root1.Right, root2.Left)
+}
+
+/**
+ * [JZ28-简单] 对称二叉树
+ *
+ * @param pRoot TreeNode 类
+ * @return bool 布尔型
+*/
+func isSymmetricalTree(pRoot *TreeNode) bool {
+    return recursion(pRoot, pRoot)
+}
+```
+
+#### [JZ82-简单] 二叉树中和为某一值的路径(一)
+
+##### 描述
+
+给定一个二叉树 root 和一个值 sum ，判断是否有从根节点到叶子节点的节点值之和等于 sum 的路径。
+
+1.该题路径定义为从树的根结点开始往下一直到叶子结点所经过的结点
+
+2.叶子节点是指没有子节点的节点
+
+3.路径只能从父节点到子节点，不能从子节点到父节点
+
+4.总节点数目为n
+例如：
+给出如下的二叉树sum=22，
+
+```
+		 5
+ 	   /   \
+ 	  4	    8
+    /  \     \
+   1   11     9
+  	  /  \  
+  	  2   7
+```
+
+返回 true，因为存在一条路径 5→4→11→2 的节点值之和为 22
+
+数据范围：
+
+1.树上的节点数满足 0≤*n*≤10000
+
+2.每 个节点的值都满足 |val|≤1000
+
+要求：空间复杂度 O(n)，时间复杂度 O(n)
+
+进阶：空间复杂度 O(树的高度)，时间复杂度 O(n)
+
+##### 示例
+
+```
+// 输入：
+{5,4,8,1,11,#,9,#,#,2,7},22
+// 返回值：
+true
+
+// 输入：
+{1,2},0
+// 返回值：
+false
+
+// 输入：
+{1,2},3
+// 返回值：
+true
+
+// 输入：
+{},0
+// 返回值：
+false
+```
+
+##### 解题思路
+
+前序遍历
+
+##### 代码实现
+
+```go
+/**
+  * [JZ82-简单] 二叉树中和为某一值的路径(一)
+  *
+  * @param root TreeNode 类 
+  * @param sum int 整型 
+  * @return bool 布尔型
+*/
+func hasTreePathSum(root *TreeNode, sum int) bool {
+    if nil == root {
+		return false
+	}
+	if nil == root.Left && nil == root.Right && root.Val == sum {
+		return true
+	}
+
+	return hasTreePathSum(root.Left, sum - root.Val) || hasTreePathSum(root.Right, sum - root.Val)
+}
+```
+
+#### [JZ34-中等] 二叉树中和为某一值的路径(二)
+
+##### 描述
+
+输入一颗二叉树的根节点 root 和一个整数 expectNumber，找出二叉树中结点值的和为 expectNumber 的所有路径。
+
+1.该题路径定义为从树的根结点开始往下一直到叶子结点所经过的结点
+
+2.叶子节点是指没有子节点的节点
+
+3.路径只能从父节点到子节点，不能从子节点到父节点
+
+4.总节点数目为 n
+
+如二叉树 root 为 {10,5,12,4,7} ，expectNumber 为 22
+
+```
+		 10
+ 	   /    \
+ 	  5	     12
+    /  \     
+   4    7     
+```
+
+则合法路径有[[10,5,7],[10,12]]
+
+数据范围:
+
+树中节点总数在范围 [0, 5000] 内
+
+-1000 <= 节点值 <= 1000
+
+-1000 <= expectNumber <= 1000
+
+##### 示例
+
+```
+// 输入：
+{10,5,12,4,7},22
+// 返回值：
+[[10,5,7],[10,12]]（返回[[10,12],[10,5,7]]也是对的）
+
+// 输入：
+{10,5,12,4,7},15
+// 返回值：
+[]
+
+// 输入：
+{2,3},0
+// 返回值：
+[]
+
+// 输入：
+{1,3,4},7
+// 返回值：
+[]
+```
+
+##### 解题思路
+
+深度优先搜索
+
+- 维护两个向量`ret`和`path`
+- 编写递归函数`dfs`
+- 递归函数内部要处理更新`path`，更新`expectNumber`，判断是否为叶子节点和判断是否要将`path`追加到`ret`末尾
+
+##### 代码示例
+
+```go
+var ret [][]int
+
+func dfs(root *TreeNode, expectNumber int, path []int) {
+	if nil == root {
+		return
+	}
+	if nil == root.Left && nil == root.Right && root.Val == expectNumber {
+		ret = append(ret, append(path, root.Val))
+		return
+	}
+	dfs(root.Left, expectNumber - root.Val, append(path, root.Val))
+	dfs(root.Right, expectNumber - root.Val, append(path, root.Val))
+}
+
+/**
+  * [JZ34-简单] 二叉树中和为某一值的路径(二)
+  *
+  * @param root TreeNode 类 
+  * @param sum int 整型 
+  * @return bool 布尔型
+*/
+func findTreePathSum(root *TreeNode, expectNumber int) [][]int {
+	dfs(root, expectNumber, []int{})
+	return ret
+}
+```
+
 #### [中等]按之字形顺序打印二叉树
 
 ##### 描述
