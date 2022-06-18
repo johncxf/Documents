@@ -15,9 +15,9 @@
   - [PHP 开发环境搭建](./Manual/PHP/NMP.md)
   - [Laravel 框架学习笔记](./Manual/PHP/Laravel.md)
 - 后端开发
-  - [API 开发](./Manual/api.md)
+  - [API 开发](./Manual/Api.md)
   - [Nginx](./Manual/Server/Nginx.md)
-  - [Golang](./Manual/golang.md)
+  - [Golang](./Manual/Golang.md)
   - [Python](./Manual/Python.md)
 - 前端开发
   - [Css](./Manual/Front-end/Css.md)
@@ -40,15 +40,15 @@
   - [剑指offer](./Manual/Algorithm/Algorithm-offer.md)
   - [剑指offer-go](./Manual/Algorithm/Algorithm-offer-go.md)
 - 计算机原理
-  - [Linux](./Manual/linux.md)
+  - [Linux](./Manual/Linux.md)
   - [计算机网络](./Manual/Computer-network.md)
   - [计算机组成原理](./Manual/Computer-organization.md)
   - [计算机操作系统](./Manual/Computer-system.md)
 - 基础工具
-  - [Git](./Manual/git.md)
-  - [Vi/Vim](./Manual/vim.md)
-  - [Docker](./Manual/docker.md)
-  - [工具环境](./Manual/tools.md)
+  - [Git](./Manual/Git.md)
+  - [Vi/Vim](./Manual/Vim.md)
+  - [Docker](./Manual/Docker.md)
+  - [工具环境](./Manual/Tools.md)
 
 ## 技术分享
 
