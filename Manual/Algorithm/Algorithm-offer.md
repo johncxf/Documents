@@ -2874,7 +2874,7 @@ func FirstNotRepeatingChar(str string) int {
 
 ```go
 /**
- * [JZ39-简单] 数组中出现次数超过一半的数字
+ * [JZ39-简单] 数组中出现次数超过一半的数字（哈希法）
  *
  * @param numbers int整型一维数组
  * @return int整型
@@ -2905,6 +2905,131 @@ func moreThanHalfNum(numbers []int) int {
 ```
 
 候选法：
+
+```go
+/**
+ * [JZ39-简单] 数组中出现次数超过一半的数字（候选法）
+ *
+ * @param numbers int整型一维数组
+ * @return int整型
+ */
+func moreThanHalfNum(numbers []int) int {
+	length := len(numbers)
+	if 1 == length {
+		return numbers[0]
+	}
+
+	cond, count := -1, 0
+	for _, v := range numbers {
+		if 0 == count {
+			cond = v
+			count++
+		} else {
+			if cond == v {
+				count++
+			} else {
+				count--
+			}
+		}
+	}
+
+	count = 0
+	for _, v := range numbers {
+		if v == cond {
+			count++
+		}
+	}
+
+	if count > length/2 {
+		return cond
+	} else {
+		return 0
+	}
+}
+```
+
+#### [JZ17-简单] 打印从1到最大的n位数
+
+##### 描述
+
+输入数字 n，按顺序打印出从 1 到最大的 n 位十进制数。比如输入 3，则打印出 1、2、3 一直到最大的 3 位数 999。
+
+- 用返回一个整数列表来代替打印
+- n 为正整数，0 < n <= 5
+
+##### 示例
+
+```
+// 输入：
+1
+// 返回值：
+[1,2,3,4,5,6,7,8,9]
+```
+
+##### 解题思路
+
+由题意可知，数组长度为 10^n - 1，先求出数组长度，再遍历依次向空数组中添加元素即可
+
+##### 代码实现
+
+```go
+/**
+ * [JZ17-简单] 打印从1到最大的n位数
+ *
+ * @param n int整型 最大位数
+ * @return int整型一维数组
+ */
+func printNumbers(n int) []int {
+	pow := math.Pow10(n)
+	count := int(pow) - 1
+	arr := make([]int, count)
+	for i := 1; i <= count; i++ {
+		arr[i-1] = i
+	}
+	return arr
+}
+```
+
+#### [JZ81-简单] 调整数组顺序使奇数位于偶数前面(二)
+
+##### 描述
+
+输入一个长度为 n 整数数组，数组里面可能含有相同的元素，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前面部分，所有的偶数位于数组的后面部分，对奇数和奇数，偶数和偶数之间的相对位置不做要求，但是时间复杂度和空间复杂度必须如下要求。
+
+数据范围：0≤*n*≤50000，数组中每个数的值 0≤*v**a**l*≤10000
+
+要求：时间复杂度 O(n)，空间复杂度 O(1)
+
+##### 示例
+
+
+
+```
+// 输入
+[1,2,3,4]
+// 输出
+[1,3,2,4]
+// 说明
+[3,1,2,4]或者[3,1,4,2]也是正确答案 
+
+// 输入
+[1,3,5,6,7]
+// 输出
+[1,3,5,7,6]
+// 说明
+[3,1,5,7,6]等也是正确答案 
+
+// 输入
+[1,4,4,3]
+// 输出
+[1,3,4,4]
+```
+
+##### 解题思路
+
+
+
+##### 代码实现
 
 ```go
 
