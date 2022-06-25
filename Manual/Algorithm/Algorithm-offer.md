@@ -2990,6 +2990,79 @@ func printNumbers(n int) []int {
 }
 ```
 
+#### [JZ21-简单] 调整数组顺序使奇数位于偶数前面(一)
+
+##### 描述
+
+输入一个长度为 n 整数数组，数组里面可能含有相同的元素，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前面部分，所有的偶数位于数组的后面部分，对奇数和奇数，偶数和偶数之间的相对位置不变
+
+数据范围：0≤*n*≤50000，数组中每个数的值 0≤*v**a**l*≤10000
+
+要求：时间复杂度 O(n)，空间复杂度 O(1)
+
+##### 示例
+
+```
+// 输入
+[1,2,3,4]
+// 输出
+[1,3,2,4]
+
+// 输入
+[1,3,5,6,7]
+// 输出
+[1,3,5,7,6]
+
+// 输入
+[1,4,4,3]
+// 输出
+[1,3,4,4]
+```
+
+##### 解题思路
+
+双指针
+
+- 先遍历数组获取奇数个数 odd，也就是偶数在新数组起点位置
+- 双指针 left、right，奇数在 0 位置后添加，偶数在 odd 位置后添加
+
+##### 代码实现
+
+```go
+/**
+ * [JZ21-简单] 调整数组顺序使奇数位于偶数前面(二)
+ *
+ * @param array int 整型一维数组
+ * @return int 整型一维数组
+ */
+func reOrderArrayTwo2(array []int) []int {
+	n := len(array)
+	if n <= 1 {
+		return array
+	}
+
+	odd := 0
+	for _, v := range array {
+		if v%2 == 1 {
+			odd++
+		}
+	}
+
+	left, right := 0, odd
+	arr := make([]int, n)
+	for i := 0; i < n; i++ {
+		if array[i]%2 == 1 {
+			arr[left] = array[i]
+			left++
+		} else {
+			arr[right] = array[i]
+			right++
+		}
+	}
+	return arr
+}
+```
+
 #### [JZ81-简单] 调整数组顺序使奇数位于偶数前面(二)
 
 ##### 描述
@@ -3001,8 +3074,6 @@ func printNumbers(n int) []int {
 要求：时间复杂度 O(n)，空间复杂度 O(1)
 
 ##### 示例
-
-
 
 ```
 // 输入
@@ -3025,14 +3096,145 @@ func printNumbers(n int) []int {
 [1,3,4,4]
 ```
 
+##### 代码实现
+
+遍历数组，将奇数添加到新数组头部，偶数 append 到数组尾部
+
+```go
+/**
+ * [JZ81-简单] 调整数组顺序使奇数位于偶数前面(二)
+ *
+ * @param array int 整型一维数组
+ * @return int 整型一维数组
+ */
+func reOrderArrayTwo(array []int) []int {
+	n := len(array)
+	if n <= 1 {
+		return array
+	}
+
+	var arr []int
+	for _, v := range array {
+		if v%2 == 1 {
+			arr = append([]int{v}, arr...)
+		} else {
+			arr = append(arr, v)
+		}
+	}
+	return arr
+}
+```
+
+双指针（优化）
+
+- 先遍历数组获取奇数个数 odd，也就是偶数在新数组起点位置
+- 双指针 left、right，奇数在 0 位置后添加，偶数在 odd 位置后添加
+
+```go
+/**
+ * [JZ81-简单] 调整数组顺序使奇数位于偶数前面(二)
+ *
+ * @param array int 整型一维数组
+ * @return int 整型一维数组
+ */
+func reOrderArrayTwo2(array []int) []int {
+	n := len(array)
+	if n <= 1 {
+		return array
+	}
+
+	odd := 0
+	for _, v := range array {
+		if v%2 == 1 {
+			odd++
+		}
+	}
+
+	left, right := 0, odd
+	arr := make([]int, n)
+	for i := 0; i < n; i++ {
+		if array[i]%2 == 1 {
+			arr[left] = array[i]
+			left++
+		} else {
+			arr[right] = array[i]
+			right++
+		}
+	}
+	return arr
+}
+```
+
+#### [JZ43-中等] 从1到n整数中1出现的次数
+
+##### 描述
+
+输入一个整数 n ，求 1～n 这 n 个整数的十进制表示中 1 出现的次数
+例如， 1~13 中包含 1 的数字有 1 、 10 、 11 、 12 、 13 因此共出现 6 次
+
+注意：11 这种情况算两次
+
+数据范围： 1≤*n*≤30000 
+
+进阶：空间复杂度 O(1)  ，时间复杂度 O(lognn)
+
+##### 示例
+
+```
+// 输入：
+13
+// 返回值：
+6
+
+// 输入：
+0
+// 返回值：
+0
+```
+
 ##### 解题思路
+
+最简单的方法是依次遍历，判断每个数中存在的 1 的数量相加，但是复杂度较大
+
+仔细观察本题，可以发现其实是一道数学找规律的题目
+
+首先，如果我们修改下题目，如果要找出 1 到 n 中百位数上 1 出现的次数？那么，则可以推导：
+
+```
+
+```
 
 
 
 ##### 代码实现
 
 ```go
-
+/**
+ * [JZ43-中等] 从 1 到 n 整数中 1 出现的次数
+ *
+ * @param n int整型
+ * @return int整型
+ */
+func numOfOneFromInt(n int) int {
+	i, count, high, cur, low := 1, 0, 0, 0, 0
+	for i <= n {
+		// 取高位
+		high = n / (i * 10)
+		// 取当前位
+		cur = (n / i) % 10
+		// 取低位
+		low = n - n/i*i
+		if cur == 0 {
+			count += high * i
+		} else if cur == 1 {
+			count += high*i + low + 1
+		} else {
+			count += (high + 1) * i
+		}
+		i *= 10
+	}
+	return count
+}
 ```
 
 #### [中等] 左旋转字符串
