@@ -3354,11 +3354,40 @@ func leftRotateString(str string, n int) string {
 
 ##### 解题思路
 
-
+- 对 numbers 中的元素（x、y）进行排序，排序规则是：x+y 和 y+x 比较大小（x、y需要转化成 string）
+- 然后再次遍历 number，按顺序拼接成数组即可
 
 ##### 代码实现
 
 ```go
+/**
+ * [JZ45-中等] 把数组排成最小的数
+ *
+ * @param numbers int整型一维数组
+ * @return string字符串
+ */
+func printMinNumFromArray(numbers []int) string {
+	count := len(numbers)
+	if count == 0 {
+		return ""
+	}
 
+	for i := 0; i < count; i++ {
+		for j := 0; j < count-1; j++ {
+			str1 := strconv.Itoa(numbers[j]) + strconv.Itoa(numbers[j+1])
+			str2 := strconv.Itoa(numbers[j+1]) + strconv.Itoa(numbers[j])
+			if str1 > str2 {
+				numbers[j], numbers[j+1] = numbers[j+1], numbers[j]
+			}
+		}
+	}
+
+	result := ""
+	for _, v := range numbers {
+		result += strconv.Itoa(v)
+	}
+
+	return result
+}
 ```
 
