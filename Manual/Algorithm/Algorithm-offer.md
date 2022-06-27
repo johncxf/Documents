@@ -3264,15 +3264,19 @@ func numOfOneFromInt(n int) int {
 }
 ```
 
-#### [中等] 左旋转字符串
+#### [JZ58-中等] 左旋转字符串
 
 ##### 题目描述
 
 汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。是不是很简单？OK，搞定它！
 
+##### 解题思路
+
+字符串操作
+
 ##### 代码实现
 
-PHP
+PHP：
 
 ```php
 function LeftRotateString($str, $n)
@@ -3284,10 +3288,9 @@ function LeftRotateString($str, $n)
 }
 ```
 
-Node
+Node：
 
 ```javascript
-// js
 function LeftRotateString(str, n)
 {
     if(!str || str.length === 0) return '';
@@ -3295,3 +3298,67 @@ function LeftRotateString(str, n)
     return str.substr(num) + str.substr(0,num);
 }
 ```
+
+Golang：
+
+```go
+/**
+ * [JZ58-中等] 左旋转字符串
+ *
+ * @param str string 字符串
+ * @param n int 整型
+ * @return string 字符串
+ */
+func leftRotateString(str string, n int) string {
+	if 0 == len(str) {
+		return ""
+	}
+
+	n = n % len(str)
+
+	return str[n:] + str[:n]
+}
+```
+
+#### [JZ45-中等] 把数组排成最小的数
+
+##### 题目描述
+
+输入一个非负整数数组 numbers，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+
+例如输入数组[3，32，321]，则打印出这三个数字能排成的最小数字为321323。
+
+1.输出结果可能非常大，所以你需要返回一个字符串而不是整数
+2.拼接起来的数字可能会有前导 0，最后结果不需要去掉前导 0
+
+数据范围：0<=len(numbers)<=100
+
+##### 示例
+
+```
+// 输入：
+[11,3]
+// 返回值：
+"113"
+
+// 输入：
+[]
+// 返回值：
+""
+
+// 输入：
+[3,32,321]
+// 返回值：
+"321323"
+```
+
+##### 解题思路
+
+
+
+##### 代码实现
+
+```go
+
+```
+
