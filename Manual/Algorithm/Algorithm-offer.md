@@ -3412,11 +3412,239 @@ func printMinNumFromArray(numbers []int) string {
 
 ##### 解题思路
 
+首先可以发现丑数存在的规律
 
+- 前 20 个丑数：1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32, 36
+- 丑数：u = 2^a * 3^b * 5^c
+
+```
+将所有丑数按顺序存入数组 data 中
+第一个丑数为 1，则：data[0] = 1
+下一个丑数是：data[0]*2 data[0]*3 data[0]*5 中的最小的一个，即 data[0]*2=2
+所以，下一个丑数为：x=data[a] * 2	y=data[b] * 3	z=data[c] * 5 中最小的一个
+因为 2 已经乘了一次，所以 a 从 0 变为 1（a++）
+```
 
 ##### 代码实现
 
 ```go
+/**
+ * [JZ49-中等] 丑数
+ *
+ * @param index int整型
+ * @return int整型
+ */
+func getUglyNumber(index int) int {
+	if index <= 6 {
+        return index
+    }
+ 
+    a, b, c := 0, 0, 0
+ 
+    data := make([]int, index)
+    data[0] = 1
+     
+    for i := 1; i < index; i++ {
+        min := data[a] * 2
+        if t := data[b] * 3; t < min {
+            min = t
+        }
+        if t := data[c] * 5; t < min {
+            min = t
+        }
+        data[i] = min
+        if min == data[a] * 2 {
+            a++
+        }
+        if min == data[b] * 3 {
+            b++
+        }
+        if min == data[c] * 5 {
+            c++
+        }
+    }
+    return data[index-1]
+}
+```
 
+#### [JZ74-中等] 和为S的连续正数序列
+
+##### 描述
+
+小明很喜欢数学,有一天他在做数学作业时,要求计算出9~16的和,他马上就写出了正确答案是100。但是他并不满足于此,他在想究竟有多少种连续的正数序列的和为100(至少包括两个数)。没多久,他就得到另一组连续正数和为100的序列:18,19,20,21,22。现在把问题交给你,你能不能也很快的找出所有和为S的连续正数序列?
+
+- 数据范围：0 < n ≤ 100
+- 进阶：时间复杂度 O(n)
+- 返回值：输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序
+
+##### 示例
+
+```
+// 输入：
+9
+// 返回值：
+[[2,3,4],[4,5]]
+
+// 输入：
+0
+// 返回值：
+[]
+```
+
+##### 解题思路
+
+枚举法：
+
+- 因为序列至少两个数，每次枚举区间的起始数字最多到目标数的一半向下取整即可，因为两个大于目标数一半的数相加一定大于目标数。
+- 第一个数从 i=1 开始，依次加上后面连续的整数，相加如果大于预期值，则说明从 i=1 开始不存在，退出，在从 i=2 开始，以此枚举，找到等于预期值的连续数后，存入二维数组，再 i++ 后继续查找
+
+滑动窗口：
+
+连续正数序列存在以下规律：
+
+假设首位为 l，最后一位为 r，则 s=(l + r) * (r - l + 1) / 2
+
+因此，可以：
+
+- 先定义一个两位数的区间 [1, 2]
+- 若区间所有整数和小于预期 sum，则区间向右扩大（r++）
+- 若区间所有整数和大于预期 sum，则区间向左缩小（l++）
+- 直到找出等于 sum 为止（l < r）
+
+##### 代码实现
+
+枚举法：
+
+```go
+/**
+ * 枚举法
+ *
+ * @param sum int整型
+ * @return int整型二维数组
+ */
+func findContinuousSequence(sum int) [][]int {
+	if sum == 0 {
+		return [][]int{{}}
+	}
+
+	half := math.Ceil(float64(sum) / 2)
+	count := int(half)
+
+	result := make([][]int, 0)
+	for i := 1; i < count; i++ {
+		tmpArr := []int{i}
+		tmpSum := i
+		for j := i + 1; j <= count; j++ {
+			tmpArr = append(tmpArr, j)
+			tmpSum += j
+			if tmpSum > sum {
+				break
+			} else if tmpSum == sum {
+				result = append(result, tmpArr)
+			}
+		}
+	}
+	return result
+}
+```
+
+滑动窗口：
+
+```go
+/**
+ * 滑动窗口
+ *
+ * @param sum int 整型
+ * @return int 整型二维数组
+ */
+func findContinuousSequence2(sum int) [][]int {
+	if sum == 0 {
+		return [][]int{{}}
+	}
+
+	result := make([][]int, 0)
+
+	// 定义左右区间初始值为 1、2
+	l, r := 1, 2
+	for l < r {
+		// 区间所有数之和
+		tmpSum := (l + r) * (r - l + 1) / 2
+
+		if tmpSum == sum {
+			// 等于预期值，将区间处理成一维数组
+			tmpArr := []int{}
+			for i := l; i <= r; i++ {
+				tmpArr = append(tmpArr, i)
+			}
+			result = append(result, tmpArr)
+
+			// 移动区间左临界值，继续查找下一个
+			l++
+		} else if tmpSum < sum {
+			// 小于预期值，左区间 l 右移一位
+			r++
+		} else if tmpSum > sum {
+			// 大于预期值，右区间 r 左边移一位
+			l++
+		}
+	}
+	return result
+}
+```
+
+#### [JZ57-中等] 和为S的两个数字
+
+##### 描述
+
+输入一个升序数组 array 和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，返回任意一组即可，如果无法找出这样的数字，返回一个空数组即可。
+
+数据范围: 0≤len(array)≤10^5 ， 1 ≤ array[i] ≤ 10^6
+
+##### 示例
+
+```
+// 输入：
+[1,2,4,7,11,15],15
+// 返回值：
+[4,11]
+// 说明：返回[4,11]或者[11,4]都是可以的
+
+// 输入：
+[1,5,11],10
+// 返回值：
+[]
+// 说明：不存在，返回空数组
+```
+
+##### 解题思路
+
+双指针，从首位下标 l=0，最后一位下标 r=len(array)-1 开始，若两数相加大于预期 sum，则 r 左移（r--），若大于预期 sum，则 l 右移（l++），找到等于 sum 的退出
+
+##### 代码实现
+
+```go
+/**
+ * 双指针
+ *
+ * @param array int 整型一维数组
+ * @param sum int 整型
+ * @return int 整型一维数组
+ */
+func findNumbersWithSum(array []int, sum int) []int {
+	result := []int{}
+	l, r := 0, len(array)-1
+	for l < r {
+		tmpSum := array[l] + array[r]
+		if tmpSum == sum {
+			result = []int{array[l], array[r]}
+			break
+		} else if tmpSum < sum {
+			l++
+		} else {
+			r--
+		}
+	}
+	return result
+}
 ```
 
