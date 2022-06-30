@@ -2617,9 +2617,84 @@ function Power($base, $exponent)
 
 ##### 解题思路
 
+```
+[[1,2,3,4],
+[5,6,7,8],
+[9,10,11,12],
+[13,14,15,16]]
 
+设左边界、右边界、上边界、下边界分别为 left、right、up、down
+则：left=0、right=4=matrix[0].length-1、up=0、down=matrix.length-1
+1.上边界先从左到右遍历，遍历后上边界下移（up++）
+2.右边界从上往下遍历，遍历后右边界左移（right--）
+3.下边界从右往左遍历，遍历后下边界上移（down--）
+4.左边界从下往上遍历，遍历后左边界右移（left++）
+一直重复 1-4，最后遍历完成即可
+```
 
 ##### 代码实现
+
+```go
+/**
+ * 边界模拟法
+ *
+ * @param matrix int 整型二维数组
+ * @return int 整型一维数组
+ */
+func printMatrix(matrix [][]int) []int {
+	result := []int{}
+	n := len(matrix)
+	if 0 == n {
+		return result
+	}
+
+	// 左、右、上、下 边界
+	left, right, up, down := 0, len(matrix[0])-1, 0, n-1
+	for left <= right && up <= down {
+		// 遍历上边界从左到右
+		for i := left; i <= right; i++ {
+			result = append(result, matrix[up][i])
+		}
+		// 上边界向下
+		up++
+		if up > down {
+			break
+		}
+
+		// 右边界的从上到下
+		for i := up; i <= down; i++ {
+			result = append(result, matrix[i][right])
+		}
+		//右边界向左
+		right--
+		if left > right {
+			break
+		}
+
+		// 下边界的从右到左
+		for i := right; i >= left; i-- {
+			result = append(result, matrix[down][i])
+		}
+		// 下边界向上
+		down--
+		if up > down {
+			break
+		}
+
+		// 左边界从下向上
+		for i := down; i >= up; i-- {
+			result = append(result, matrix[i][left])
+		}
+		// 左边界向右
+		left++
+		if left > right {
+			break
+		}
+	}
+
+	return result
+}
+```
 
 
 
@@ -3645,6 +3720,116 @@ func findNumbersWithSum(array []int, sum int) []int {
 		}
 	}
 	return result
+}
+```
+
+#### [JZ62-中等] 孩子们的游戏(圆圈中最后剩下的数)
+
+##### 描述
+
+每年六一儿童节，牛客都会准备一些小礼物和小游戏去看望孤儿院的孩子们。其中，有个游戏是这样的：首先，让 n 个小朋友们围成一个大圈，小朋友们的编号是0~n-1。然后，随机指定一个数 m ，让编号为0的小朋友开始报数。每次喊到 m-1 的那个小朋友要出列唱首歌，然后可以在礼品箱中任意的挑选礼物，并且不再回到圈中，从他的下一个小朋友开始，继续0... m-1报数....这样下去....直到剩下最后一个小朋友，可以不用表演，并且拿到牛客礼品，请你试着想下，哪个小朋友会得到这份礼品呢？
+
+数据范围：1≤*n*≤5000，1≤*m*≤10000
+
+要求：空间复杂度 O(1)，时间复杂度 O(n)
+
+##### 示例
+
+```
+// 输入：
+5,3
+// 返回值：
+3
+
+// 输入：
+2,3
+// 返回值：
+1
+// 说明：有2个小朋友编号为0，1，第一次报数报到3的是0号小朋友，0号小朋友出圈，1号小朋友得到礼物
+
+// 输入：
+10,17
+// 返回值：
+2
+```
+
+##### 代码实现
+
+```go
+/**
+ * [JZ62-中等] 孩子们的游戏(圆圈中最后剩下的数)
+ *
+ * @param n int 整型
+ * @param m in t整型
+ * @return int 整型
+ */
+func lastRemaining(n int, m int) int {
+	x := 0
+	for i := 2; i <= n; i++ {
+		x = (m + x) % i
+	}
+	return x
+}
+```
+
+#### [JZ14-中等] 剪绳子
+
+##### 描述
+
+给你一根长度为 n 的绳子，请把绳子剪成整数长的 m 段（ m 、 n 都是整数， n > 1 并且 m > 1 ， m <= n ），每段绳子的长度记为 k[1],...,k[m] 。请问 k[1]*k[2]*...*k[m] 可能的最大乘积是多少？例如，当绳子的长度是 8 时，我们把它剪成长度分别为 2、3、3 的三段，此时得到的最大乘积是 18 。
+
+数据范围： 2≤*n*≤60
+进阶：空间复杂度 O(1)，时间复杂度 O(n)
+
+输入描述：输入一个数n，意义见题面。
+
+##### 示例
+
+```
+// 输入：
+8
+// 返回值：
+18
+// 说明：
+8 = 2 +3 +3 , 2*3*3=18
+
+// 输入：
+2
+// 返回值：
+1
+// 说明：
+m>1，所以切成两段长度是1的绳子
+```
+
+##### 代码实现
+
+```go
+/**
+ * 动态规划
+ *
+ * @param n int 整型
+ * @return int 整型
+ */
+func cutRope(n int) int {
+	if n <= 3 {
+		return n - 1
+	}
+
+	dp := make([]int, n+1)
+	dp[1] = 1
+	dp[2] = 2
+	dp[3] = 3
+	dp[4] = 4
+	for i := 5; i <= n; i++ {
+		for j := 1; j < i; j++ {
+			if dp[i] > j*dp[i-j] {
+				dp[i] = dp[i]
+			} else {
+				dp[i] = j * dp[i-j]
+			}
+		}
+	}
+	return dp[n]
 }
 ```
 
