@@ -2304,9 +2304,41 @@ function rectCover($number)
 
 ### 回溯算法
 
+#### [JZ12-中等] 矩阵中的路径
+
+##### 描述
+
+请设计一个函数，用来判断在一个 n 乘 m 的矩阵中是否存在一条包含某长度为 len 的字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。 
+
+数据范围：0≤*n*，m≤20 ，≤len≤25 
+
+##### 示例
+
+```
+// 输入：
+[[a,b,c,e],[s,f,c,s],[a,d,e,e]],"abcced"
+// 返回值：
+true
+
+// 输入：
+[[a,b,c,e],[s,f,c,s],[a,d,e,e]],"abcb"
+// 返回值：
+false
+```
+
+##### 解题思路
+
+
+
+##### 代码实现
+
+```go
+
+```
+
 ### 排序算法
 
-#### [简单] 数组中重复的数字
+#### [JZ3-简单] 数组中重复的数字
 
 ##### 描述
 
@@ -2332,30 +2364,184 @@ function rectCover($number)
 2或3都是对的 
 ```
 
+##### 解题思路
+
+1.暴力
+
+2.位置重排
+
+数组长度为 n 只包含了 0 到 n−1 的数字，那么如果数字没有重复，这些数字排序后将会与其下标一一对应。那我们就可以考虑遍历数组，每次检查数字与下标是不是一致的，一致的说明它在属于它的位置上，不一致我们就将其交换到该数字作为下标的位置上，如果交换过程中，那个位置已经出现了等于它下标的数字，那肯定就重复了。
+
 ##### 代码实现
+
+暴力：
 
 ```go
 /**
  * 【暴力】数组中重复的数字
  *
- * @param numbers int整型一维数组
- * @return int整型
+ * @param numbers int 整型一维数组
+ * @return int 整型
  */
 func duplicate(numbers []int) int {
-	ret := -1
 	// 遍历数组
-	for i := 0; i < len(numbers); i++ {
-		//fmt.Println("Element", i, "of arr is", numbers[i])
-		for j := 0; j < len(numbers); j++ {
-			if i == j {
-				continue
-			}
+	for i := 0; i < len(numbers)-1; i++ {
+		for j := i + 1; j < len(numbers); j++ {
 			if numbers[i] == numbers[j] {
-				ret = numbers[i]
+				return numbers[i]
 			}
 		}
 	}
-	return ret
+	return -1
+}
+```
+
+位置重排：
+
+```go
+/**
+ * 位置重排
+ *
+ * @param numbers int 整型一维数组
+ * @return int 整型
+ */
+func duplicate2(numbers []int) int {
+	for i := 0; i < len(numbers); i++ {
+		if numbers[i] != i {
+			// 当前值对应的下标已经有正确的对应数值，说明重复
+			if numbers[i] == numbers[numbers[i]] {
+				return numbers[i]
+			}
+			// 未存在，则交换位置
+			numbers[i], numbers[numbers[i]] = numbers[numbers[i]], numbers[i]
+		}
+	}
+	return -1
+}
+```
+
+#### [JZ40-中等] 最小的K个数
+
+##### 描述
+
+给定一个长度为 n 的可能有重复值的数组，找出其中不去重的最小的 k 个数。例如数组元素是 4,5,1,6,2,7,3,8 这 8 个数字，则最小的4个数字是1,2,3,4(任意顺序皆可)。
+
+数据范围：0≤*k*,*n*≤10000，数组中每个数的大小0 ≤val≤1000
+
+要求：空间复杂度 O(n) ，时间复杂度 O(nlogn)
+
+##### 示例
+
+```
+// 输入：
+[4,5,1,6,2,7,3,8],4 
+// 返回值：
+[1,2,3,4]
+// 说明：返回最小的4个数即可，返回[1,3,2,4]也可以
+
+// 输入：
+[1],0
+// 返回值：
+[]
+
+// 输入：
+[0,1,2,1,2],3
+// 返回值：
+[0,1,1]
+```
+
+##### 解题思路
+
+- 排序
+- 取排序后数组前 4 位
+
+##### 代码实现
+
+冒泡排序：
+
+```go
+/**
+ * 冒泡排序
+ *
+ * @param input int 整型一维数组
+ * @param k int 整型
+ * @return int 整型一维数组
+ */
+func getLeastNumbers(input []int, k int) []int {
+	result := []int{}
+	if k == 0 {
+		return result
+	}
+
+	count := len(input)
+	if count < k {
+		return result
+	}
+
+	for i := 0; i < count; i++ {
+		for j := 0; j < count-1; j++ {
+			if input[j] > input[j+1] {
+				input[j], input[j+1] = input[j+1], input[j]
+			}
+		}
+	}
+	result = input[:k]
+
+	return result
+}
+```
+
+快排：
+
+```go
+func quickSort(arr []int, left int, right int) {
+	if left > right {
+		return
+	}
+
+	tmp := arr[left]
+	i := left
+	j := right
+
+	for i != j {
+		for arr[j] >= tmp && i < j {
+			j--
+		}
+		for arr[i] <= tmp && i < j {
+			i++
+		}
+		if i < j {
+			arr[i], arr[j] = arr[j], arr[i]
+		}
+	}
+	arr[left], arr[i] = arr[i], arr[left]
+
+	quickSort(arr, left, i-1)
+	quickSort(arr, j+1, right)
+}
+
+/**
+ * 快排
+ *
+ * @param input int 整型一维数组
+ * @param k int 整型
+ * @return int 整型一维数组
+ */
+func getLeastNumbers2(input []int, k int) []int {
+	result := []int{}
+	if k == 0 {
+		return result
+	}
+
+	count := len(input)
+	if count < k {
+		return result
+	}
+
+	quickSort(input, 0, count-1)
+	result = input[:k]
+
+	return result
 }
 ```
 
@@ -2535,27 +2721,7 @@ function NumberOf1(n)
 
 [计算机组成原理](计算机组成原理.md)
 
-#### [中等]求1+2+3+...+n
-
-##### 题目描述
-
-求1+2+3+...+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
-
-##### 解题思路
-
-由题可知：sum=n(n+1)/2，由于不能使用循环和乘除，所以使用递归实现
-
-##### 代码实现
-
-```php
-function Sum_Solution($n)
-{
-    $n > 1 && $n += Sum_Solution($n-1);
-    return $n;
-}
-```
-
-#### [中等]数值的整数次方
+#### [中等] 数值的整数次方
 
 ##### 题目描述
 
@@ -2571,6 +2737,248 @@ function Power($base, $exponent)
     if ($exponent == 0) return 1;
     if ($base == 0) return 0;
     return pow($base, $exponent);
+}
+```
+
+#### [JZ51-中等] 数组中的逆序对
+
+##### 描述
+
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组,求出这个数组中的逆序对的总数P。并将P对 1000000007 取模的结果输出。 即输出P mod 1000000007
+
+数据范围： 对于 50% 的数据, size≤104
+对于 100% 的数据, size≤105
+
+数组中所有数字的值满足 0 ≤*v**a**l*≤1000000
+
+要求：空间复杂度 O(n)，时间复杂度 O(nlogn)
+
+输入描述：题目保证输入的数组中没有的相同的数字
+
+##### 示例
+
+```
+// 输入：
+[1,2,3,4,5,6,7,0]
+// 返回值：
+7
+
+// 输入：
+[1,2,3]
+// 返回值：
+0
+```
+
+##### 解题思路
+
+归并排序
+
+##### 代码实现
+
+```go
+var count int = 0
+
+/**
+ * 归并排序法
+ *
+ * @param data int 整型一维数组
+ * @return int 整型
+ */
+func inversePairs(data []int) int {
+	n := len(data)
+	if n < 2 {
+		return 0
+	}
+
+	mergeSort(data, 0, len(data)-1)
+
+	return count
+}
+
+func mergeSort(arr []int, left int, right int) {
+	if left >= right {
+		return
+	}
+
+	mid := left + (right-left)/2
+
+	mergeSort(arr, left, mid)
+	mergeSort(arr, mid+1, right)
+
+	merge(arr, left, mid, right)
+}
+
+func merge(arr []int, left int, mid int, right int) {
+	result := make([]int, right-left+1)
+	c, s, l, r := 0, left, left, mid+1
+
+	for l <= mid && r <= right {
+		if arr[l] <= arr[r] {
+			result[c] = arr[l]
+			l++
+		} else {
+			count += mid + 1 - l
+			count %= 1000000007
+
+			result[c] = arr[r]
+			r++
+		}
+		c++
+	}
+
+	for l <= mid {
+		result[c] = arr[l]
+		c++
+		l++
+	}
+
+	for r <= right {
+		result[c] = arr[r]
+		c++
+		r++
+	}
+
+	for i := 0; i < len(result); i++ {
+		arr[s] = result[i]
+		s++
+	}
+}
+```
+
+#### [JZ56-中等] 数组中只出现一次的两个数字
+
+##### 描述
+
+一个整型数组里除了两个数字只出现一次，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+
+数据范围：数组长度 2≤*n*≤1000，数组中每个数的大小 0 < val ≤ 1000000
+要求：空间复杂度 O(1)，时间复杂度 O(n)
+
+提示：输出时按非降序排列。
+
+##### 示例
+
+```
+// 输入：
+[1,4,1,6]
+// 返回值：
+[4,6]
+// 说明：返回的结果中较小的数排在前面
+
+// 输入：
+[1,2,3,3,2,9]
+// 返回值：
+[1,9]
+```
+
+##### 解题思路
+
+哈希法：
+
+- 先遍历数组，以数为键名，出现次数为键值存入map（也可以是 array）
+- 再遍历 map，找出 val 为 1 的两个数，组成数组
+- 判断两个数大小，从小到大排序
+
+##### 代码实现
+
+```go
+/**
+ * [JZ56-中等] 数组中只出现一次的两个数字
+ *
+ * @param array int整型一维数组
+ * @return int整型一维数组
+ */
+func findNumsAppearOnce(array []int) []int {
+	hash := map[int]int{}
+
+	// 统计每个数出现的次数
+	for _, v := range array {
+		if _, ok := hash[v]; ok {
+			hash[v] += 1
+		} else {
+			hash[v] = 1
+		}
+	}
+
+	// 遍历查找次数等于 1 的数
+	result := []int{}
+	for k, v := range hash {
+		if v == 1 {
+			result = append(result, k)
+		}
+	}
+
+	// 排序 - 就两个数，判断下大小即可
+	for i := 0; i < len(result)-1; i++ {
+		if result[i] > result[i+1] {
+			result[i], result[i+1] = result[i+1], result[i]
+		}
+	}
+
+	return result
+}
+```
+
+#### [JZ64-中等] 求1+2+3+...+n
+
+##### 描述
+
+求1+2+3+...+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+
+数据范围： 0 0<*n*≤200
+进阶： 空间复杂度 O(1) ，时间复杂度 O(n)
+
+##### 示例
+
+```
+// 输入：
+5
+// 返回值：
+15
+
+// 输入：
+1
+// 返回值：
+1
+```
+
+##### 解题思路
+
+1.递归
+
+2.找规律：sum = n * (n + 1) / 2
+
+##### 代码实现
+
+Golang：
+
+```go
+/**
+ * [JZ64-中等] 求1+2+3+...+n
+ *
+ * @param n int 整型
+ * @return int 整型
+ */
+func sumOfOneToN(n int) int {
+	return n * (n + 1) / 2
+}
+```
+
+JavaScript：
+
+```javascript
+function Sum_Solution(n) {
+    return n && n + Sum_Solution(n-1);
+}
+```
+
+PHP：
+
+```php
+function Sum_Solution($n)
+{
+    $n > 1 && $n += Sum_Solution($n-1);
+    return $n;
 }
 ```
 
@@ -2696,7 +3104,195 @@ func printMatrix(matrix [][]int) []int {
 }
 ```
 
+#### [JZ61-简单] 扑克牌顺子
 
+##### 描述
+
+现在有2副扑克牌，从扑克牌中随机五张扑克牌，我们需要来判断一下是不是顺子。
+有如下规则：
+
+1. A为1，J为11，Q为12，K为13，A不能视为14
+2. 大、小王为 0，0可以看作任意牌
+3. 如果给出的五张牌能组成顺子（即这五张牌是连续的）就输出true，否则就输出false。
+4. 数据保证每组5个数字，每组最多含有4个零，数组的数取值为 [0, 13]
+
+要求：空间复杂度 O(1)，时间复杂度 O(nlogn)，本题也有时间复杂度 O(n) 的解法
+
+##### 示例
+
+```
+// 输入：
+[6,0,2,0,4]
+// 返回值：
+true
+//说明：中间的两个0一个看作3，一个看作5 。即：[6,3,2,5,4] 这样这五张牌在[2,6]区间连续，输出true
+
+// 输入：
+[0,3,2,6,4]
+// 返回值：
+true
+
+// 输入：
+[1,0,0,1,0]
+// 返回值：
+false
+
+// 输入：
+[13,12,11,0,1]
+// 返回值：
+false
+```
+
+##### 解题思路
+
+五个连续的数，则说明：
+
+- 5 个数中一定不存在相同的数
+- 5 个数中一定不存在两个数相差大于 4 的数（排除 0 情况）
+
+##### 代码实现
+
+```go
+/**
+ * [JZ61-简单] 扑克牌顺子
+ *
+ * @param numbers int整型一维数组
+ * @return bool布尔型
+ */
+func isContinuous(numbers []int) bool {
+	for i := 0; i < len(numbers)-1; i++ {
+		for j := i + 1; j < len(numbers); j++ {
+			if numbers[i] == 0 || numbers[j] == 0 {
+				continue
+			}
+			tmp := numbers[i] - numbers[j]
+			// 存在两数相等或者相差大于 4，则肯定不连续
+			if tmp > 4 || tmp < -4 || tmp == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+```
+
+#### [JZ67-中等] 把字符串转换成整数(atoi)
+
+##### 描述
+
+写一个函数 StrToInt，实现把字符串转换成整数这个功能。不能使用 atoi 或者其他类似的库函数。传入的字符串可能有以下部分组成:
+
+1. 若干空格
+2. （可选）一个符号字符（'+' 或 '-'）
+3. 数字，字母，符号，空格组成的字符串表达式
+4. 若干空格
+
+**转换算法如下:**
+
+- 去掉无用的前导空格
+- 第一个非空字符为+或者-号时，作为该整数的正负号，如果没有符号，默认为正数
+- 判断整数的有效部分：
+  - 确定符号位之后，与之后面尽可能多的连续数字组合起来成为有效整数数字，如果没有有效的整数部分，那么直接返回0
+  - 将字符串前面的整数部分取出，后面可能会存在存在多余的字符(字母，符号，空格等)，这些字符可以被忽略，它们对于函数不应该造成影响
+  - 整数超过 32 位有符号整数范围 [−231, 231 − 1] ，需要截断这个整数，使其保持在这个范围内。具体来说，小于 −231的整数应该被调整为 −231 ，大于 231 − 1 的整数应该被调整为 231 − 1
+- 去掉无用的后导空格
+
+数据范围:
+
+1. 0 <=字符串长度<= 100
+2. 字符串由英文字母（大写和小写）、数字（0-9）、' '、'+'、'-' 和 '.' 组成
+
+##### 示例
+
+```
+// 输入：
+"82"
+// 返回值：
+82
+
+// 输入：
+"   -12  "
+// 返回值：
+-12
+// 说明：去掉前后的空格，为-12
+
+// 输入：
+"4396 clearlove"
+// 返回值：
+4396
+// 说明：6后面的字符不属于有效的整数部分，去除，但是返回前面提取的有效部分
+
+// 输入：
+"clearlove 4396"
+// 返回值：
+0
+
+// 输入：
+"-987654321111"
+// 返回值：
+-2147483648
+```
+
+##### 解题思路
+
+- 去掉前后空格
+- 处理符号位
+- 判断整数有效部分
+- 结果数据范围判断
+
+##### 代码实现
+
+```go
+/**
+ * [JZ67-中等] 把字符串转换成整数(atoi)
+ *
+ * @param s string字符串
+ * @return int整型
+ */
+func strToInt(s string) int {
+	// 去掉前后空格
+	s = strings.Trim(s, " ")
+	if len(s) == 0 {
+		return 0
+	}
+
+	// 处理符号位
+	sign := 1
+	if s[0] == '-' {
+		sign = -1
+		s = s[1:]
+	} else if s[0] == '+' {
+		s = s[1:]
+	}
+
+	// 判断整数有效部分
+	res := 0
+	for _, v := range s {
+		// 数据范围
+		if v >= '0' && v <= '9' {
+			// 将符合条件的整数字符串转化后加入的结果整数中
+			res = res*10 + int(v-'0')
+		} else {
+			break
+		}
+		if res > int(math.Pow(2, 31)) {
+			break
+		}
+	}
+	// 乘以符号位
+	res = int(sign) * res
+
+	// 数据范围判断
+	if res > int(math.Pow(2, 31)-1) {
+		return int(math.Pow(2, 31) - 1)
+	}
+	if res < int(0-math.Pow(2, 31)) {
+		return int(0 - math.Pow(2, 31))
+	}
+
+	return int(res)
+}
+```
 
 ### 其他算法
 

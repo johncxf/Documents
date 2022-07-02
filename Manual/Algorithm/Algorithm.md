@@ -1125,63 +1125,84 @@ function shellSort(&$arr) {
 
 **代码实现**
 
-```php
-class Merge_sort{
-	/**
-	* 归并排序
-	*/
- 	public static function mergeSort(&$array, $cmp_function = 'strcmp') {
- 		//边界判断
-        if (count($array) < 2) {
-            return;
-        }
-        //拆分
-        $halfway = count($array) / 2;
-        $array1 = array_slice($array, 0, $halfway);
-        $array2 = array_slice($array, $halfway);
-        //递归调用
-        self::mergeSort($array1, $cmp_function);
-        self::mergeSort($array2, $cmp_function);
-		//array1与array2各自有序;要整体有序，需要比较array1的最后一个元素和array2的第一个元素大小
-        if (call_user_func($cmp_function, end($array1), $array2[0]) < 1) {
-            $array = array_merge($array1, $array2);
-            return;
-        }
-        //将两个有序数组合并为一个有序数组
-        $array = array();
-        $ptr1 = $ptr2 = 0;
-        while ($ptr1 < count($array1) && $ptr2 < count($array2)) {
-            if (call_user_func($cmp_function, $array1[$ptr1], $array2[$ptr2]) < 1) {
-                $array[] = $array1[$ptr1++];
-            } else {
-                $array[] = $array2[$ptr2++];  
-            }
-        }
-        //合并剩余部分
-        while ($ptr1 < count($array1)) {
-            $array[] = $array1[$ptr1++];  
-        }
-        while ($ptr2 < count($array2)) {
-            $array[] = $array2[$ptr2++];
-        }
-        return;
-    }
-    public static function stableSort(&$array, $cmp_function = 'strcmp') { 
-	    //使用合并排序
-	    self::mergeSort($array, $cmp_function);
-	    return;
+Golang：
+
+```go
+func merge(left []int, right []int) []int {
+	var result []int
+	for len(left) != 0 && len(right) != 0 {
+		if left[0] <= right[0] {
+			result = append(result, left[0])
+			left = left[1:]
+		} else {
+			result = append(result, right[0])
+			right = right[1:]
+		}
 	}
-}  
-	$list = array(3,2,4,1,5);
-	$sort = new Merge_sort();
-	$sort->stableSort($list, function ($a, $b) {// function ($a, $b)匿名函数  
-	    return $a < $b;  
-	});  
-	//静态调用方式也行  
-	/*Merge_sort:: stableSort($arrStoreList, function ($a, $b) {
-	    return $a < $b; 
-	});*/
-	print_r($list); 
+
+	for len(left) != 0 {
+		result = append(result, left[0])
+		left = left[1:]
+	}
+
+	for len(right) != 0 {
+		result = append(result, right[0])
+		right = right[1:]
+	}
+
+	return result
+}
+
+// 归并排序
+func mergeSort(arr []int) []int {
+	length := len(arr)
+	if length < 2 {
+		return arr
+	}
+
+	middle := length / 2
+	left := arr[0:middle]
+	right := arr[middle:]
+
+	return merge(mergeSort(left), mergeSort(right))
+}
+```
+
+PHP：
+
+```php
+function mergeSort($arr)
+{
+    $len = count($arr);
+    if ($len < 2) {
+        return $arr;
+    }
+    $middle = floor($len / 2);
+    $left = array_slice($arr, 0, $middle);
+    $right = array_slice($arr, $middle);
+    return merge(mergeSort($left), mergeSort($right));
+}
+
+function merge($left, $right)
+{
+    $result = [];
+
+    while (count($left) > 0 && count($right) > 0) {
+        if ($left[0] <= $right[0]) {
+            $result[] = array_shift($left);
+        } else {
+            $result[] = array_shift($right);
+        }
+    }
+
+    while (count($left))
+        $result[] = array_shift($left);
+
+    while (count($right))
+        $result[] = array_shift($right);
+
+    return $result;
+}
 ```
 
 ## 查找算法
