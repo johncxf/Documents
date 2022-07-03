@@ -38,7 +38,6 @@
   - [算法笔记](./Manual/Algorithm/Algorithm.md)
   - [Leetcode](./Manual/Algorithm/Algorithm-leetcode.md)
   - [剑指offer](./Manual/Algorithm/Algorithm-offer.md)
-  - [剑指offer-go](./Manual/Algorithm/Algorithm-offer-go.md)
 - 计算机原理
   - [Linux](./Manual/Linux.md)
   - [计算机网络](./Manual/Computer-network.md)
