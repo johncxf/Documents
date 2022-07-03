@@ -2186,6 +2186,105 @@ func findGreatestSumOfSubArray(array []int) int {
 }
 ```
 
+#### [JZ85-中等] 连续子数组的最大和(二)
+
+##### 描述
+
+输入一个长度为n的整型数组array，数组中的一个或连续多个整数组成一个子数组，找到一个具有最大和的连续子数组。
+
+- 子数组是连续的，比如[1,3,5,7,9]的子数组有[1,3]，[3,5,7]等等，但是[1,3,7]不是子数组
+- 如果存在多个最大和的连续子数组，那么返回其中长度最长的，该题数据保证这个最长的只存在一个
+- 该题定义的子数组的最小长度为1，不存在为空的子数组，即不存在[]是某个数组的子数组
+- 返回的数组不计入空间复杂度计算
+
+数据范围:
+
+- 1<=n<=10^5
+- -100 <= a[i] <= 100
+
+要求:时间复杂度O(n)，空间复杂度O(n)
+
+进阶:时间复杂度O(n)，空间复杂度O(1)
+
+##### 示例
+
+```
+// 输入：
+[1,-2,3,10,-4,7,2,-5]
+// 返回值：
+[3,10,-4,7,2]
+// 说明：经分析可知，输入数组的子数组[3,10,-4,7,2]可以求得最大和为18，故返回[3,10,-4,7,2]
+
+// 输入：
+[1,2,-3,4,-1,1,-3,2]
+// 返回值：
+[1,2,-3,4,-1,1]
+// 说明：经分析可知，最大子数组的和为4，有[4],[4,-1,1],[1,2,-3,4],[1,2,-3,4,-1,1]，故返回其中长度最长的[1,2,-3,4,-1,1]
+
+// 输入：
+[-2,-1]
+// 返回值：
+[-1]
+// 说明：子数组最小长度为1，故返回[-1] 
+```
+
+##### 解题思路
+
+动态规划+滑动区间
+
+##### 代码实现
+
+```go
+package main
+
+import "fmt"
+
+/**
+ * [JZ42-简单] 连续子数组的最大和
+ *
+ * @param array int 一维数组
+ * @return int
+ */
+func findGreatestSumOfSubArr(array []int) []int {
+	length := len(array)
+	if 1 == length {
+		return array
+	}
+
+	dp := make([]int, length)
+	dp[0] = array[0]
+	max := array[0]
+
+	// 滑动左右区间值 left、right 和最长区间值 l、r
+	left, right, maxLeft, maxRight := 0, 0, 0, 0
+	for i := 1; i < length; i++ {
+		right++
+
+		// 前面连续数字和小于当前数，则重新开始
+		if dp[i-1]+array[i] < array[i] {
+			dp[i] = array[i]
+			left = right
+		} else {
+			dp[i] = dp[i-1] + array[i]
+		}
+
+		if dp[i] > max || dp[i] == max && (right-left) > (maxRight-maxLeft) {
+			max = dp[i]
+			maxLeft = left
+			maxRight = right
+		}
+	}
+
+	return array[maxLeft : maxRight+1]
+}
+
+func main() {
+	arr := []int{1, -2, 3, 10, -4, 7, 2, -5}
+	ret := findGreatestSumOfSubArr(arr)
+	fmt.Println(ret)
+}
+```
+
 #### [JZ63-简单] 买卖股票的最好时机(一)
 
 ##### 描述
@@ -2328,12 +2427,78 @@ false
 
 ##### 解题思路
 
-
+递归
 
 ##### 代码实现
 
 ```go
+package main
 
+import "fmt"
+
+func dfsMatrix(matrix [][]byte, n int, m int, i int, j int, word string, k int, flag [][]bool) bool {
+	// i, j 越界，或字符不匹配、或该点已走过则退出
+	if i < 0 || i >= n || j < 0 || j >= m || (matrix[i][j] != word[k]) || flag[i][j] == true {
+		return false
+	}
+
+	// 已经找到
+	if k == len(word)-1 {
+		return true
+	}
+
+	// 标记当前位置已经走过
+	flag[i][j] = true
+
+	// 向四个方向查找
+	if dfsMatrix(matrix, n, m, i-1, j, word, k+1, flag) == true ||
+		dfsMatrix(matrix, n, m, i+1, j, word, k+1, flag) == true ||
+		dfsMatrix(matrix, n, m, i, j-1, word, k+1, flag) == true ||
+		dfsMatrix(matrix, n, m, i, j+1, word, k+1, flag) == true {
+		return true
+	}
+
+	flag[i][j] = false
+	return false
+}
+
+/**
+ * [JZ12-中等] 矩阵中的路径
+ *
+ * @param matrix char 字符型二维数组
+ * @param word string 字符串
+ * @return bool 布尔型
+ */
+func hasPath(matrix [][]byte, word string) bool {
+	if len(matrix) == 0 {
+		return false
+	}
+
+	// 矩阵 n、m
+	n, m := len(matrix), len(matrix[0])
+
+	// 初始化一个标记矩阵，记录矩阵走过路径
+	flag := make([][]bool, n)
+	for k := 0; k < n; k++ {
+		flag[k] = make([]bool, m)
+	}
+
+	// 遍历矩阵，查找以每个点为起始点情况下是否存在该路径
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
+			// 查找路径
+			if dfsMatrix(matrix, n, m, i, j, word, 0, flag) == true {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func main() {
+	fmt.Println(hasPath([][]byte{{'a', 'b', 'c', 'e'}, {'s', 'f', 'c', 's'}, {'a', 'd', 'e', 'e'}}, "abcced"))
+}
 ```
 
 ### 排序算法
