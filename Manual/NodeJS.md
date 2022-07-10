@@ -1,6 +1,6 @@
 # Node.js
 
-Node.js 是一个开源与跨平台的 JavaScript 运行时环境
+Node.js 是一个开源与跨平台的 javaScript 运行时环境
 
 ## 安装配置
 
@@ -243,6 +243,8 @@ Node.js 几乎每一个 API 都是支持回调函数的。
 Node.js 基本上所有的事件机制都是用设计模式中观察者模式实现。
 
 Node.js 单线程类似进入一个while(true)的事件循环，直到没有事件观察者退出，每个异步事件都生成一个事件观察者，如果有事件发生就调用该回调函数.
+
+参考：https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/
 
 ### Buffer
 

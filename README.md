@@ -22,7 +22,7 @@
 - 前端开发
   - [Css](./Manual/Front-end/Css.md)
   - [JavaScript](./Manual/Front-end/JavaScript.md)
-  - [Node.js](./Manual/Front-end/node.md)
+  - [Node.js](./Manual/Node.md)
   - [jQuery](./Manual/Front-end/jQuery.md)
   - [ES6](./Manual/Front-end/ES6.md)
   - [TypeScript](./Manual/Front-end/TypeScript.md)
