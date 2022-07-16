@@ -2,6 +2,8 @@
 
 #### L1.两数之和
 
+> 难度：简单
+
 ##### 描述
 
 给定一个整数数组 `nums` 和一个目标值 `target`，请你在该数组中找出和为目标值的那 **两个** 整数，并返回他们的数组下标。
@@ -67,7 +69,513 @@ class Solution {
 }
 ```
 
+#### L2.两数相加
+
+> 难度：中等
+
+##### 描述
+
+给出两个 **非空** 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 **逆序** 的方式存储的，并且它们的每个节点只能存储 **一位** 数字。
+
+如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
+
+您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+##### 示例
+
+```
+输入：l1 = [2,4,3], l2 = [5,6,4]
+输出：[7,0,8]
+解释：342 + 465 = 807
+
+输入：l1 = [0], l2 = [0]
+输出：[0]
+
+输入：l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
+输出：[8,9,9,9,0,0,0,1]
+```
+
+##### 代码实现
+
+```php
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $l1
+     * @param ListNode $l2
+     * @return ListNode
+     */
+    function addTwoNumbers($l1, $l2) {
+        $add = 0;
+        $list = new ListNode(0);
+        $current = $list;
+        while($l1 || $l2) {
+            $x = $l1 != null ? $l1->val : 0;
+            $y = $l2 != null ? $l2->val : 0;
+            
+            $val = ($x + $y + $add) % 10;
+            
+            $add = intval(($x + $y + $add) / 10);
+            
+            $new = new ListNode($val);
+            $current->next = $new;
+            $current = $current->next;
+            
+            if ($l1 != null) {
+                $l1 = $l1->next;
+            }
+            if ($l2 != null) {
+                $l2 = $l2->next;
+            }
+        }
+        if ($add > 0) {
+            $current->next = new ListNode($add);
+        }
+        return $list->next;
+    }
+}
+```
+
+#### L3.无重复字符的最长子串
+
+> 难度：中等
+
+##### 描述
+
+给定一个字符串，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+##### 示例
+
+**示例 1:**
+
+```
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+```
+
+**示例 2:**
+
+```
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+```
+
+**示例 3:**
+
+```
+输入: "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+```
+
+##### 代码实现
+
+```php
+class Solution {
+
+    /**
+     * @param String $s
+     * @return Integer
+     */
+    function lengthOfLongestSubstring($s) {
+        //边界
+        if (!$s || strlen($s) == 0) return 0;
+        //初始化
+        $array= [];
+        $ret = 0;
+        $start = 0;
+        //遍历
+        for ($i = 0; $i < strlen($s); $i++) {
+           if (isset($array[$s[$i]]) && $start <= $array[$s[$i]]) {
+               $start = $array[$s[$i]] + 1;
+           } else {
+               $ret = max($ret, $i - $start + 1);
+           }
+            $array[$s[$i]] = $i;
+        }
+        return $ret;
+    }
+}
+```
+
+#### L5.最长回文子串
+
+> 难度：中等
+
+##### 描述
+
+给定一个字符串 `s`，找到 `s` 中最长的回文子串。你可以假设 `s` 的最大长度为 1000。
+
+- `1 <= s.length <= 1000`
+- `s` 仅由数字和英文字母组成
+
+##### 示例
+
+```
+输入: "babad"
+输出: "bab"
+注意: "aba" 也是一个有效答案。
+
+输入: "cbbd"
+输出: "bb"
+```
+
+##### 解题思路
+
+1. 暴力法
+2. 中心扩散法
+3. 动态规划法
+
+##### 代码实现
+
+**暴力法**
+
+> 时间复杂度-O(n^3)
+>
+> 空间复杂度-O(1)
+
+GO：
+
+```go
+func longestPalindrome(s string) string {
+    n := len(s)
+    if (n < 2) {
+        return s
+    }
+
+    max, index := 1, 0
+    for i := 0; i < n - 1; i++ {
+        for j := i + 1; j < n; j++ {
+            if j - i + 1 > max && isPalindrome(s, i, j) {
+                max = j - i + 1
+                index = i
+            }
+        }
+    }
+
+    return s[index: index+max]
+}
+
+func isPalindrome(s string, left int, right int) bool {
+    for left < right {
+        if s[left] != s[right] {
+            return false
+        }
+        left++
+        right--
+    }
+    return true
+}
+```
+
+JavaScript：
+
+```go
+var longestPalindrome = function(s) {
+    let n = s.length;
+    if (n < 2) {
+        return s;
+    }
+
+    let maxLen = 1;
+    let index = 0;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = i + 1; j < n; j++) {
+            if (j - i + 1 > maxLen && isPalindrome(s, i ,j)) {
+                maxLen = j - i + 1;
+                index = i;
+            }
+        }
+    }
+
+    return s.slice(index, index + maxLen);
+};
+
+function isPalindrome(str, left, right) {
+    while(left < right) {
+        if (str[left] !== str[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+```
+
+**中心扩散法**
+
+> 时间复杂度-O(n^2)
+>
+> 空间复杂度-O(1)
+
+GO：
+
+```go
+func longestPalindrome(s string) string {
+    n := len(s)
+    if (n < 2) {
+        return s
+    }
+
+    left, right := 0, 0
+    for i := 0; i < n - 1; i++ {
+        left1, right1 := expandAroundCenter(s, i, i);
+        left2, right2 := expandAroundCenter(s, i, i + 1);
+        if right1 - left1 > right - left {
+            left, right = left1, right1
+        }
+        if right2 - left2 > right - left {
+            left, right = left2, right2
+        }
+    }
+
+    return s[left: right+1]
+}
+
+func expandAroundCenter(s string, left, right int) (int, int) {
+    for left >= 0 && right < len(s) {
+        if s[left] == s[right] {
+            left--
+            right++
+        } else {
+            break
+        }
+    }
+    return left + 1, right - 1
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    //定义全局
+    public $res = "";
+    public $max = 0;
+    //比较左右
+    private function diff($s, $left, $right) {
+        while ($left >=0 && $right < strlen($s) && $s[$left] == $s[$right]) {
+            if ($right - $left + 1 > $this->max) {
+                $this->max = $right - $left + 1;
+                $this->res = substr($s, $left, $right-$left+1);
+            }
+            $left--;
+            $right++;
+        }
+    }
+    /**
+     * @param String $s
+     * @return String
+     */
+    function longestPalindrome($s) {
+        if (strlen($s) <= 1) return $s;
+        for ($i = 0; $i < strlen($s); $i++) {
+            $this->diff($s, $i, $i);
+            $this->diff($s, $i, $i + 1);
+        }
+        return $this->res;
+    }
+}
+```
+
+**动态规划**
+
+> 时间复杂度-O(n^2)
+>
+> 空间复杂度-O(n^2)
+
+GO：
+
+```go
+func longestPalindrome(s string) string {
+    n := len(s)
+    if (n < 2) {
+        return s
+    }
+
+    dp := make([][]bool, n)
+    for i,_ := range dp {
+        dp[i] = make([]bool, n)
+    }
+
+    max, index := 1, 0
+    for j := 1; j < n; j++ {
+        for i := 0; i < j; i++ {
+            if s[i] != s[j] {
+                dp[i][j] = false
+            } else {
+                if j - i < 3 {
+                    dp[i][j] = true
+                } else {
+                    dp[i][j] = dp[i + 1][j - 1]
+                }
+            }
+            if dp[i][j] == true && j - i + 1 > max {
+                max = j - i + 1
+                index = i
+            }
+        }
+    }
+
+    return s[index: index+max]
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    /**
+     * @param String $s
+     * @return String
+     */
+    function longestPalindrome($s) {
+        if (strlen($s) <= 1) return $s;
+        $res = $s[0];
+        $max = 0;
+        if ($s[0] == $s[1]) {
+            $res = substr($s, 0, 2);
+        }
+        for ($j = 2; $j < strlen($s); $j++) {
+            $dp[$j][$j] = true;
+            for ($i = 0; $i < $j; $i++) {
+                $dp[$i][$j] = $s[$i] == $s[$j] && ($j - $i <= 2 || $dp[$i + 1][$j - 1]);
+                if ($dp[$i][$j] && $max < $j - $i + 1) {
+                    $max = $j - $i + 1;
+                    $res = substr($s, $i, $j - $i + 1);
+                }
+            }
+        }
+        return $res;
+    }
+}
+```
+
+#### L6.z字变换
+
+> 难度：中等
+
+##### 描述
+
+将一个给定字符串根据给定的行数，以从上往下、从左到右进行 Z 字形排列。
+
+比如输入字符串为 `"LEETCODEISHIRING"` 行数为 3 时，排列如下：
+
+```
+L   C   I   R
+E T O E S I I G
+E   D   H   N
+```
+
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如：`"LCIRETOESIIGEDHN"`。
+
+请你实现这个将字符串进行指定行数变换的函数：
+
+```
+string convert(string s, int numRows);
+```
+
+##### 示例
+
+**示例 1:**
+
+```
+输入: s = "LEETCODEISHIRING", numRows = 3
+输出: "LCIRETOESIIGEDHN"
+```
+
+**示例 2:**
+
+```
+输入: s = "LEETCODEISHIRING", numRows = 4
+输出: "LDREOEIIECIHNTSG"
+解释:
+
+L     D     R
+E   O E   I I
+E C   I H   N
+T     S     G
+```
+
+##### 代码实现
+
+方法一：
+
+```php
+class Solution {
+
+    /**
+     * @param String $s
+     * @param Integer $numRows
+     * @return String
+     */
+    function convert($s, $numRows) {
+         if (strlen($s) == 1 || $numRows == 1) return $s;
+        
+        $ret = [];
+        $pre = -1;
+        $sign = 'down';
+        for ($i = 0; $i < strlen($s); $i++) {
+            if ($sign == 'up') {
+                $ret[$pre - 1][] = $s[$i];
+                $pre = $pre - 1;
+                if ($pre == 0) {
+                    $sign = 'down';
+                }
+            } else {
+                $ret[$pre + 1][] = $s[$i];
+                $pre = $pre + 1;
+                if ($pre == $numRows - 1) {
+                    $sign = 'up';
+                }
+            }
+        }
+        return implode('', array_map(function($a){return implode('', $a);}, $ret));
+    }
+    
+}
+```
+
+方法二：
+
+```php
+class Solution {
+
+    /**
+     * @param String $s
+     * @param Integer $numRows
+     * @return String
+     */
+    function convert($s, $numRows) {
+         if (strlen($s) == 1 || $numRows == 1) return $s;
+        
+        $ret = [];
+        for ($i = 0; $i < strlen($s); $i++) {
+            $index = $i % (2 * $numRows -2);
+            $index = $index < $numRows ? $index : 2 * $numRows -2 - $index;
+            $ret[$index][] = $s[$i];
+        }
+        return implode('', array_map(function($a){return implode('', $a);}, $ret));
+    }
+    
+}
+```
+
 #### L7.整数反转
+
+> 难度：中等
 
 ##### 描述
 
@@ -129,6 +637,8 @@ class Solution {
 ```
 
 #### L9.回文数
+
+> 难度：简单
 
 ##### 描述
 
@@ -208,6 +718,8 @@ class Solution {
 ```
 
 #### L13.罗马数字转整数
+
+> 难度：简单
 
 ##### 描述
 
@@ -314,6 +826,8 @@ class Solution {
 
 #### L14.最长公共前缀
 
+> 难度：简单
+
 ##### 描述
 
 编写一个函数来查找字符串数组中的最长公共前缀。
@@ -395,6 +909,8 @@ class Solution {
 ```
 
 #### L20.有效的括号
+
+> 难度：简单
 
 ##### 描述
 
@@ -484,6 +1000,8 @@ class Solution {
 
 #### L21.合并两个有序链表
 
+> 难度：简单
+
 ##### 描述
 
 将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
@@ -545,7 +1063,193 @@ class Solution {
 
 有关php实现链表可以参考以下文章：https://www.cnblogs.com/sunshineliulu/p/7717301.html
 
+#### L26.删除排序数组中的重复项
+
+> 难度：中等
+
+##### 描述
+
+给定一个排序数组，你需要在**原地**删除重复出现的元素，使得每个元素只出现一次，返回移除后数组的新长度。
+
+不要使用额外的数组空间，你必须在**原地修改输入数组**并在使用 O(1) 额外空间的条件下完成。
+
+##### 示例
+
+**示例 1:**
+
+```
+给定数组 nums = [1,1,2], 
+
+函数应该返回新的长度 2, 并且原数组 nums 的前两个元素被修改为 1, 2。 
+
+你不需要考虑数组中超出新长度后面的元素。
+```
+
+**示例 2:**
+
+```
+给定 nums = [0,0,1,1,1,2,2,3,3,4],
+
+函数应该返回新的长度 5, 并且原数组 nums 的前五个元素被修改为 0, 1, 2, 3, 4。
+
+你不需要考虑数组中超出新长度后面的元素。
+```
+
+**说明:**
+
+为什么返回数值是整数，但输出的答案是数组呢?
+
+请注意，输入数组是以**“引用”**方式传递的，这意味着在函数里修改输入数组对于调用者是可见的。
+
+你可以想象内部操作如下:
+
+```
+// nums 是以“引用”方式传递的。也就是说，不对实参做任何拷贝
+int len = removeDuplicates(nums);
+
+// 在函数里修改输入数组对于调用者是可见的。
+// 根据你的函数返回的长度, 它会打印出数组中该长度范围内的所有元素。
+for (int i = 0; i < len; i++) {
+    print(nums[i]);
+}
+```
+
+##### 解题思路
+
+两两比较，如果不相等则插入nums中
+
+##### 代码实现
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @return Integer
+     */
+    function removeDuplicates(&$nums) {
+        if (!$nums) return 0;
+        $i = 0;
+        for ($j = 1; $j < count($nums); $j++) {
+            if ($nums[$j] != $nums[$i]) {
+                $i++;
+                $nums[$i] = $nums[$j];
+            }
+        }
+        return $i + 1;
+    }
+}
+```
+
+#### L27.移除元素
+
+> 难度：简单
+
+##### 描述
+
+给定一个数组 *nums* 和一个值 *val*，你需要**原地**移除所有数值等于 *val* 的元素，返回移除后数组的新长度。
+
+不要使用额外的数组空间，你必须在**原地修改输入数组**并在使用 O(1) 额外空间的条件下完成。
+
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+##### 示例
+
+**示例 1:**
+
+```
+给定 nums = [3,2,2,3], val = 3,
+
+函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
+
+你不需要考虑数组中超出新长度后面的元素。
+```
+
+**示例 2:**
+
+```
+给定 nums = [0,1,2,2,3,0,4,2], val = 2,
+
+函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。
+
+注意这五个元素可为任意顺序。
+
+你不需要考虑数组中超出新长度后面的元素。
+```
+
+##### 代码实现
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $val
+     * @return Integer
+     */
+    function removeElement(&$nums, $val) {
+        $n = 0;
+        for ($i = 0; $i < count($nums); $i++) {
+            if (!$nums) return 0;
+            if ($nums[$i] != $val) {
+                $nums[$n] = $nums[$i];
+                $n++;
+            }
+        }
+        return $n;
+    }
+}
+```
+
+#### L28.实现strStr()
+
+> 难度：简单
+
+##### 描述
+
+给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  **-1**。
+
+##### 示例
+
+**示例 1:**
+
+```
+输入: haystack = "hello", needle = "ll"
+输出: 2
+```
+
+**示例 2:**
+
+```
+输入: haystack = "aaaaa", needle = "bba"
+输出: -1
+```
+
+##### 代码实现
+
+```php
+class Solution {
+
+    /**
+     * @param String $haystack
+     * @param String $needle
+     * @return Integer
+     */
+    function strStr($haystack, $needle) {
+       for ($i = 0; $i <= strlen($haystack) - strlen($needle); $i++) {
+           $str = substr($haystack, $i, strlen($needle));
+           if ($str == $needle) {
+               return $i;
+           }
+       }
+        return -1;
+    }
+}
+```
+
 #### L46.全排列
+
+> 难度：中等
 
 ##### 描述
 
@@ -595,180 +1299,7 @@ class Solution {
 }
 ```
 
-#### 9.删除排序数组中的重复项(a)
-
-> 给定一个排序数组，你需要在**原地**删除重复出现的元素，使得每个元素只出现一次，返回移除后数组的新长度。
->
-> 不要使用额外的数组空间，你必须在**原地修改输入数组**并在使用 O(1) 额外空间的条件下完成。
-
-**示例 1:**
-
-```
-给定数组 nums = [1,1,2], 
-
-函数应该返回新的长度 2, 并且原数组 nums 的前两个元素被修改为 1, 2。 
-
-你不需要考虑数组中超出新长度后面的元素。
-```
-
-**示例 2:**
-
-```
-给定 nums = [0,0,1,1,1,2,2,3,3,4],
-
-函数应该返回新的长度 5, 并且原数组 nums 的前五个元素被修改为 0, 1, 2, 3, 4。
-
-你不需要考虑数组中超出新长度后面的元素。
-```
-
-**说明:**
-
-为什么返回数值是整数，但输出的答案是数组呢?
-
-请注意，输入数组是以**“引用”**方式传递的，这意味着在函数里修改输入数组对于调用者是可见的。
-
-你可以想象内部操作如下:
-
-```
-// nums 是以“引用”方式传递的。也就是说，不对实参做任何拷贝
-int len = removeDuplicates(nums);
-
-// 在函数里修改输入数组对于调用者是可见的。
-// 根据你的函数返回的长度, 它会打印出数组中该长度范围内的所有元素。
-for (int i = 0; i < len; i++) {
-    print(nums[i]);
-}
-```
-
-**代码实现**
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @return Integer
-     */
-    function removeDuplicates(&$nums) {
-        if (!$nums) return 0;
-        $i = 0;
-        for ($j = 1; $j < count($nums); $j++) {
-            if ($nums[$j] != $nums[$i]) {
-                $i++;
-                $nums[$i] = $nums[$j];
-            }
-        }
-        return $i + 1;
-    }
-}
-```
-
-**解题思路**
-
-> 两两比较，如果不相等则插入nums中
-
-#### 10.移除元素(a)
-
-给定一个数组 *nums* 和一个值 *val*，你需要**原地**移除所有数值等于 *val* 的元素，返回移除后数组的新长度。
-
-不要使用额外的数组空间，你必须在**原地修改输入数组**并在使用 O(1) 额外空间的条件下完成。
-
-元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
-
-**示例 1:**
-
-```
-给定 nums = [3,2,2,3], val = 3,
-
-函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
-
-你不需要考虑数组中超出新长度后面的元素。
-```
-
-**示例 2:**
-
-```
-给定 nums = [0,1,2,2,3,0,4,2], val = 2,
-
-函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。
-
-注意这五个元素可为任意顺序。
-
-你不需要考虑数组中超出新长度后面的元素。
-```
-
-**代码实现**
-
-```
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @param Integer $val
-     * @return Integer
-     */
-    function removeElement(&$nums, $val) {
-        $n = 0;
-        for ($i = 0; $i < count($nums); $i++) {
-            if (!$nums) return 0;
-            if ($nums[$i] != $val) {
-                $nums[$n] = $nums[$i];
-                $n++;
-            }
-        }
-        return $n;
-    }
-}
-```
-
-#### 11.实现strStr()(a)
-
-给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  **-1**。
-
-**示例 1:**
-
-```
-输入: haystack = "hello", needle = "ll"
-输出: 2
-```
-
-**示例 2:**
-
-```
-输入: haystack = "aaaaa", needle = "bba"
-输出: -1
-```
-
-**说明:**
-
-当 `needle` 是空字符串时，我们应当返回什么值呢？这是一个在面试中很好的问题。
-
-对于本题而言，当 `needle` 是空字符串时我们应当返回 0 。这与C语言的 [strstr()](https://baike.baidu.com/item/strstr/811469) 以及 Java的 [indexOf()](https://docs.oracle.com/javase/7/docs/api/java/lang/String.html#indexOf(java.lang.String)) 定义相符。
-
-**代码实现**
-
-```php
-class Solution {
-
-    /**
-     * @param String $haystack
-     * @param String $needle
-     * @return Integer
-     */
-    function strStr($haystack, $needle) {
-        
-       for ($i = 0; $i <= strlen($haystack) - strlen($needle); $i++) {
-           $str = substr($haystack, $i, strlen($needle));
-           if ($str == $needle) {
-               return $i;
-           }
-       }
-        return -1;
-    }
-}
-```
-
-#### 12.报数(a)
+#### 12.报数
 
 报数序列是一个整数序列，按照其中的整数的顺序进行报数，得到下一个数。其前五项如下：
 
@@ -787,8 +1318,6 @@ class Solution {
 给定一个正整数 *n*（1 ≤ *n* ≤ 30），输出报数序列的第 *n* 项。
 
 注意：整数顺序将表示为一个字符串。
-
- 
 
 **示例 1:**
 
@@ -838,318 +1367,6 @@ class Solution {
 > n项既是n-1项的报数，求n项只需知道n-1项的值即可
 >
 > 先遍历n项，求出n-1项中连续的数的重复次数即可
-
-#### 13.两数相加（b）
-
-> 给出两个 **非空** 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 **逆序** 的方式存储的，并且它们的每个节点只能存储 **一位** 数字。
->
-> 如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
->
-> 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
-
-**示例：**
-
-```
-输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
-输出：7 -> 0 -> 8
-原因：342 + 465 = 807
-```
-
-**代码实现**
-
-```php
-/**
- * Definition for a singly-linked list.
- * class ListNode {
- *     public $val = 0;
- *     public $next = null;
- *     function __construct($val) { $this->val = $val; }
- * }
- */
-class Solution {
-
-    /**
-     * @param ListNode $l1
-     * @param ListNode $l2
-     * @return ListNode
-     */
-    function addTwoNumbers($l1, $l2) {
-        $add = 0;
-        $list = new ListNode(0);
-        $current = $list;
-        while($l1 || $l2) {
-            $x = $l1 != null ? $l1->val : 0;
-            $y = $l2 != null ? $l2->val : 0;
-            
-            $val = ($x + $y + $add) % 10;
-            
-            $add = intval(($x + $y + $add) / 10);
-            
-            $new = new ListNode($val);
-            $current->next = $new;
-            $current = $current->next;
-            
-            if ($l1 != null) {
-                $l1 = $l1->next;
-            }
-            if ($l2 != null) {
-                $l2 = $l2->next;
-            }
-        }
-        if ($add > 0) {
-            $current->next = new ListNode($add);
-        }
-        return $list->next;
-    }
-}
-```
-
-#### 14.无重复字符的最长子串(b)
-
-> 给定一个字符串，请你找出其中不含有重复字符的 **最长子串** 的长度。
-
-**示例 1:**
-
-```
-输入: "abcabcbb"
-输出: 3 
-解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
-```
-
-**示例 2:**
-
-```
-输入: "bbbbb"
-输出: 1
-解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
-```
-
-**示例 3:**
-
-```
-输入: "pwwkew"
-输出: 3
-解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
-     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
-```
-
-**代码实现**
-
-```php
-class Solution {
-
-    /**
-     * @param String $s
-     * @return Integer
-     */
-    function lengthOfLongestSubstring($s) {
-        //边界
-        if (!$s || strlen($s) == 0) return 0;
-        //初始化
-        $array= [];
-        $ret = 0;
-        $start = 0;
-        //遍历
-        for ($i = 0; $i < strlen($s); $i++) {
-           if (isset($array[$s[$i]]) && $start <= $array[$s[$i]]) {
-               $start = $array[$s[$i]] + 1;
-           } else {
-               $ret = max($ret, $i - $start + 1);
-           }
-            $array[$s[$i]] = $i;
-        }
-        return $ret;
-    }
-}
-```
-
-#### 15.最长回文子串(b)
-
-给定一个字符串 `s`，找到 `s` 中最长的回文子串。你可以假设 `s` 的最大长度为 1000。
-
-**示例 1：**
-
-```
-输入: "babad"
-输出: "bab"
-注意: "aba" 也是一个有效答案。
-```
-
-**示例 2：**
-
-```
-输入: "cbbd"
-输出: "bb"
-```
-
-**代码实现**
-
-方法一：中心扩散法
-
-```php
-class Solution {
-    
-    //定义全局
-    public $res = "";
-    public $max = 0;
-    //比较左右
-    private function diff($s, $left, $right) {
-        while ($left >=0 && $right < strlen($s) && $s[$left] == $s[$right]) {
-            if ($right - $left + 1 > $this->max) {
-                $this->max = $right - $left + 1;
-                $this->res = substr($s, $left, $right-$left+1);
-            }
-            $left--;
-            $right++;
-        }
-    }
-    /**
-     * @param String $s
-     * @return String
-     */
-    function longestPalindrome($s) {
-        if (strlen($s) <= 1) return $s;
-        for ($i = 0; $i < strlen($s); $i++) {
-            $this->diff($s, $i, $i);
-            $this->diff($s, $i, $i + 1);
-        }
-        return $this->res;
-    }
-}
-```
-
-方法二：动态规划
-
-```php
-class Solution {
-    
-    /**
-     * @param String $s
-     * @return String
-     */
-    function longestPalindrome($s) {
-        if (strlen($s) <= 1) return $s;
-        $res = $s[0];
-        $max = 0;
-        if ($s[0] == $s[1]) {
-            $res = substr($s, 0, 2);
-        }
-        for ($j = 2; $j < strlen($s); $j++) {
-            $dp[$j][$j] = true;
-            for ($i = 0; $i < $j; $i++) {
-                $dp[$i][$j] = $s[$i] == $s[$j] && ($j - $i <= 2 || $dp[$i + 1][$j - 1]);
-                if ($dp[$i][$j] && $max < $j - $i + 1) {
-                    $max = $j - $i + 1;
-                    $res = substr($s, $i, $j - $i + 1);
-                }
-            }
-        }
-        return $res;
-    }
-}
-```
-
-#### 16.z字变换(b)
-
-将一个给定字符串根据给定的行数，以从上往下、从左到右进行 Z 字形排列。
-
-比如输入字符串为 `"LEETCODEISHIRING"` 行数为 3 时，排列如下：
-
-```
-L   C   I   R
-E T O E S I I G
-E   D   H   N
-```
-
-之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如：`"LCIRETOESIIGEDHN"`。
-
-请你实现这个将字符串进行指定行数变换的函数：
-
-```
-string convert(string s, int numRows);
-```
-
-**示例 1:**
-
-```
-输入: s = "LEETCODEISHIRING", numRows = 3
-输出: "LCIRETOESIIGEDHN"
-```
-
-**示例 2:**
-
-```
-输入: s = "LEETCODEISHIRING", numRows = 4
-输出: "LDREOEIIECIHNTSG"
-解释:
-
-L     D     R
-E   O E   I I
-E C   I H   N
-T     S     G
-```
-
-方法一：
-
-```
-class Solution {
-
-    /**
-     * @param String $s
-     * @param Integer $numRows
-     * @return String
-     */
-    function convert($s, $numRows) {
-         if (strlen($s) == 1 || $numRows == 1) return $s;
-        
-        $ret = [];
-        $pre = -1;
-        $sign = 'down';
-        for ($i = 0; $i < strlen($s); $i++) {
-            if ($sign == 'up') {
-                $ret[$pre - 1][] = $s[$i];
-                $pre = $pre - 1;
-                if ($pre == 0) {
-                    $sign = 'down';
-                }
-            } else {
-                $ret[$pre + 1][] = $s[$i];
-                $pre = $pre + 1;
-                if ($pre == $numRows - 1) {
-                    $sign = 'up';
-                }
-            }
-        }
-        return implode('', array_map(function($a){return implode('', $a);}, $ret));
-    }
-    
-}
-```
-
-方法二：
-
-```
-class Solution {
-
-    /**
-     * @param String $s
-     * @param Integer $numRows
-     * @return String
-     */
-    function convert($s, $numRows) {
-         if (strlen($s) == 1 || $numRows == 1) return $s;
-        
-        $ret = [];
-        for ($i = 0; $i < strlen($s); $i++) {
-            $index = $i % (2 * $numRows -2);
-            $index = $index < $numRows ? $index : 2 * $numRows -2 - $index;
-            $ret[$index][] = $s[$i];
-        }
-        return implode('', array_map(function($a){return implode('', $a);}, $ret));
-    }
-    
-}
-```
 
 #### 17.字符串转换整数(b)
 
