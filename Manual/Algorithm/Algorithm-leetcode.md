@@ -463,7 +463,7 @@ class Solution {
 }
 ```
 
-#### L6.z字变换
+#### L6.Z 字变换
 
 > 难度：中等
 
@@ -489,24 +489,20 @@ string convert(string s, int numRows);
 
 ##### 示例
 
-**示例 1:**
-
 ```
 输入: s = "LEETCODEISHIRING", numRows = 3
 输出: "LCIRETOESIIGEDHN"
-```
 
-**示例 2:**
-
-```
 输入: s = "LEETCODEISHIRING", numRows = 4
 输出: "LDREOEIIECIHNTSG"
 解释:
-
 L     D     R
 E   O E   I I
 E C   I H   N
 T     S     G
+
+输入：s = "A", numRows = 1
+输出："A"
 ```
 
 ##### 代码实现
@@ -544,7 +540,6 @@ class Solution {
         }
         return implode('', array_map(function($a){return implode('', $a);}, $ret));
     }
-    
 }
 ```
 
@@ -569,7 +564,6 @@ class Solution {
         }
         return implode('', array_map(function($a){return implode('', $a);}, $ret));
     }
-    
 }
 ```
 
