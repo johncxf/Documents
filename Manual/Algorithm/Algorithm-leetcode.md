@@ -20,7 +20,25 @@
 
 ##### 题解
 
-暴力法（php）
+**暴力**
+
+Golang：
+
+```go
+func twoSum(nums []int, target int) []int {
+    n := len(nums)
+    for i := 0; i < n - 1; i++ {
+        for j := i + 1; j < n; j++ {
+            if nums[i] + nums[j] == target {
+                return []int{i, j}
+            }
+        }
+    }
+    return []int{}
+}
+```
+
+PHP：
 
 ```php
 class Solution {
@@ -43,7 +61,26 @@ class Solution {
 }
 ```
 
-数组查找（php）
+**哈希法**
+
+Golang：
+
+```go
+func twoSum(nums []int, target int) []int {
+    hash := map[int]int{}
+    for i, v := range nums {
+        if p, ok := hash[target-v]; ok {
+            return []int{p, i}
+        }
+        hash[v] = i
+    }
+    return nil
+}
+```
+
+**数组查找**
+
+PHP：
 
 ```php
 class Solution {
