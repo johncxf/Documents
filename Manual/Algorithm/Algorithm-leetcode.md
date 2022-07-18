@@ -121,6 +121,8 @@ class Solution {
 ##### 示例
 
 ```
+2 -> 4 -> 3
+5 -> 6 -> 4
 输入：l1 = [2,4,3], l2 = [5,6,4]
 输出：[7,0,8]
 解释：342 + 465 = 807
@@ -133,6 +135,52 @@ class Solution {
 ```
 
 ##### 题解
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+    var head, cur *ListNode
+    add := 0
+    for l1 != nil || l2 != nil {
+        n1, n2 := 0, 0
+        if l1 != nil {
+            n1 = l1.Val
+            l1 = l1.Next
+        }
+        if l2 != nil {
+            n2 = l2.Val
+            l2 = l2.Next
+        }
+
+        sum := n1 + n2 + add
+        sum, add = sum % 10, sum / 10
+
+        if head == nil {
+            head = &ListNode{Val: sum}
+            cur = head
+        } else {
+            cur.Next = &ListNode{Val: sum}
+            cur = cur.Next
+        }
+    }
+
+    if add > 0 {
+        cur.Next = &ListNode{Val: add}
+    }
+
+    return head
+}
+```
+
+PHP：
 
 ```php
 /**
@@ -155,23 +203,23 @@ class Solution {
         $list = new ListNode(0);
         $current = $list;
         while($l1 || $l2) {
-            $x = $l1 != null ? $l1->val : 0;
-            $y = $l2 != null ? $l2->val : 0;
+            $x = 0;
+            $y = 0;
+            if ($l1 != null) {
+                $x = $l1->val;
+                $l1 = $l1->next;
+            }
+            if ($l2 != null) {
+                $y = $l2->val;
+                $l2 = $l2->next;
+            }
             
             $val = ($x + $y + $add) % 10;
-            
             $add = intval(($x + $y + $add) / 10);
             
             $new = new ListNode($val);
             $current->next = $new;
             $current = $current->next;
-            
-            if ($l1 != null) {
-                $l1 = $l1->next;
-            }
-            if ($l2 != null) {
-                $l2 = $l2->next;
-            }
         }
         if ($add > 0) {
             $current->next = new ListNode($add);
