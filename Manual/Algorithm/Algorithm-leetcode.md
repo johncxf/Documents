@@ -955,7 +955,7 @@ class Solution {
 
 **说明：**你不能倾斜容器，且 *n* 的值至少为 2。
 
-![img](../Image/markdown/question_11.jpg)
+![img](../../Image/oldimg/question_11.jpg)
 
 图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
 
@@ -2373,6 +2373,35 @@ class Solution {
 ```
 
 ##### 题解
+
+> 滑动窗口
+
+Go：
+
+```go
+func lengthOfLongestSubstring(s string) int {
+    n := len(s)
+    if n < 2 {
+        return n
+    }
+
+    hash := map[byte]int{}
+    left, right, max := 0, 0, 1
+    for right < n {
+        hash[s[right]]++
+        for hash[s[right]] != 1 {
+            hash[s[left]]--
+            left++
+        }
+        max = int(math.Max(float64(max), float64(right-left+1)))
+        right++
+    }
+
+    return max
+}
+```
+
+PHP：
 
 ```php
 class Solution {
