@@ -964,11 +964,14 @@ class Solution {
 ```
 输入: [1,8,6,2,5,4,8,3,7]
 输出: 49
+
+输入：height = [1,1]
+输出：1
 ```
 
 ##### 题解
 
-**方法一：**
+**暴力法**
 
 > 暴力，超时
 
@@ -993,9 +996,33 @@ class Solution {
 }
 ```
 
-**方法二：**
+**左右指针**
 
+Go：
+
+```go
+func maxArea(height []int) int {
+    n := len(height)
+    left, right, max, tmp := 0, n - 1, 0, 0
+    for left < right {
+        if height[left] < height[right] {
+            tmp = height[left] * (right - left)
+            left++
+        } else {
+            tmp = height[right] * (right - left)
+            right--
+        }
+        if tmp > max {
+            max = tmp
+        }
+    }
+    return max
+}
 ```
+
+PHP：
+
+```php
 class Solution {
 
     /**
@@ -1320,7 +1347,7 @@ class Solution {
 
 ##### 题解
 
-> 先排序，双指针
+先排序，双指针
 
 ```php
 class Solution {
