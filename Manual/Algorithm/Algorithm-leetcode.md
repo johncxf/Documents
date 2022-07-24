@@ -1347,7 +1347,50 @@ class Solution {
 
 ##### 题解
 
-先排序，双指针
+**排序+双指针**
+
+Go：
+
+```go
+func threeSum(nums []int) [][]int {
+    n := len(nums)
+    if n < 3 {
+        return [][]int{}
+    }
+
+    // 不能重复，所以先进行排序
+    sort.Ints(nums)
+
+    ret := make([][]int, 0)
+    for i := 0; i < n - 2; i++ {
+        if i > 0 && nums[i] == nums[i - 1] {
+            continue
+        }
+        left, right := i + 1, n - 1
+        need := 0 - nums[i]
+        for left < right {
+            if nums[left] + nums[right] == need {
+                ret = append(ret, []int{nums[i], nums[left], nums[right]})
+                for left < right && nums[left] == nums[left + 1] {
+                    left++
+                }
+                for left < right && nums[right] == nums[right - 1] {
+                    right--
+                }
+                left++
+                right--
+            } else if nums[left] + nums[right] < need {
+                left++
+            } else {
+                right--
+            }
+        }
+    }
+    return ret
+}
+```
+
+PHP：
 
 ```php
 class Solution {
@@ -1383,7 +1426,6 @@ class Solution {
         }
         return $ret;
     }
-    
 }
 ```
 
@@ -1444,7 +1486,7 @@ class Solution {
 
 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
 
-![img](../Image/markdown/17_telephone_keypad.png)
+<img src="../../Image/oldimg/17_telephone_keypad.png" alt="17_telephone_keypad" style="zoom:50%;" />
 
 ##### 示例
 
@@ -1452,13 +1494,27 @@ class Solution {
 输入："23"
 输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
 说明：尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+
+输入：digits = "2"
+输出：["a","b","c"]
+
+输入：digits = ""
+输出：[]
 ```
 
 ##### 题解
 
 **回溯法：**
 
+Go：
+
+```go
+
 ```
+
+PHP：
+
+```php
 class Solution {
     public $res = [];
     public $str = "";
@@ -1472,6 +1528,7 @@ class Solution {
         '8' => ['t', 'u', 'v'],
         '9' => ['w', 'x', 'y', 'z'],
     ];
+
     /**
      * @param String $digits
      * @return String[]
@@ -1481,6 +1538,7 @@ class Solution {
         $this->_dfs($digits, 0);
         return $this->res;
     }
+
     private function _dfs($digits, $step) {
         if ($step == strlen($digits)) {
             $this->res[] = $this->str;
