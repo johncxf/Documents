@@ -1675,7 +1675,26 @@ class Solution {
 Go:
 
 ```go
-
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+    dummy := &ListNode{0, head}
+    fast, slow := dummy, dummy
+	for i := 0; i <= n; i++ {
+        fast = fast.Next
+	}
+    for fast != nil {
+        fast = fast.Next
+        slow = slow.Next
+    }
+    slow.Next = slow.Next.Next
+	return dummy.Next
+}
 ```
 
 PHP:
@@ -1697,7 +1716,7 @@ class Solution {
      * @return ListNode
      */
     function removeNthFromEnd($head, $n) {
-        $dummy  = new ListNode(0);
+        $dummy = new ListNode(0);
         $dummy->next = $head;
         $slow = $dummy;
         $first = $dummy;
@@ -1770,6 +1789,40 @@ class Solution {
 
 如果属于左侧括号，则向数组end中插入对应的右侧括号；如果属于右侧括号则查找end数组中是否有一样的，如果有则删去
 类似于用栈实现
+
+Go：
+
+```go
+func isValid(s string) bool {
+	length := len(s)
+	if length == 0 {
+		return true
+	}
+
+	bracketsMap := map[byte]byte{
+		'(': ')',
+		'{': '}',
+		'[': ']',
+	}
+
+	stack := []byte{}
+	for i := 0; i < length; i++ {
+		if bracketsMap[s[i]] != 0 {
+			stack = append(stack, bracketsMap[s[i]])
+		} else {
+			if len(stack) == 0 || stack[len(stack)-1] != s[i] {
+				return false
+			} else {
+				stack = stack[:len(stack)-1]
+			}
+		}
+	}
+
+	return len(stack) == 0
+}
+```
+
+PHP：
 
 ```php
 class Solution {

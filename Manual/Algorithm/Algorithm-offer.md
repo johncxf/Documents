@@ -113,17 +113,17 @@ func findKthToTail(pHead *ListNode,  k int) *ListNode {
 	current, res := pHead, pHead
     n := 0
     for current != nil {
-			current = current.Next
-			n++
-		}
+		current = current.Next
+		n++
+	}
     if (k > n) {
         return nil
     }
-		// current 指针先走 k 步
+	// current 指针先走 k 步
     for i := 1; i <= (n - k); i++ {
-			res = res.Next
-		}
-		return res
+		res = res.Next
+	}
+	return res
 }
 ```
 
