@@ -1672,6 +1672,14 @@ class Solution {
 
 ##### 题解
 
+Go:
+
+```go
+
+```
+
+PHP:
+
 ```php
 /**
  * Definition for a singly-linked list.
