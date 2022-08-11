@@ -1872,6 +1872,84 @@ class Solution {
 
 ##### 题解
 
+**递归：**
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+    if l1 == nil{
+        return l2
+    }  
+    if l2 == nil{
+        return l1
+    }
+    var res *ListNode
+    if l1.Val >= l2.Val{
+        res = l2
+        res.Next = mergeTwoLists(l1,l2.Next)
+    }else{
+        res = l1
+        res.Next = mergeTwoLists(l1.Next,l2)
+    }
+    return res
+}
+```
+
+**迭代：**
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+    if list1 == nil {
+        return list2
+    }
+    if list2 == nil {
+        return list1
+    }
+
+    dummy := &ListNode{0, nil}
+    current := dummy
+    for list1 != nil || list2 != nil {
+        if list1 == nil {
+            current.Next = list2
+            break
+        }
+        if list2 == nil {
+            current.Next = list1
+            break
+        }
+        if list1.Val < list2.Val {
+            current.Next = list1
+            current = current.Next
+            list1 = list1.Next
+        } else {
+            current.Next = list2
+            current = current.Next
+            list2 = list2.Next
+        }
+    }
+    return dummy.Next
+}
+```
+
+PHP：
+
 ```php
 /**
  * Definition for a singly-linked list.
@@ -1944,7 +2022,15 @@ class Solution {
 
 ##### 题解
 
-> 回溯法，递归
+**回溯法**
+
+Go:
+
+```go
+
+```
+
+PHP：
 
 ```php
 class Solution {
