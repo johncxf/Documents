@@ -2027,7 +2027,25 @@ class Solution {
 Go:
 
 ```go
+var result []string
 
+func generateParenthesis(n int) []string {
+    dfs(0, 0, n, "")
+    return result
+}
+
+func dfs(left int, right int, n int, str string) {
+    if left == n && right == n {
+        result = append(result, str)
+        return
+    }
+    if left < n {
+        dfs(left + 1, right, n, str + "(")
+    }
+    if right < n && left > right {
+        dfs(left, right + 1, n, str + ")")
+    }
+}
 ```
 
 PHP：
@@ -2394,7 +2412,7 @@ class Solution {
 
 > 字典序：从右往左，找到第一个左值小于右值的数，然后从右往左，找到第一个大于该左值的数，交换这两个值，并将该左值(不包含)右边的进行从小到大进行排序(原来为降序，只需要改为升序)。结合下图理解
 
-![Next Permutation](image/oldimg/1df4ae7eb275ba4ab944521f99c84d782d17df804d5c15e249881bafcf106173-file_1555696082944.gif)
+![Next Permutation](../../Image/oldimg/1df4ae7eb275ba4ab944521f99c84d782d17df804d5c15e249881bafcf106173-file_1555696082944.gif)
 
 ##### 题解
 
