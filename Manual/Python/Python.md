@@ -1,6 +1,6 @@
 # Python
 
-> Python是著名的“龟叔”Guido van Rossum在1989年圣诞节期间，为了打发无聊的圣诞节而编写的一个编程语言。
+Python是著名的“龟叔”Guido van Rossum在1989年圣诞节期间，为了打发无聊的圣诞节而编写的一个编程语言。
 
 ### 基础语法
 
@@ -114,7 +114,7 @@ import requests
 
 **基本使用**
 
-```
+```python
 from selenium import webdriver
 
 browser = webdriver.Chrome()
@@ -126,7 +126,7 @@ finally:
 
 **声明浏览器对象**
 
-```
+```python
 from seleinum import webdriver
 
 browser = webdriver.Chrome()
@@ -135,10 +135,6 @@ browser = webdriver.Edge()
 browser = webdriver.Safari()
 browser = webdriver.Phantom.JS()
 ```
-
-
-
-
 
 
 

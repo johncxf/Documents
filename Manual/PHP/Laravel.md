@@ -1,3 +1,5 @@
+# Laravel
+
 ### 前言
 
 > laravel是目前最火的php框架，之前用过thinkphp3.2和thinkphp5.1，最近接触laravel
@@ -8,7 +10,7 @@
 
 #### 环境要求
 
-官方文档给的环境要求**
+官方文档给的环境要求：
 
 - PHP> = 7.1.3
 - OpenSSL PHP扩展

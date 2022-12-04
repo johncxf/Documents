@@ -44,7 +44,7 @@ brew install go
 
    - 立即生效：`source ~/.bash_profile`或`source ~/.zshrc`
 
-   - 注意：不要把`GOPATH`设置成`go`的安装路径
+   - 注意：不要把`GOPATH`设置成`go`的安装路径g
 
 #### 配置
 
@@ -945,9 +945,9 @@ func main() {
 
 func printStudent(student Students) {
    /* 打印 Students 信息 */
-	fmt.Printf( "Student 1 name : %s\n", Student.name)
-	fmt.Printf( "Student 1 age : %d\n", Student.age)
-	fmt.Printf( "Student 1 sno : %d\n", Student.sno)
+	fmt.Printf( "Student 1 name : %s\n", student.name)
+	fmt.Printf( "Student 1 age : %d\n", student.age)
+	fmt.Printf( "Student 1 sno : %d\n", student.sno)
 }
 ```
 
@@ -980,9 +980,9 @@ func main() {
 
 func printStudent(student Students) {
    /* 打印 Students 信息 */
-	fmt.Printf( "Student 1 name : %s\n", Student.name)
-	fmt.Printf( "Student 1 age : %d\n", Student.age)
-	fmt.Printf( "Student 1 sno : %d\n", Student.sno)
+	fmt.Printf( "Student 1 name : %s\n", student.name)
+	fmt.Printf( "Student 1 age : %d\n", student.age)
+	fmt.Printf( "Student 1 sno : %d\n", student.sno)
 }
 ```
 

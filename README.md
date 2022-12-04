@@ -17,8 +17,8 @@
 - 后端开发
   - [API 开发](./Manual/Api.md)
   - [Nginx](./Manual/Server/Nginx.md)
-  - [Golang](./Manual/Golang.md)
-  - [Python](./Manual/Python.md)
+  - [Golang](./Manual/Go/Golang.md)
+  - [Python](./Manual/Python/Python.md)
 - 前端开发
   - [Css](./Manual/Front-end/Css.md)
   - [JavaScript](./Manual/Front-end/JavaScript.md)
