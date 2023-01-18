@@ -1,6 +1,20 @@
-# CSS
+# HTML/CSS
 
-## 知识点
+参考文档：
+
+- https://www.w3school.com.cn/h.asp
+
+## HTML
+
+超文本标记语言（Hyper Text Markup Language，也就是HTML）
+
+标签查询：https://www.w3schools.com/tags/default.asp
+
+## CSS
+
+层叠样式表（Cascading Style Sheets，也就是CSS）
+
+### 知识点
 
 #### Css 选择器都有什么，权重是怎么计算的
 
