@@ -20,7 +20,8 @@
   - [Golang](./Manual/Go/Golang.md)
   - [Python](./Manual/Python/Python.md)
 - 前端开发
-  - [HTML/CSS](./Manual/Front-end/HTML-CSS.md)
+  - [HTML](./Manual/Front-end/HTML.md)
+  - [CSS](./Manual/Front-end/CSS.md)
   - [JavaScript](./Manual/Front-end/JavaScript.md)
   - [Node.js](./Manual/NodeJS.md)
   - [jQuery](./Manual/Front-end/jQuery.md)

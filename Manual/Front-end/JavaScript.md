@@ -1,5 +1,9 @@
 # JavaScript
 
+参考文档：
+
+- https://www.w3school.com.cn/js/index.asp
+
 ## 知识点
 
 #### 怎么判断js的数据类型？
@@ -29,11 +33,11 @@
 
 ## 简介
 
-### JavaScript 起源
+#### JavaScript 起源
 
 1995 年，Netscape 公司的 Brenddan Eich 两周内开发设计了 LiveScript 语言，当时为了搭上媒体热炒 Java 的顺风车，临时把 LiveScript 改为为 Javascript。
 
-### JavaScript 实现
+#### JavaScript 实现
 
 一个完整的 JavaScript 实现应该由以下三个不同部分组成：
 
@@ -41,13 +45,13 @@
 - 文档对象模型（DOM）
 - 浏览器对象模型（BOM）
 
-### ECMAScript
+#### ECMAScript
 
 因为 Netscape 开发了JavaScript，一年后微软又模仿JavaScript开发了JScript，为了让JavaScript成为全球标准，几个公司联合ECMA（European Computer Manufacturers Association）组织定制了JavaScript语言的标准，被称为ECMAScript标准。
 
 ECMAScript 就是一种语言标准，JavaScript 实现了 ECMAScript，Adobe ActionScript 同样也实现了ECMAScript。
 
-### DOM
+#### DOM
 
 文档对象模型（DOM，Document Object Model）是针对 XML 但经过扩展用于 HTML 的应用程序编程接口。
 
@@ -71,7 +75,7 @@ HTML DOM 模型被结构化为对象树，通过这个对象模型，JavaScript 
 - 对页面中所有已有的 HTML 事件作出反应
 - 在页面中创建新的 HTML 事件
 
-### BOM
+#### BOM
 
 浏览器对象模型（BOM，Browser Object Model）
 
