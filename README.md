@@ -27,7 +27,7 @@
   - [jQuery](./Manual/Front-end/jQuery.md)
   - [TypeScript](./Manual/Front-end/TypeScript.md)
   - [Webpack](./Manual/Front-end/webpack.md)
-  - [Mocha 测试框架](./Manual/Front-end/mocha.md)
+  - [Mocha](./Manual/Front-end/mocha.md)
 - 自动化测试
   - [Android](./Manual/Automation/Android.md)
   - [iOS](./Manual/Automation/iOS.md)
