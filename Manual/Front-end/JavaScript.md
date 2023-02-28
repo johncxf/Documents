@@ -16,33 +16,179 @@
 
 ## DOM
 
-文档对象模型（DOM，Document Object Model）是针对 XML 但经过扩展用于 HTML 的应用程序编程接口。
+DOM（Document Object Model），文档对象模型
 
-DOM1 于 1998年10月成为了 W3C (World Wide Web Consortium) 的推荐标准。
+通过 HTML DOM，JavaScript 能够访问和改变 HTML 文档的所有元素。
 
-W3C DOM 标准被分为 3 个不同的部分：
+示例：
 
-- Core DOM - 所有文档类型的标准模型
-- XML DOM - XML 文档的标准模型
-- HTML DOM - HTML 文档的标准模型
+```html
+<html>
+	<body>
+        <p id="demo"></p>
+        <script>
+            document.getElementById("demo").innerHTML = "Hello World!";
+        </script>
+	</body>
+</html>
+```
 
-当网页被加载时，浏览器会创建页面的文档对象模型（DOM）。
+`getElementById` 方法使用 id="demo" 来查找元素，`innerHTML` 属性用于获取或替换 HTML 元素的内容。
 
-HTML DOM 模型被结构化为对象树，通过这个对象模型，JavaScript 获得创建动态 HTML：
+### document
 
-- 改变页面中的所有 HTML 元素
-- 改变页面中的所有 HTML 属性
-- 改变页面中的所有 CSS 样式
-- 删除已有的 HTML 元素和属性
-- 添加新的 HTML 元素和属性
-- 对页面中所有已有的 HTML 事件作出反应
-- 在页面中创建新的 HTML 事件
+#### 查找 HTML 元素
+
+| 方法                                    | 描述                   |
+| :-------------------------------------- | :--------------------- |
+| document.getElementById(*id*)           | 通过元素 id 来查找元素 |
+| document.getElementsByTagName(*name*)   | 通过标签名来查找元素   |
+| document.getElementsByClassName(*name*) | 通过类名来查找元素     |
+
+#### 改变 HTML 元素
+
+| 方法                                       | 描述                   |
+| :----------------------------------------- | :--------------------- |
+| element.innerHTML = *new html content*     | 改变元素的 inner HTML  |
+| element.attribute = *new value*            | 改变 HTML 元素的属性值 |
+| element.setAttribute(*attribute*, *value*) | 改变 HTML 元素的属性值 |
+| element.style.property = *new style*       | 改变 HTML 元素的样式   |
+
+#### 添加和删除元素
+
+| 方法                              | 描述             |
+| :-------------------------------- | :--------------- |
+| document.createElement(*element*) | 创建 HTML 元素   |
+| document.removeChild(*element*)   | 删除 HTML 元素   |
+| document.appendChild(*element*)   | 添加 HTML 元素   |
+| document.replaceChild(*element*)  | 替换 HTML 元素   |
+| document.write(*text*)            | 写入 HTML 输出流 |
+
+#### 添加事件处理程序
+
+| 方法                                                     | 描述                            |
+| :------------------------------------------------------- | :------------------------------ |
+| document.getElementById(id).onclick = function(){*code*} | 向 onclick 事件添加事件处理程序 |
+
+#### 查找 HTML 对象
+
+| 属性                         | 描述                                        |
+| :--------------------------- | :------------------------------------------ |
+| document.anchors             | 返回拥有 name 属性的所有 <a> 元素。         |
+| document.applets             | 返回所有 <applet> 元素（HTML5 不建议使用）  |
+| document.baseURI             | 返回文档的绝对基准 URI                      |
+| document.body                | 返回 <body> 元素                            |
+| document.cookie              | 返回文档的 cookie                           |
+| document.doctype             | 返回文档的 doctype                          |
+| document.documentElement     | 返回 <html> 元素                            |
+| document.documentMode        | 返回浏览器使用的模式                        |
+| document.documentURI         | 返回文档的 URI                              |
+| document.domain              | 返回文档服务器的域名                        |
+| document.domConfig           | 废弃。返回 DOM 配置                         |
+| document.embeds              | 返回所有 <embed> 元素                       |
+| document.forms               | 返回所有 <form> 元素                        |
+| document.head                | 返回 <head> 元素                            |
+| document.images              | 返回所有 <img> 元素                         |
+| document.implementation      | 返回 DOM 实现                               |
+| document.inputEncoding       | 返回文档的编码（字符集）                    |
+| document.lastModified        | 返回文档更新的日期和时间                    |
+| document.links               | 返回拥有 href 属性的所有 <area> 和 <a> 元素 |
+| document.readyState          | 返回文档的（加载）状态                      |
+| document.referrer            | 返回引用的 URI（链接文档）                  |
+| document.scripts             | 返回所有 <script> 元素                      |
+| document.strictErrorChecking | 返回是否强制执行错误检查                    |
+| document.title               | 返回 <title> 元素                           |
+| document.URL                 | 返回文档的完整 URL                          |
 
 ## BOM
 
-浏览器对象模型（BOM，Browser Object Model）
+BOM（Browser Object Model），浏览器对象模型，提供与浏览器交互的方法和接口
 
-BOM 提供了很多对象，用于访问浏览器功能，这些功能和任何网页内容无关。多年来，不存在浏览器对象模型（BOM）的官方标准。W3C 为了把浏览器中 JavaScript 最基本的部分标准化，已经将 BOM 的主要内容纳入 HTML 的规范中。
+### window
+
+所有浏览器都支持 *window* 对象
+
+#### 窗口尺寸
+
+- window.innerHeight - 浏览器窗口的内高度（以像素计）
+- window.innerWidth - 浏览器窗口的内宽度（以像素计）
+
+浏览器窗口（浏览器视口）不包括工具栏和滚动条。
+
+对于 Internet Explorer 8, 7, 6, 5：
+
+- document.documentElement.clientHeight
+- document.documentElement.clientWidth
+
+或
+
+- document.body.clientHeight
+- document.body.clientWidth
+
+```javascript
+var w = window.innerWidth
+|| document.documentElement.clientWidth
+|| document.body.clientWidth;
+
+var h = window.innerHeight
+|| document.documentElement.clientHeight
+|| document.body.clientHeight;
+```
+
+#### 其他
+
+- window.open()：打开新窗口
+- window.close()：关闭当前窗口
+- window.moveTo()：移动当前窗口
+- window.resizeTo()：重新调整当前窗口
+
+### screen
+
+window.screen 对象包含用户屏幕的信息
+
+- window.screen.width：返回以像素计的访问者屏幕宽度
+- window.screen.height：返回以像素计的访问者屏幕的高度。
+- window.screen.availWidth：返回访问者屏幕的宽度，以像素计，减去诸如窗口工具条之类的界面特征
+- window.screen.availHeight：返回访问者屏幕的高度，以像素计，减去诸如窗口工具条之类的界面特征
+- window.screen.colorDepth：返回用于显示一种颜色的比特数
+- window.screen.pixelDepth：返回屏幕的像素深度
+
+前缀可以不带 `window.`
+
+### location
+
+window.location 对象可用于获取当前页面地址（URL）并把浏览器重定向到新页面。
+
+- window.location.href：返回当前页面的 href (URL)
+- window.location.hostname：返回 web 主机的域名
+- window.location.pathname：返回当前页面的路径或文件名
+- window.location.protocol：返回使用的 web 协议（http: 或 https:）
+- window.location.assign：加载新文档
+
+### history
+
+window.history 对象包含浏览器历史。
+
+- history.back()：等同于在浏览器点击后退按钮
+- history.forward()：等同于在浏览器中点击前进按钮
+
+### navigator
+
+window.navigator 对象包含有关访问者的信息
+
+- window.navigator.appVersion：返回有关浏览器的版本信息
+- window.navigator.appName：返回浏览器的应用程序名称
+- window.navigator.appCodeName：返回浏览器的应用程序代码名称
+- window.navigator.cookieEnabled：返回 true，如果 cookie 已启用，否则返回 false
+- window.navigator.product：返回浏览器引擎的产品名称
+- window.navigator.userAgent：返回由浏览器发送到服务器的用户代理报头（user-agent header）
+- window.navigator.platform
+
+### 弹出框
+
+- window.alert()
+- window.confirm()
+- window.prompt()
 
 ## ES5
 
