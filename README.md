@@ -25,7 +25,6 @@
   - [JavaScript](./Manual/Front-end/JavaScript.md)
   - [Node.js](./Manual/NodeJS.md)
   - [jQuery](./Manual/Front-end/jQuery.md)
-  - [ES6](./Manual/Front-end/ES6.md)
   - [TypeScript](./Manual/Front-end/TypeScript.md)
   - [Webpack](./Manual/Front-end/webpack.md)
   - [Mocha 测试框架](./Manual/Front-end/mocha.md)

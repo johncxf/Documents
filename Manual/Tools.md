@@ -548,7 +548,7 @@ nvm uninstall <version>             卸载指定的版本
 nvm use [--silent] <version>        使用已经安装的版本  切换版本
 nvm current                         查看当前使用的node版本
 nvm ls                              查看已经安装的版本
-nvm ls  <version>                   查看指定版本
+nvm ls <version>                   查看指定版本
 nvm ls-remote                       显示远程所有可以安装的nodejs版本
 nvm ls-remote --lts                 查看长期支持的版本
 nvm install --latest-npm            安装最新的npm
