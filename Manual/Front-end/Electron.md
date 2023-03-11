@@ -45,3 +45,41 @@ $ npm run make
 ```
 
 Electron-forge 会创建 `out` 文件夹，软件包将在那里找到
+
+## 应用调试
+
+#### 主进程调试
+
+终端执行
+
+```shell
+# 格式
+electron --inspect=5858 your/app
+
+# 示例：
+./node_modules/.bin/electron --inspect .
+./node_modules/.bin/electron --inspect=5858 .
+```
+
+chrome 浏览器输入：`chrome://inspect` 打开，选择对应对话连接
+
+#### 渲染进程调试
+
+和 chrome 调试一样，快捷键打开 devtools 进行调试
+
+也可以在主进程启动后自动打开 devtools，在 `main.js` 的 `mainWindow.loadFile` 代码后加一行：
+
+```javascript
+mainWindow.webContents.openDevTools();
+```
+
+
+
+
+
+
+
+
+
+
+
