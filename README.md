@@ -29,8 +29,8 @@
   - [Webpack](./Manual/Front-end/webpack.md)
   - [Mocha](./Manual/Front-end/mocha.md)
 - 自动化测试
-  - [Android](./Manual/Automation/Android.md)
-  - [iOS](./Manual/Automation/iOS.md)
+  - [Android](./Manual/Automator/Android.md)
+  - [iOS](./Manual/Automator/iOS.md)
 - 数据库
   - [Mysql](./Manual/Database/Mysql.md)
   - [Redis](./Manual/Database/Redis.md)
