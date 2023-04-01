@@ -410,7 +410,7 @@ sublime 可以通过扩展包来丰富编码功能，扩展插件网站：https:
 
 解决方案：更换镜像安装
 
-#### 安装：
+#### 安装
 
 ```shell
 export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
@@ -418,7 +418,7 @@ export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
 /bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"
 ```
 
-#### 配置：
+#### 配置
 
 ```shell
 # 对于 bash 用户：
@@ -431,7 +431,7 @@ source ~/.zshrc
 
 参考：https://brew.idayer.com/guide/change-source/
 
-### 常用指令
+#### 切换镜像源
 
 查看镜像源：
 
@@ -464,6 +464,21 @@ source ~/.zshrc
 - 官方：`https://github.com/Homebrew/`
 - 中科大：`https://mirrors.ustc.edu.cn/`
 - 清华：`https://mirrors.tuna.tsinghua.edu.cn/`
+
+### 常用指令
+
+```sh
+# 查看帮助
+$ brew --help
+# 安装
+$ brew install xxx
+# 卸载
+$ brew uninstall xxx
+# 查找已安装软件列表
+$ brew list
+# 查看软件安装目录
+$ brew list xxx
+```
 
 ## PM2
 

@@ -26,12 +26,16 @@ $ elasticsearch -version
 
 **目录**：
 
-- home：/usr/local/var/homebrew/linked/elasticsearch-full
-- bin：/usr/local/var/homebrew/linked/elasticsearch-full/bin
-- conf：`/usr/local/etc/elasticsearch`
-- data：/usr/local/var/lib/elasticsearch
-- logs：/usr/local/var/log/elasticsearch
-- plugins：/usr/local/var/homebrew/linked/elasticsearch/plugins
+```sh
+# 查看安装目录
+$ brew list elasticsearch-full
+```
+
+一般 `elasticsearch.yml` 配置文件在 `homebrew`安装目录的`etc/elasticsearch`目录下，我这边的目录：
+
+```
+/opt/homebrew/etc/elasticsearch
+```
 
 **运行**：
 
@@ -97,6 +101,36 @@ $ ./bin/elasticsearch -d
 
 ```shell
 $ curl 'http://localhost:9200/?pretty'
+```
+
+### elasticsearch-head
+
+连接 Elasticsearch 集群的 web 客户端工具
+
+- https://github.com/mobz/elasticsearch-head
+
+#### 安装配置
+
+```sh
+# 拉取代码库
+$ git clone git://github.com/mobz/elasticsearch-head.git
+# 进入目录
+$ cd elasticsearch-head
+# 安装依赖
+$ npm i
+# 启动服务
+$ npm run start
+```
+
+连接本地 es 集群时需要配置 es 集群允许跨域，否则会连接失败
+
+编辑 es 配置文件 `elasticsearch.yml`，新增如下配置，再重启 es 集群服务
+
+```yml
+# 是否支持跨域
+http.cors.enabled: true
+# *表示支持所有域名
+http.cors.allow-origin: "*"
 ```
 
 ## 基础入门
