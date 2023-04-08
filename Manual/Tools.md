@@ -465,6 +465,20 @@ source ~/.zshrc
 - 中科大：`https://mirrors.ustc.edu.cn/`
 - 清华：`https://mirrors.tuna.tsinghua.edu.cn/`
 
+#### 关闭自动更新
+
+```sh
+# 临时关闭
+$ export HOMEBREW_NO_AUTO_UPDATE=true
+
+# 永久关闭
+$ vim ~/.zshrc
+# 添加配置
+export HOMEBREW_NO_AUTO_UPDATE=true
+# 生效
+$ source ~/.zshrc
+```
+
 ### 常用指令
 
 ```sh
@@ -478,6 +492,20 @@ $ brew uninstall xxx
 $ brew list
 # 查看软件安装目录
 $ brew list xxx
+```
+
+### FQA
+
+安装软件报错
+
+```sh
+Warning: formula.jws.json: update failed, falling back to cached version.
+```
+
+解决方法：
+
+```sh
+$ export HOMEBREW_NO_INSTALL_FROM_API=1
 ```
 
 ## PM2
