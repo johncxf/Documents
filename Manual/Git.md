@@ -141,6 +141,20 @@ git pull
 git reset --soft HEAD^
 ```
 
+##### 切换仓库
+
+```sh
+# 查看远程仓库的地址
+git remote -v
+
+# 方法一：更换远程仓库地址，URL为新地址
+git remote set-url origin URL
+
+# 方法二：先删除远程仓库地址，然后再添加
+git remote rm origin
+git remote add origin URL
+```
+
 ## 指令分类
 
 ### Log操作

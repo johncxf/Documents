@@ -305,19 +305,19 @@ NPM是随同 NodeJS 一起安装的包管理工具，能解决 NodeJS 代码部�
 
 npm 安装 Node.js 模块语法格式如下：
 
-```
+```sh
 $ npm install <Module Name>
 ```
 
 以下实例，我们使用 npm 命令安装常用的 Node.js web框架模块 **express**:
 
-```
+```sh
 $ npm install express
 ```
 
 安装好之后，express 包就放在了工程目录下的 node_modules 目录中，因此在代码中只需要通过 **require('express')** 的方式就好，无需指定第三方包路径。
 
-```
+```javascript
 const express = require('express');
 ```
 
@@ -325,8 +325,8 @@ const express = require('express');
 
 npm 的包安装分为本地安装（local）、全局安装（global）两种，从敲的命令行来看，差别只是有没有-g而已，比如
 
-```
-npm install express          # 本地安装
+```sh
+npm install express      # 本地安装
 npm install express -g   # 全局安装
 ```
 
@@ -447,3 +447,41 @@ npm 推出了5.5.1版的双重身份验证（2FA），它可以防止他人未�
 
 - 在 npm 官网登录账号：https://www.npmjs.com/
 - 点击右上角头像 -> 点击「Account」-> 点击开启「Two Factor Authentication」-> 依次按照提示进行设置
+
+### 发布包
+
+没有npm账号的先在官网注册账号：https://www.npmjs.com/
+
+控制台输入指令进行账号登陆：
+
+```sh
+$ npm login
+```
+
+控制台输出：
+
+```
+npm notice Log in on https://registry.npmjs.org/
+Login at:
+https://www.npmjs.com/login?next=/login/cli/8fc6a446-c678-4c57-bbbe-bd1811d3a05b
+Press ENTER to open in the browser...
+
+Logged in on https://registry.npmjs.org/.
+```
+
+点击链接跳转浏览器页面进行账号登陆
+
+查看当前登陆账号信息：
+
+```sh
+$ npm whoami
+```
+
+发布：
+
+```sh
+$ npm publish --registry=https://registry.npmjs.org/
+```
+
+
+
