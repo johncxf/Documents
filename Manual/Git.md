@@ -2,7 +2,11 @@
 
 ## 安装配置
 
-#### 安装
+### 安装
+
+#### window环境
+
+下载安装即可
 
 - https://git-scm.com/
 
@@ -11,7 +15,15 @@
 
 **注意：安装路径不要有中文**
 
-#### 配置
+#### mac环境
+
+通过`git --version`查看是否安装，没有安装可以通过`brew`进行安装
+
+```sh
+$ brew install git
+```
+
+### 配置
 
 > 配置文件为 `~/.gitconfig` ，执行任何Git配置命令后文件将自动创建
 
@@ -29,16 +41,16 @@ $ git config --global --list
 $ git config --system --list
 
 # 配置全局用户、邮箱
-git config --global user.name 'johncxf'
-git config --global user.email 'johncxf@163.com'
+$ git config --global user.name 'johncxf'
+$ git config --global user.email 'johncxf@163.com'
 
 # 配置当前仓库用户、邮箱
-git config user.name 'johncxf'
-git config user.email 'johncxf@163.com'
+$ git config user.name 'johncxf'
+$ git config user.email 'johncxf@163.com'
 
 # 查看当前仓库用户、邮箱
-git config user.name
-git config user.email
+$ git config user.name
+$ git config user.email
 ```
 
 ## 常用指令
@@ -55,14 +67,13 @@ git config user.email
 - 只删除版本库中文件但保存项目目录中文件 `git rm --cached index.php`
 - 修改最后一次提交 `git commit --amend`
 - 修改文件名：`git mv a.php index.php`
-
 - 放弃没有提交的修改 `git checkout .`
 - 删除没有add 的文件和目录 `git clean -fd`
 - 显示将要删除的文件或目录 `git clean -n`
 
 ##### 退出查看状态
 
-> 当使用`git log`，`git tag`等指令查看所有的时候，按英文字母Q退出
+当使用`git log`，`git tag`等指令查看所有的时候，按英文字母Q退出
 
 ##### 撤销add
 
@@ -87,9 +98,9 @@ git reset --参数 HEAD^ 		# HEAD^表示上一个版本，也可以接commit_id�
 
 使用场景
 
-> 当前分支发生改动，需要切换到其他分支
->
-> 没注意再主分支或者不对的分支进行了开发，想要将代码转到正确的分支上去
+当前分支发生改动，需要切换到其他分支
+
+没注意再主分支或者不对的分支进行了开发，想要将代码转到正确的分支上去
 
 ```shell
 git stash	#暂存

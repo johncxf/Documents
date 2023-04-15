@@ -16,6 +16,20 @@ alias subl='open -a /Applications/Sublime\ Text.app'
 source ～/.zshrc
 ```
 
+#### 开启合盖不睡眠
+
+禁用Lid-Sleep的命令（保持系统唤醒）
+
+```sh
+$ sudo pmset -b sleep 0; sudo pmset -b disablesleep 1
+```
+
+激活Lid-Sleep的命令（让系统像正常一样再次进入睡眠状态）
+
+```sh
+$ sudo pmset -b sleep 5; sudo pmset -b disablesleep 0
+```
+
 ## Composer
 
 官网：https://www.phpcomposer.com/
@@ -541,10 +555,11 @@ pm2 restart ${id}
 
 ## NVM
 
- - nvm 是 Mac 下的 node 管理工具
+nvm 是 node.js 版本管理工具
+
  - github：https://github.com/nvm-sh/nvm
 
-### 安装配置
+### MAC 安装配置
 #### 卸载
 没有安装过`node`的跳过此步骤
 
@@ -577,6 +592,12 @@ git checkout v0.39.1
 // 安装
 . ./nvm.sh
 ```
+
+### Window 安装
+
+下载 win 版本安装包进行安装
+
+- https://github.com/coreybutler/nvm-windows/releases
 
 ### 常用指令
 
@@ -637,6 +658,12 @@ $ gitbook init
 ```
 
 初始化会生成 `README.md` 、 `SUMMARY.md` 两个文件
+
+#### 安装依赖
+
+```sh
+$ gitbook install
+```
 
 #### 预览
 
