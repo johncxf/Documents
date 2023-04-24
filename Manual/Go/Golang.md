@@ -19,8 +19,8 @@
 
 #### HomeBrew 安装
 
-```
-brew install go
+```sh
+$ brew install go
 ```
 
 #### 下载安装
@@ -33,7 +33,7 @@ brew install go
 
    - 需要变更项目地址，编辑 `~/.bash_profile`或·`~/.zshrc`文件
 
-     ```
+     ```sh
      # 项目目录
      export GOPATH=/Users/${username}/go/
      # 可执行文件目录

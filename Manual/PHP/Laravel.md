@@ -2,9 +2,9 @@
 
 ### 前言
 
-> laravel是目前最火的php框架，之前用过thinkphp3.2和thinkphp5.1，最近接触laravel
->
-> 我这里使用的laravel版本是5.6
+laravel是目前最火的php框架，之前用过thinkphp3.2和thinkphp5.1，最近接触laravel
+
+我这里使用的laravel版本是5.6
 
 ### 安装
 

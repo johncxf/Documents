@@ -30,21 +30,6 @@ $ sudo pmset -b sleep 0; sudo pmset -b disablesleep 1
 $ sudo pmset -b sleep 5; sudo pmset -b disablesleep 0
 ```
 
-## Composer
-
-官网：https://www.phpcomposer.com/
-
-### 安装
-
-- mac：
-
-  ```shell
-  # homebrew安装
-  brew install composer
-  # 更新
-  composer self-update
-  ```
-
 ## Phpmyadmin
 
 官网：https://www.phpmyadmin.net
@@ -94,12 +79,11 @@ yum install -y samba samba-client
 
 `以下/etc/samba/smb.conf`文件主要配置的讲解
 
-```shell
+```yaml
 # 全局配置
 global]
-				# 定义工作组
+		# 定义工作组
         workgroup = MYGROUP
-        # 
         server string = Samba Server Version %v
         # samba的安全等级，有以下四种
         # 1.share：用户不需要账户及密码即可登录samba服务器
@@ -143,7 +127,7 @@ global]
 
 在配置文件中加入
 
-```shell
+```yaml
 # 这下是配置work
 [work]
    comment = home work

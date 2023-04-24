@@ -326,8 +326,8 @@ const express = require('express');
 npm 的包安装分为本地安装（local）、全局安装（global）两种，从敲的命令行来看，差别只是有没有-g而已，比如
 
 ```sh
-npm install express      # 本地安装
-npm install express -g   # 全局安装
+$ npm install express      # 本地安装
+$ npm install express -g   # 全局安装
 ```
 
 如果出现以下错误：
@@ -338,7 +338,7 @@ npm err! Error: connect ECONNREFUSED 127.0.0.1:8087
 
 解决办法为：
 
-```
+```sh
 $ npm config set proxy null
 ```
 
@@ -373,37 +373,31 @@ package.json 位于模块的目录下，用于定义包的属性。
 
 我们可以使用以下命令来卸载 Node.js 模块。
 
-```
+```sh
 $ npm uninstall express
 ```
 
 卸载后，你可以到 /node_modules/ 目录下查看包是否还存在，或者使用以下命令查看：
 
-```
+```sh
 $ npm ls
 ```
-
-------
 
 ### 更新模块
 
 我们可以使用以下命令更新模块：
 
-```
+```sh
 $ npm update express
 ```
-
-------
 
 ### 搜索模块
 
 使用以下来搜索模块：
 
-```
+```sh
 $ npm search express
 ```
-
-------
 
 ### 创建模块
 
@@ -423,13 +417,13 @@ $ npm search express
 
 你可以使用淘宝定制的 cnpm (gzip 压缩支持) 命令行工具代替默认的 npm:
 
-```
+```sh
 $ npm install -g cnpm --registry=https://registry.npm.taobao.org
 ```
 
 这样就可以使用 cnpm 命令来安装模块了：
 
-```
+```sh
 $ cnpm install [name]
 ```
 

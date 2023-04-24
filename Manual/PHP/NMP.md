@@ -16,7 +16,7 @@ Homebrew安装：
 
 homebew中没有php的一些历史版本
 
-```
+```sh
 # 查看所有版本
 brew search php
 # 安装指定版本php
