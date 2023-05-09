@@ -138,7 +138,7 @@ $ docker ps -a
 启动已终止容器：
 
 ```SH
-$  docker container start [OPTIONS] CONTAINER [CONTAINER...]
+$ docker container start [OPTIONS] CONTAINER [CONTAINER...]
 ```
 
 #### 终止容器
@@ -540,11 +540,12 @@ options：
 
 - `-t, --timeout TIMEOUT` 停止容器时候的超时（默认为 10 秒）。
 
-
-
 ## Laradock
 
-https://laradock.io/
+Laradock 是 Docker 的一个完整的PHP开发环境。
+
+- 官网：https://laradock.io/
+
 
 ### 安装配置
 
@@ -651,11 +652,71 @@ $ docker-compose build workspace
 
 #### Mysql
 
-默认情况下使用MySQL 8.0运行。其他版本：https://store.docker.com/images/mysql
+默认情况下使用MySQL 最新版本运行，用户和密码默认都是 root
 
-- 修改.env laradock配置文件 `MYSQL_VERSION=5.7.31`
+##### 修改版本
+
+- 修改.env laradock配置文件 MYSQL_VERSION=5.7，具体可用版本见：https://store.docker.com/images/mysql
 - 重新编译 `docker-compose build mysql`
 - 如果已经运行则重新启动 `docker-compose restart mysql`
+
+MacOS M1 buiild 时候如果出现报错：
+
+```
+[+] Building 0.2s (3/3) FINISHED
+ => [internal] load build definition from Dockerfile                                                         
+ => => transferring dockerfile: 32B                                                                           
+ => [internal] load .dockerignore                                                                             
+ => => transferring context: 2B                                                                               
+ => ERROR [internal] load metadata for docker.io/library/mysql:5.7                                           
+------
+ > [internal] load metadata for docker.io/library/mysql:5.7:
+------
+failed to solve: rpc error: code = Unknown desc = failed to solve with frontend dockerfile.v0: failed to create LLB definition: no match for platform in manifest sha256:f2ad209efe9c67104167fc609cca6973c8422939491c9345270175a300419f94: not found
+```
+
+可以修改 `docker-compose.yml`新增 `platform: linux/amd64` 配置
+
+```
+### MySQL ################################################
+    mysql:
+      build:
+        context: ./mysql
+        args:
+          - MYSQL_VERSION=${MYSQL_VERSION}
+      environment:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - TZ=${WORKSPACE_TIMEZONE}
+      volumes:
+        - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
+        - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+      ports:
+        - "${MYSQL_PORT}:3306"
+      networks:
+        - backend
+      platform: linux/amd64
+```
+
+##### 其他用法
+
+```sh
+# 进入 Mysql 容器
+$ docker-compose exec mysql bash
+
+# root 登陆
+$ mysql -uroot -proot
+
+# 其他用户
+$ mysql -udefault -psecret
+
+# 查看日志
+$ docker-compose logs mysql
+```
+
+mysql 数据目录：`~/.laradock/data/mysql`
 
 #### phpMyAdmin
 
@@ -669,6 +730,7 @@ $ docker-compose up -d mysql phpmyadmin
 
 ```text
 host: mysql
-user:	root
-password:	root
+user: root
+password: root
 ```
+
