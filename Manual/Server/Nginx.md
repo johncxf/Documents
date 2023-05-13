@@ -1,26 +1,22 @@
 # Nginx
 
-中文文档：https://www.nginx.cn/doc/
-
-## 简介
-
 Nginx是lgor Sysoev为俄罗斯访问量第二的rambler.ru站点设计开发的，从2004年发布至今。
+
+- 中文文档：https://www.nginx.cn/doc/
 
 ## 安装配置
 
 ### Mac
 
-**安装**
-
 使用`homebrew`进行安装
 
-```
-brew install nginx
+```sh
+$ brew install nginx
 ```
 
 #### 常用指令
 
-```
+```sh
 # 启动|停止|重启 服务
 brew services start|stop|restart nginx
 # 测试配置是否有语法错误
@@ -41,17 +37,18 @@ nginx -h
 
 - `sudo nginx -s reload`时报错：`nginx: [error] invalid PID number "" in "/usr/local/var/run/nginx.pid"`
 
-  ```
-  sudo nginx -c /usr/local/etc/nginx/nginx.conf
-  sudo nginx -s reload
+  ```sh
+  $ sudo nginx -c /usr/local/etc/nginx/nginx.conf
+  $ sudo nginx -s reload
   ```
 
 - 访问php文件报错：File not found
 
-  ```
   更改配置文件nginx.conf 
+  
+  ```nginx
   fastcgi_param SCRIPT_FILENAME /scripts$fastcgi_script_name; 
-  替换成下面
+  # 替换成下面
   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
   ```
 
