@@ -99,6 +99,7 @@ go run hello.go
 
 ```go
 // 单行注释
+
 /*
  Author
  我是多行注释
@@ -150,21 +151,19 @@ var age int;
 
 ## 数据类型
 
-### 变量、常量
-
-#### 变量
+### 变量
 
 Go 语言变量名由字母、数字、下划线组成，其中首个字符不能为数字。
 
 声明变量的一般形式是使用 var 关键字：
 
-```
+```go
 var identifier type
 ```
 
 可以一次声明多个变量：
 
-```
+```go
 var identifier1, identifier2 type
 ```
 
@@ -189,7 +188,7 @@ Runoob
 1 2
 ```
 
-##### 变量声明
+#### 变量声明
 
 **第一种，指定变量类型，如果没有初始化，则变量默认为零值**。
 
@@ -295,7 +294,7 @@ func main() {
 Runoob
 ```
 
-##### 多变量声明
+#### 多变量声明
 
 ```go
 //类型相同多个变量, 非全局变量
@@ -313,13 +312,68 @@ var (
 )
 ```
 
-##### 变量作用域
+#### 内存地址
+
+```go
+var num int
+num = 100
+// 取地址符 &变量
+fmt.Printf("num: %d, 内存地址: %p \n", num, &num)
+
+num = 200
+fmt.Printf("num: %d, 内存地址: %p", num, &num)
+```
+
+输出：
+
+```
+num: 100, 内存地址: 0xc0000260a8 
+num: 200, 内存地址: 0xc0000260a8
+```
+
+#### 变量交换
+
+```go
+var a int = 100
+var b int = 200
+
+// 交换a、b变量的值
+b, a = a, b
+```
+
+输出：
+
+```
+200 100
+```
+
+#### 匿名变量
+
+使用下划线“_”表示
+
+```go
+package main
+
+import "fmt"
+
+func test() (int, int) {
+	return 1, 2
+}
+
+func main() {
+	a, _ := test()
+	_, b := test()
+	fmt.Println(a, b)
+}
+```
+
+#### 变量作用域
 
 如果一个变量在函数体外声明，则被认为是全局变量，可以在整个包甚至外部包（变量名以大写字母开头）使用，不管你声明在哪个源文件里或在哪个源文件里调用该变量。在函数体内声明的变量称之为局部变量，它们的作用域只在函数体内，函数的参数和返回值变量也是局部变量。
 
-#### 常量
+### 常量
 
-##### 常量声明声明
+#### 常量声明
 
 常量中的数据类型只可以是布尔型、数字型（整数型、浮点型和复数）和字符串型。
 
@@ -340,7 +394,7 @@ const identifier [type] = value
 const c_name1, c_name2 = value1, value2
 ```
 
-##### 常量作用域
+#### 常量作用域
 
 和函数体外声明的变量一样，以大写字母开头的常量在包外可见（类似于 `public` 修饰的类属性），比如上面介绍的 `Pi`、`Sunday` 等，而以小写字母开头的常量只能在包内访问（类似于通过 `protected` 修饰的类属性），比如 `zero`、`numberOfDays` 等
 
@@ -1262,7 +1316,7 @@ Exit.
 
 格式如下：
 
-```
+```go
 func function_name( [parameter list] ) [return_types] {
    函数体
 }
@@ -1407,6 +1461,9 @@ func Printf(format string, args ...interface{}) {
 ```
 
 #### 引用传值
+
+值类型：int、string、bool、...
+引用类型：slice、map、chan、...
 
 **例：**
 

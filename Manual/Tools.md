@@ -760,3 +760,41 @@ TypeError [ERR_INVALID_ARG_TYPE]: The "data" argument must be of type string or 
 ```
 
 解决方法：node.js  版本过高，将 node.js 版本降到 12.0
+
+## Jenkins
+
+持续集成工具
+
+- 官网：https://www.jenkins.io/
+- https://www.k8stech.net/jenkins-docs/
+
+### 安装配置
+
+#### 环境依赖
+
+JDK 版本：11 ～ 17
+
+#### 下载安装
+
+官网下载 war 包：https://www.jenkins.io/download/
+
+#### 启动配置
+
+命令行执行：
+
+```sh
+$ java -jar jenkins.war
+
+# 指定端口
+$ java -jar jenkins.war --httpPort=8088
+```
+
+第一次启动控制台会输出一个 token，复制 token
+
+在浏览器打开：http://localhost:8080/，输入 token
+
+安装指引创建用户、安装插件
+
+安装完成后即可进入首页
+
+### Pipeline

@@ -47,3 +47,9 @@ $ npm i
 $ npm run dev
 ```
 
+编译代码：
+
+```sh
+$ npm run build
+```
+

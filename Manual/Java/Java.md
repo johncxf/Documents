@@ -41,6 +41,61 @@ C:\Program Files\Java\jdk-19
 Path=%JAVA_HOME%\bin;
 ```
 
+### MacOS 多版本共存
+
+1、下载多个版本JDK进行安装：https://www.oracle.com/java/technologies/downloads/
+
+```sh
+# 查看已安装JDK：
+$ /usr/libexec/java_home -V
+
+# 或通过查看 /Library/Java/JavaVirtualMachines 目录下存在对应多个版本JDK
+$ ls /Library/Java/JavaVirtualMachines
+# 输出：jdk-17.jdk jdk-19.jdk
+```
+
+2、编辑 `~/.bash_profile` 或者 `~/.zshrc`（如果之前配置过 JAVA_HOME 配置记得删除）
+
+```sh
+# Java config
+export JAVA_17_HOME="/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home"
+export JAVA_19_HOME="/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home"
+
+# config alias
+alias jdk17="export JAVA_HOME=$JAVA_17_HOME"
+alias jdk19="export JAVA_HOME=$JAVA_19_HOME"
+
+# config default jdk
+export JAVA_HOME=$JAVA_19_HOME
+export PATH="$JAVA_HOME:$PATH"
+```
+
+3、保存生效配置信息
+
+```sh
+$ source ~/.bash_profile
+
+# ~/.zshrc 对应
+$ source ~/.zshrc
+```
+
+4、切换 JDK 版本
+
+```sh
+# 查看默认版本
+$ java -version
+java version "19.0.1" 2022-10-18
+Java(TM) SE Runtime Environment (build 19.0.1+10-21)
+Java HotSpot(TM) 64-Bit Server VM (build 19.0.1+10-21, mixed mode, sharing)
+
+# 切换成 JDK17 版本
+$ jdk17
+$ java -version
+java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+```
+
 ### IDE 安装配置
 
 #### Eclipse
@@ -326,6 +381,139 @@ for (int i=0; i<5; i++) {
 #### break&continue
 
 在循环过程中，可以使用`break`语句跳出当前循环，`continue`则是提前结束本次循环，直接继续执行下次循环
+
+## 注解
+
+注解（Annotation）是放在Java源码的类、方法、字段、参数前的一种特殊“注释”
+
+注释会被编译器直接忽略，注解则可以被编译器打包进入class文件，因此，注解是一种用作标注的“元数据”。
+
+### 注解的作用
+
+注解可以分为三类：
+
+1、内置注解（由编译器使用的注解），如：
+
+- `@Override`：让编译器检查该方法是否正确地实现了覆写；
+- `@SuppressWarnings`：告诉编译器忽略此处代码产生的警告。
+
+这类注解不会被编译进入`.class`文件，它们在编译后就被编译器扔掉了。
+
+2、由工具处理`.class`文件使用的注解，比如有些工具会在加载class的时候，对class做动态修改，实现一些特殊的功能。这类注解会被编译进入`.class`文件，但加载结束后并不会存在于内存中。这类注解只被一些底层库使用，一般我们不必自己处理。
+
+3、在程序运行期能够读取的注解，它们在加载后一直存在于JVM中，这也是最常用的注解。例如，一个配置了`@PostConstruct`的方法会在调用构造方法后自动被调用（这是Java代码读取该注解实现的功能，JVM并不会识别该注解）。
+
+### 注解的定义
+
+#### 元注解
+
+有一些注解可以修饰其他注解，这些注解就称为元注解（meta annotation）。Java标准库已经定义了一些元注解，我们只需要使用元注解，通常不需要自己去编写元注解。
+
+##### @Target
+
+定义注解能够被应用于源码的哪些位置
+
+```java
+// 定义注解 @Report 可用在方法上
+@Target(ElementType.METHOD)
+public @interface MyAnnotation1 {
+    int type() default 0;
+    String level() default "info";
+    String value() default "";
+}
+
+// 定义注解 @Report 可用在方法或字段上
+@Target({
+    ElementType.METHOD,
+    ElementType.FIELD
+})
+public @interface MyAnnotation2 {
+    ...
+}
+```
+
+##### @Retention
+
+定义注解的生命周期，默认为 `CLASS`，使用最多一般是 `RUNTIME`
+
+- 仅编译期：`RetentionPolicy.SOURCE`
+- 仅class文件：`RetentionPolicy.CLASS`
+- 运行期：`RetentionPolicy.RUNTIME`
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {
+    int type() default 0;
+    String level() default "info";
+    String value() default "";
+}
+```
+
+##### @Repeatable
+
+定义注解是否可重复
+
+```java
+@Repeatable(Reports.class)
+@Target(ElementType.TYPE)
+public @interface MyAnnotation {
+    int type() default 0;
+    String level() default "info";
+    String value() default "";
+}
+```
+
+##### @Inherited
+
+定义子类是否可继承父类定义的注解
+
+```java
+@Inherited
+@Target(ElementType.TYPE)
+public @interface MyAnnotation {
+    int type() default 0;
+    String level() default "info";
+    String value() default "";
+}
+```
+
+#### 定义注解
+
+格式：
+
+```java
+public @interface xxx {...}
+```
+
+1. 用 `@interface` 定义注解
+2. 添加参数、默认值
+3. 用元注解配置注解
+
+```java
+// 用元注解配置注解
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+// 用 @interface 定义注解
+public @interface MyAnnotation {
+    // 注解的参数
+    int type() default 0;
+    String level() default "info";
+    String value() default "";
+}
+```
+
+- 定义一个注解时，还可以定义配置参数。配置参数可以包括：基本类型、String、Class、枚举类型。
+- 可以使用 default 来声明参数的默认值
+- 最常用的参数定义为`value()`，推荐所有参数都尽量设置默认值
+- 必须设置`@Target`和`@Retention`，`@Retention`一般设置为`RUNTIME`，便于运行期读取该注解
+
+## 反射
+
+Java的反射是指程序在运行期可以拿到一个对象的所有信息
+
+## 泛型
+
+
 
 ## 面向对象
 
@@ -802,6 +990,132 @@ $ ./bin/shutdown.sh
 ```
 
 启动后浏览器访问：`http://localhost:8080/`
+
+## MyBatis
+
+文档：https://mybatis.org/mybatis-3/zh/index.html
+
+## Swagger
+
+官网：https://swagger.io/
+
+### SpringBoot 使用 Swagger
+
+springBoot3.x 不支持 swagger
+
+引入依赖：
+
+```xml
+<!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger2</artifactId>
+    <version>3.0.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui -->
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger-ui</artifactId>
+    <version>3.0.0</version>
+</dependency>
+```
+
+新建配置：
+
+新建配置：
+
+xxx.xxx/config/SwaggerConfig.java
+
+```java
+package com.yiqiesuifeng.config;
+
+import org.springframework.context.annotation.Configuration;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+@Configuration
+// 开启 Swagger
+@EnableSwagger2
+public class SwaggerConfig {
+	// 进行配置
+}
+```
+
+访问：http://localhost:8081/swagger-ui.html
+
+## SpringDoc
+
+文档：https://springdoc.org/
+
+由于 swagger 不再更新，目前也不支持 springboot3.x，目前取而代之的就是 springDoc
+
+引入依赖：
+
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.1.0</version>
+</dependency>
+```
+
+新建配置：
+
+xxx.xxx/config/OpenApiConfig.java
+
+```java
+package com.yiqiesuifeng.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenApiConfig {
+    /**
+     * SpringDoc 配置
+     *
+     * @return openApi 配置信息
+     */
+    @Bean
+    public OpenAPI springDocOpenAPI() {
+        return new OpenAPI().info(new Info()
+                        .title("API DOCUMENT")
+                        .description("接口文档")
+                        .version("0.0.1-SNAPSHOT"));
+    }
+
+    /**
+     * 分组配置
+     *
+     * @return 分组接口
+     */
+    @Bean
+    public GroupedOpenApi siteApi() {
+        return GroupedOpenApi.builder()
+                .group("Hello")
+                .pathsToMatch("/hello/**")
+                .build();
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

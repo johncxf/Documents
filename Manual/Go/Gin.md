@@ -14,11 +14,11 @@
 
 ```shell
 # 1、新建项目目录
-$ mkdir gin-demo/basic
+$ mkdir gin-demo
 # 2、进入项目根目录并初始化 go.mod 文件
-$ cd gin-demo/basic & go mod init gin-demo/basic
+$ cd gin-demo & go mod init gin-demo
 # 3、下载 gin 框架源码
-$ get -u github.com/gin-gonic/gin
+$ go get -u github.com/gin-gonic/gin
 # 4、gin 下载完成，可以下载示例代码
 $ curl https://raw.githubusercontent.com/gin-gonic/examples/master/basic/main.go > main.go
 #	5、运行
@@ -104,5 +104,105 @@ gin.DefaultWriter = io.MultiWriter(f)
 
 // 如果你需要同时写入日志文件和控制台，可以这么做：
 gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+```
+
+### 示例代码
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+var db = make(map[string]string)
+
+func setupRouter() *gin.Engine {
+	// 创建一个服务
+	ginServer := gin.Default()
+
+	// 加载静态页面
+	ginServer.LoadHTMLGlob("templates/*")
+
+	// 重定向
+	ginServer.GET("/redirect", func(context *gin.Context) {
+		context.Redirect(http.StatusMovedPermanently, "https://www.yiqiesuifeng.cn")
+	})
+
+	//404
+	ginServer.NoRoute(func(context *gin.Context) {
+		context.HTML(http.StatusNotFound, "404.html", nil)
+	})
+
+	// hello
+	ginServer.GET("/hello", func(context *gin.Context) {
+		context.JSON(200, gin.H{
+			"code": 0,
+			"msg":  "hello gin!",
+		})
+	})
+
+	// Ping test
+	ginServer.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
+
+	// Get user value
+	ginServer.GET("/user/:name", func(c *gin.Context) {
+		user := c.Params.ByName("name")
+		value, ok := db[user]
+		if ok {
+			c.JSON(http.StatusOK, gin.H{"user": user, "value": value})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"user": user, "status": "no value"})
+		}
+	})
+
+	// Authorized group (uses gin.BasicAuth() middleware)
+	// Same than:
+	// authorized := r.Group("/")
+	// authorized.Use(gin.BasicAuth(gin.Credentials{
+	//	  "foo":  "bar",
+	//	  "manu": "123",
+	//}))
+	authorized := ginServer.Group("/", gin.BasicAuth(gin.Accounts{
+		"foo":  "bar", // user:foo password:bar
+		"manu": "123", // user:manu password:123
+	}))
+
+	/* example curl for /admin with basicauth header
+	   Zm9vOmJhcg== is base64("foo:bar")
+
+		curl -X POST \
+	  	http://localhost:8080/admin \
+	  	-H 'authorization: Basic Zm9vOmJhcg==' \
+	  	-H 'content-type: application/json' \
+	  	-d '{"value":"bar"}'
+	*/
+	authorized.POST("admin", func(c *gin.Context) {
+		user := c.MustGet(gin.AuthUserKey).(string)
+
+		// Parse JSON
+		var json struct {
+			Value string `json:"value" binding:"required"`
+		}
+
+		if c.Bind(&json) == nil {
+			db[user] = json.Value
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		}
+	})
+
+	return ginServer
+}
+
+func main() {
+	r := setupRouter()
+
+	// 服务器端口
+	r.Run(":8088")
+}
 ```
 
