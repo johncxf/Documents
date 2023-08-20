@@ -1,5 +1,13 @@
 # Redis
 
+学习文档：
+
+- https://www.runoob.com/redis/redis-tutorial.html
+
+## 安装配置
+
+### centos 安装
+
 #### 安装
 
 1. 官网下载redis安装包（https://redis.io/）
@@ -54,6 +62,97 @@ netstat -tunpl | grep 6379
 ./bin/redis-cli			--带路径
 ```
 
+### MacOS 安装
+
+#### Brew 安装
+
+```sh
+$ brew install redis
+```
+
+#### 启动服务
+
+```sh
+# 启动服务
+brew services start redis
+# 关闭服务
+brew services stop redis
+# 重启服务
+brew services restart redis
+
+# 查看 redis 服务进程
+ps axu | grep redis
+
+# redis默认端口号6379，默认 auth 为空，输入以下命令即可连接
+redis-cli -h 127.0.0.1 -p 6379
+```
+
+#### 设置密码
+
+方式一：设置临时密码
+
+重启服务后密码会失效
+
+```sh
+$ config set requirepass 123456
+```
+
+方式二：设置永久密码
+
+需要修改配置 `redis.conf`
+
+```sh
+# 查看 brew 安装 redis 的配置文件地址
+$ brew list redis
+/opt/homebrew/Cellar/redis/7.0.11/.bottle/etc/ (2 files)
+/opt/homebrew/Cellar/redis/7.0.11/bin/redis-benchmark
+/opt/homebrew/Cellar/redis/7.0.11/bin/redis-check-aof
+/opt/homebrew/Cellar/redis/7.0.11/bin/redis-check-rdb
+/opt/homebrew/Cellar/redis/7.0.11/bin/redis-cli
+/opt/homebrew/Cellar/redis/7.0.11/bin/redis-sentinel
+/opt/homebrew/Cellar/redis/7.0.11/bin/redis-server
+/opt/homebrew/Cellar/redis/7.0.11/homebrew.mxcl.redis.plist
+/opt/homebrew/Cellar/redis/7.0.11/homebrew.redis.service
+
+# 进入目录
+$ cd /opt/homebrew/Cellar/redis/7.0.11
+
+# 查看 redis 配置文件位置
+$ cat  homebrew.mxcl.redis.plist
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+...
+	<array>
+		<string>/opt/homebrew/opt/redis/bin/redis-server</string>
+		<string>/opt/homebrew/etc/redis.conf</string>
+	</array>
+...
+</plist>
+
+# 编辑 /opt/homebrew/etc/redis.conf
+$ vim /opt/homebrew/etc/redis.conf
+
+# 查找 「#requirepass foobared」 进行修改
+requirepass 123456
+
+# 重启 redis 服务
+$ brew services restart redis
+```
+
+查询密码：
+
+```sh
+# 查询密码
+$ config get requirepass
+
+# 验证密码
+127.0.0.1:6379> auth 123456
+```
+
+## 数据类型
+
 #### 字符串
 
 | 命令   | 描述                              | 语法         |
@@ -85,15 +184,15 @@ netstat -tunpl | grep 6379
 
 #### 列表
 
-> 具有栈（先进后出）和队列（先进先出）功能
->
-> 添加元素：可以从头部或者尾部添加；
->
-> 取出元素：从头部取出
->
-> Redis列表是简单的字符串列表，按照插入顺序排序。你可以添加一个元素到列表的头部（左边）或者尾部（右边）
->
-> 一个列表最多可以包含 232 - 1 个元素 (4294967295, 每个列表超过40亿个元素)。
+具有栈（先进后出）和队列（先进先出）功能
+
+添加元素：可以从头部或者尾部添加；
+
+取出元素：从头部取出
+
+Redis列表是简单的字符串列表，按照插入顺序排序。你可以添加一个元素到列表的头部（左边）或者尾部（右边）
+
+一个列表最多可以包含 232 - 1 个元素 (4294967295, 每个列表超过40亿个元素)。
 
 | 命令   | 描述                         | 语法                  |
 | ------ | ---------------------------- | --------------------- |
@@ -105,11 +204,11 @@ netstat -tunpl | grep 6379
 
 #### 集合
 
-> Redis 的 Set 是 String 类型的无序集合。集合成员是唯一的，这就意味着集合中不能出现重复的数据。
->
-> Redis 中集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是 O(1)。
->
-> 集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)
+Redis 的 Set 是 String 类型的无序集合。集合成员是唯一的，这就意味着集合中不能出现重复的数据。
+
+Redis 中集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是 O(1)。
+
+集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)
 
 | 命令     | 描述                     | 语法             |
 | -------- | ------------------------ | ---------------- |
@@ -121,13 +220,13 @@ netstat -tunpl | grep 6379
 
 #### 有序集合
 
-> Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。
->
-> 不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。
->
-> 有序集合的成员是唯一的,但分数(score)却可以重复。
->
-> 集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。 集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)
+Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。
+
+不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。
+
+有序集合的成员是唯一的,但分数(score)却可以重复。
+
+集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。 集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)
 
 | 命令 | 描述                                                   | 语法                    |
 | ---- | ------------------------------------------------------ | ----------------------- |
