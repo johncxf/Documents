@@ -56,27 +56,20 @@ type ListNode struct {
  * @return int整型一维数组
  */
 func printListFromTailToHead(head *ListNode) []int {
+    // 定义切片
 	ret := make([]int, 0)
-	
-	// 遍历链表
-	tmp := make([]int, 0)
+    // 遍历链表
 	for head != nil {
-		tmp = append(tmp, head.Val)
+        // 将链表值插入切片数组头部
+		ret = append([]int{head.Val}, ret...)
 		head = head.Next
-	}
-
-	// 遍历数组，倒序处理
-	tmpLen := len(tmp) - 1
-	for tmpLen >= 0 {
-		ret = append(ret, tmp[tmpLen])
-		tmpLen--
 	}
 
 	return ret
 }
 ```
 
-#### [简单] 链表中倒数最后k个结点
+#### [JZ22-简单] 链表中倒数最后k个结点
 
 ##### 描述
 
@@ -168,7 +161,7 @@ func FindKthToTail(pHead *ListNode,  k int) *ListNode {
 }
 ```
 
-#### [简单] 合并两个排序的链表
+#### [JZ25-简单] 合并两个排序的链表
 
 ##### 描述
 
@@ -363,6 +356,8 @@ func FindFirstCommonNode(pHead1 *ListNode,  pHead2 *ListNode) *ListNode {
 
 ##### 代码实现
 
+**双链表法：**
+
 PHP
 
 ```php
@@ -411,6 +406,36 @@ func reverseList(head *Node) *Node {
 	}
 
 	return newHead
+}
+```
+
+**使用栈实现**：
+
+```go
+/**
+ * [JZ24-简单] 反转链表-栈
+ *
+ * @param head ListNode类
+ * @return ListNode类
+ */
+func reverseList2(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	tmpMap := make([]int, 0)
+	for head != nil {
+		tmpMap = append([]int{head.Val}, tmpMap...)
+		head = head.Next
+	}
+
+	rHead := &ListNode{Val: tmpMap[0], Next: nil}
+	cHead := rHead
+	for i := 1; i < len(tmpMap); i++ {
+		tmpHead := &ListNode{Val: tmpMap[i], Next: nil}
+		cHead.Next = tmpHead
+		cHead = cHead.Next
+	}
+	return rHead
 }
 ```
 
