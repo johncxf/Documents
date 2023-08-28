@@ -14,20 +14,23 @@
   - [PHP 面试知识点](./Notes/PHP/PHP-interview.md)
   - [PHP 开发环境搭建](./Notes/PHP/NMP.md)
   - [Laravel 框架学习笔记](./Notes/PHP/Laravel.md)
-- 后端开发
-  - [API 开发](./Notes/Api.md)
-  - [Nginx](./Notes/Server/Nginx.md)
-  - [Golang](./Notes/Go/Golang.md)
-  - [Python](./Notes/Python/Python.md)
 - 前端开发
   - [HTML](./Notes/Front-end/HTML.md)
   - [CSS](./Notes/Front-end/CSS.md)
-  - [JavaScript](./Notes/Front-end/JavaScript.md)
-  - [Node.js](./Notes/NodeJS.md)
   - [jQuery](./Notes/Front-end/jQuery.md)
+  - [JavaScript](./Notes/Front-end/JavaScript.md)
   - [TypeScript](./Notes/Front-end/TypeScript.md)
   - [Webpack](./Notes/Front-end/webpack.md)
   - [Mocha](./Notes/Front-end/mocha.md)
+- 服务端开发
+  - [API 开发](./Notes/Server/Api.md)
+  - [Nginx](./Notes/Server/Nginx.md)
+  - [Docker](./Notes/Docker.md)
+- 开发语言
+  - [Node.js](./Notes/NodeJS.md)
+  - [Golang](./Notes/Go/Golang.md)
+  - [Python](./Notes/Python/Python.md)
+  - [Java](./Notes/Java/Java.md)
 - 自动化测试
   - [Android](./Notes/Automator/Android.md)
   - [iOS](./Notes/Automator/iOS.md)
@@ -46,7 +49,6 @@
 - 基础工具
   - [Git](./Notes/Git.md)
   - [Vi/Vim](./Notes/Vim.md)
-  - [Docker](./Notes/Docker.md)
   - [工具环境](./Notes/Tools.md)
 
 ## 技术分享
