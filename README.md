@@ -2,9 +2,8 @@
 
 文档整理，包括日常学习笔记、技术分享等。
 
-- 个人站点：https://yiqiesuifeng.cn/
 - 个人博客：https://blog.yiqiesuifeng.cn/
-- 个人文档：http://note.yiqiesuifeng.cn/
+- 文档笔记：http://note.yiqiesuifeng.cn/
 
 ## 学习笔记
 
