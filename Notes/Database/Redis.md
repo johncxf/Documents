@@ -151,6 +151,33 @@ $ config get requirepass
 127.0.0.1:6379> auth 123456
 ```
 
+## 常用指令
+
+```sh
+# 连接 redis
+$ redis-cli -h 127.0.0.1 -p 6379
+
+# 退出
+> exit/quit
+
+# 测试连通性
+> ping
+
+# 输入密码
+> auth password
+
+# 获取所有键
+> keys *
+
+# 获取键值
+> get key
+
+# 获取key剩余过期时间（秒），返回-1则未设置过期时间
+> TTL key
+```
+
+
+
 ## 数据类型
 
 #### 字符串

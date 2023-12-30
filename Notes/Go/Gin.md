@@ -1,5 +1,7 @@
 # Gin
 
+Gin 是一个用 Go (Golang) 编写的 Web 框架。
+
 入门文档：
 
 - https://laravelacademy.org/books/gin-tutorial
@@ -205,4 +207,6 @@ func main() {
 	r.Run(":8088")
 }
 ```
+
+## 使用示例
 

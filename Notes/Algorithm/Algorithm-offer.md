@@ -252,7 +252,7 @@ func Merge(pHead1 *ListNode , pHead2 *ListNode) *ListNode {
 时间复杂度：O(m+n),m，n分别为两个单链表的长度
 空间复杂度：O(1)
 
-####  [简单] 两个链表的第一个公共结点
+####  [JZ52-简单] 两个链表的第一个公共结点
 
 ##### 描述
 
@@ -731,7 +731,7 @@ func entryNodeOfLoop(pHead *Node) *Node {
 
 ### 树
 
-#### [简单] 二叉树的深度
+#### [JZ55-简单] 二叉树的深度
 
 ##### 题目描述
 
