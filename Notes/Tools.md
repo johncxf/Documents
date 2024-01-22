@@ -797,4 +797,63 @@ $ java -jar jenkins.war --httpPort=8088
 
 安装完成后即可进入首页
 
-### Pipeline
+## supervisor
+
+文档：http://supervisord.org/
+
+### 安装配置
+
+#### 安装
+
+用 yum 进行安装：
+
+```sh
+$ sudo yum install epel-release
+$ sudo yum install supervisor
+```
+
+#### 配置
+
+Supervisor 的配置文件为：`/etc/supervisord.conf` ，Supervisor 所管理的应用的配置文件放在 `/etc/supervisord.d/` 目录中，修改 supervisord.conf 中的`include`配置：
+
+```yaml
+[include]
+files = /etc/supervisord.d/*.conf
+```
+
+### 使用
+
+```sh
+# 启动服务
+$ supervisord -c /etc/supervisord.conf
+# 更新配置文件并重启相关的程序
+$ supervisorctl update
+# 查看任务的运行状态
+$ supervisorctl status 应用名称
+# 查看所有任务的运行状态
+$ supervisorctl status
+# 停止进程
+$ supervisorctl stop <name>
+# 启动进程
+$ supervisorctl start <name>
+# 重启进程
+$ supervisorctl restart <name>
+# 重新启动配置中的所有程序
+$ supervisorctl reload
+# 关闭所有任务
+$ supervisorctl shutdown
+```
+
+我们在`/etc/supervisord.d`目录下创建一个名为`app.conf`的配置文件，具体内容如下。
+
+```
+[program:go-api]  ;程序名称
+user=root  ;执行程序的用户
+command=/www/wwwroot/go-api/bin/go-api /www/wwwroot/go-api/config/env.yml  ;执行的命令
+directory=/www/wwwroot/go-api ;命令执行的目录
+stopsignal=TERM  ;重启时发送的信号
+autostart=true
+autorestart=true  ;是否自动重启
+stdout_logfile=/www/wwwroot/go-api/logs/go-api-stdout.log  ;标准输出日志位置
+stderr_logfile=/www/wwwroot/go-api/logs/go-api-stderr.log  ;标准错误日志位置rint_r($this->_categoryOptions->wrapTag);
+```

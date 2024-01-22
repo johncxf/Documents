@@ -79,6 +79,13 @@ $ docker image ls
 $ docker image ls -a
 ```
 
+#### 构建镜像
+
+```sh
+# 需要 Dockerfile 文件来构建镜像
+$ docker build -t 镜像名称 .
+```
+
 #### 删除本地镜像
 
 ```sh
@@ -145,6 +152,18 @@ $ docker container start [OPTIONS] CONTAINER [CONTAINER...]
 
 ```sh
 $ docker container stop [OPTIONS] CONTAINER [CONTAINER...]
+
+# 停止所有容器
+$ docker stop $(docker ps -aq)
+```
+
+#### 删除容器
+
+```sh
+# 删除某容器
+$ docker rm -f <容器名或ID>
+# 删除所有容器
+$ docker rm $(docker ps -aq)
 ```
 
 #### 进入容器
@@ -166,58 +185,36 @@ $ docker exec -it 69d1 bash
 ```sh
 # 查看docker的版本
 $ docker -v
-
 # 查看镜像历史
 $ docker history
-
 # 查看docker的详细信息
 $ docker info
-
 # 构建自己的镜像xx/ownname是自己的托管代码路径
 $ docker build -t xx/ownname <Dockerfile路径>
-
 # 进入容器内部查看或操作
 $ docker exec it containername /bin/bash
-
 # 查看某容器的详细配置信息
 $ docker inspect container-name
-
 # 加载镜像
 $ docker load < /home/save.tar
-
 # 登录某镜像平台，默认是hub.docker.com，需要注册账户
 $ docker login <daocloud.io>
-
 # 查看容器日志
 $ docker logs -f <容器名或ID>
-
 # 暂停某一容器所有进程
 $ docker pause <docker name or id>
-
 # 从远程拉取镜像，不带tag视为latest
 $ docker pull <镜像名:tag>
-
 # 将镜像推送到远程仓库
 $ docker push name:tag
-
-# 删除所有容器
-$ docker rm ${docker ps -a -q}
-
-# 删除某容器
-$ docker rm -f <容器名或ID>
-
 # 强制删除某镜像
 $ docker rmi -f <镜像名或ID>
-
 # 运行一个容器,命名、设置端口映射、后台运行等
 $ docker run -it -d -p --name
-
 # 保存镜像
 $ docker save busy-box>/home/save.tar
-
 # 标记本地镜像
 $ docker tag
-
 # 回复某一容器的所有进程
 $ docker unpause <docker name or id>
 ```
@@ -733,4 +730,8 @@ host: mysql
 user: root
 password: root
 ```
+
+## Dockerfile
+
+Dockerfile 是一个用来构建镜像的文本文件，文本内容包含了一条条构建镜像所需的指令和说明。
 
