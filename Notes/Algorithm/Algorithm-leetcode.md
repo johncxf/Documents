@@ -2715,3 +2715,794 @@ class Solution {
     }
 }
 ```
+
+#### [L70-简单] 爬楼梯
+
+##### 描述
+
+假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。
+
+每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+##### 示例
+
+**示例 1：**
+
+```
+输入：n = 2
+输出：2
+解释：有两种方法可以爬到楼顶。
+1. 1 阶 + 1 阶
+2. 2 阶
+```
+
+**示例 2：**
+
+```
+输入：n = 3
+输出：3
+解释：有三种方法可以爬到楼顶。
+1. 1 阶 + 1 阶 + 1 阶
+2. 1 阶 + 2 阶
+3. 2 阶 + 1 阶
+```
+
+**提示：**
+
+- `1 <= n <= 45`
+
+##### 题解
+
+> 本题推导出公式为：*f*(*x*)=*f*(*x*−1)+*f*(*x*−2)，是斐波那契数，因此可以使用递归和动态规划求解，但是递归在本题中时间复杂度较高
+
+动态规划：
+
+```go
+func climbStairs(n int) int {
+    p, q, r := 0, 0, 1
+    for i := 1; i <= n; i++ {
+        p = q
+        q = r
+        r = p + q
+    }
+    return r
+}
+```
+
+#### [L94-简单] 二叉树的中序遍历
+
+##### 描述
+
+给定一个二叉树的根节点 `root` ，返回 *它的 **中序** 遍历* 。
+
+##### 示例
+
+```
+输入：root = [1,null,2,3]
+输出：[1,3,2]
+
+输入：root = []
+输出：[]
+
+输入：root = [1]
+输出：[1]
+```
+
+- 树中节点数目在范围 `[0, 100]` 内
+- `-100 <= Node.val <= 100`
+
+##### 题解
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func inorderTraversal(root *TreeNode) (res []int) {
+    var inorder func(node *TreeNode)
+    inorder = func(node *TreeNode) {
+        if node == nil {
+            return
+        }
+        inorder(node.Left)
+        res = append(res, node.Val)
+        inorder(node.Right)
+    }
+    inorder(root)
+    return
+}
+```
+
+#### [L101-简单] 对称二叉树
+
+##### 描述
+
+给你一个二叉树的根节点 `root` ， 检查它是否轴对称。
+
+##### 示例
+
+```
+输入：root = [1,2,2,3,4,4,3]
+输出：true
+
+输入：root = [1,2,2,null,3,null,3]
+输出：false
+```
+
+- 树中节点数目在范围 `[1, 1000]` 内
+- `-100 <= Node.val <= 100`
+
+##### 题解
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func isSymmetric(root *TreeNode) bool {
+    return check(root, root)
+}
+
+func check(p, q *TreeNode) bool {
+    if p == nil && q == nil {
+        return true
+    }
+    if p == nil || q == nil {
+        return false
+    }
+    return p.Val == q.Val && check(p.Left, q.Right) && check(p.Right, q.Left)
+}
+```
+
+#### [L104-简单] 二叉树的最大深度
+
+##### 描述
+
+给定一个二叉树 `root` ，返回其最大深度。
+
+二叉树的 **最大深度** 是指从根节点到最远叶子节点的最长路径上的节点数。
+
+##### 示例
+
+```
+输入：root = [3,9,20,null,null,15,7]
+输出：3
+
+输入：root = [1,null,2]
+输出：2
+```
+
+- 树中节点的数量在 `[0, 104]` 区间内。
+- `-100 <= Node.val <= 100`
+
+##### 题解
+
+> 深度优先搜索
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func maxDepth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+```
+
+#### [L121-简单] 买卖股票的最佳时机
+
+##### 描述
+
+给定一个数组 `prices` ，它的第 `i` 个元素 `prices[i]` 表示一支给定股票第 `i` 天的价格。
+
+你只能选择 **某一天** 买入这只股票，并选择在 **未来的某一个不同的日子** 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 `0` 。
+
+#####  示例
+
+**示例 1：**
+
+```
+输入：[7,1,5,3,6,4]
+输出：5
+解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+```
+
+**示例 2：**
+
+```
+输入：prices = [7,6,4,3,1]
+输出：0
+解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+**提示：**
+
+- `1 <= prices.length <= 105`
+- `0 <= prices[i] <= 104`
+
+##### 题解
+
+```go
+func maxProfit(prices []int) int {
+    minPro := int(1e5)
+    maxPro := 0
+    for i := 0; i < len(prices); i++ {
+        if (prices[i] < minPro) {
+            minPro = prices[i]
+        }
+        if (prices[i] - minPro > maxPro) {
+            maxPro = prices[i] - minPro
+        }
+    }
+    return maxPro
+}
+```
+
+#### [L136-简单] 只出现一次的数字
+
+##### 描述
+
+你一个 **非空** 整数数组 `nums` ，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+你必须设计并实现线性时间复杂度的算法来解决此问题，且该算法只使用常量额外空间。
+
+#####  示例
+
+**示例 1 ：**
+
+```
+输入：nums = [2,2,1]
+输出：1
+```
+
+**示例 2 ：**
+
+```
+输入：nums = [4,1,2,1,2]
+输出：4
+```
+
+**示例 3 ：**
+
+```
+输入：nums = [1]
+输出：1
+```
+
+**提示：**
+
+- `1 <= nums.length <= 3 * 104`
+- `-3 * 104 <= nums[i] <= 3 * 104`
+- 除了某个元素只出现一次以外，其余每个元素均出现两次。
+
+##### 题解
+
+本题的注意点是要做到线性时间复杂度和常数空间复杂度
+
+这里可以使用位运算中的异或运算（相同数异或运算为0，0和任何数异或运算为该数）
+
+```go
+func singleNumber(nums []int) int {
+    single := 0
+    for _, num := range nums {
+        single ^= num
+    }
+    return single
+}
+```
+
+#### [L141-简单] 环形链表
+
+##### 描述
+
+给你一个链表的头节点 `head` ，判断链表中是否有环。
+
+如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（索引从 0 开始）。**注意：`pos` 不作为参数进行传递** 。仅仅是为了标识链表的实际情况。
+
+*如果链表中存在环* ，则返回 `true` 。 否则，返回 `false` 。
+
+##### 示例
+
+```
+输入：head = [3,2,0,-4], pos = 1
+输出：true
+解释：链表中有一个环，其尾部连接到第二个节点。
+
+输入：head = [1,2], pos = 0
+输出：true
+解释：链表中有一个环，其尾部连接到第一个节点。
+
+输入：head = [1], pos = -1
+输出：false
+解释：链表中没有环。
+```
+
+- 链表中节点的数目范围是 `[0, 104]`
+- `-105 <= Node.val <= 105`
+- `pos` 为 `-1` 或者链表中的一个 **有效索引** 。
+
+##### 题解
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func hasCycle(head *ListNode) bool {
+    if head == nil {
+        return false
+    }
+
+    hash := map[*ListNode]struct{}{}
+    for head != nil {
+        if _, ok := hash[head]; ok {
+            return true
+        }
+        hash[head] = struct{}{}
+        head = head.Next
+    }
+    return false
+}
+```
+
+#### [L160-简单] 相交链表
+
+##### 描述
+
+给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 。
+
+##### 题解
+
+哈希表，先遍历链表A，存入hash，再遍历链表B，如果当前节点在hash表中，且后面的节点都在，则相交
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    hash := map[*ListNode]int{}
+    tmpA, tmpB := headA, headB
+    for tmpA != nil {
+        hash[tmpA] = tmpA.Val
+        tmpA = tmpA.Next
+    }
+    for tmpB != nil {
+        if hash[tmpB] == tmpB.Val {
+            return tmpB
+        }
+        tmpB = tmpB.Next
+    }
+    return nil
+}
+```
+
+双指针
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    if headA == nil || headB == nil {
+        return nil
+    }
+    pa, pb := headA, headB
+    for pa != pb {
+        if pa == nil {
+            pa = headB
+        } else {
+            pa = pa.Next
+        }
+        if pb == nil {
+            pb = headA
+        } else {
+            pb = pb.Next
+        }
+    }
+    return pa
+}
+```
+
+#### [L169-简单] 多数元素
+
+##### 描述
+
+给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+#####  示例
+
+**示例 1：**
+
+```
+输入：nums = [3,2,3]
+输出：3
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,2,1,1,1,2,2]
+输出：2
+```
+
+**提示：**
+
+- `n == nums.length`
+- `1 <= n <= 5 * 104`
+- `-109 <= nums[i] <= 109`
+
+**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
+
+##### 题解
+
+```go
+func majorityElement(nums []int) int {
+    hash := map[int]int{}
+    for _, num := range nums {
+        if _, ok := hash[num]; ok {
+            hash[num] = hash[num] + 1
+        } else {
+            hash[num] = 1
+        }
+    }
+    maxKey := 0
+    maxValue := 0
+    for k, v := range hash {
+        if v > maxValue {
+            maxKey = k
+            maxValue = v
+        }
+    }
+    return maxKey
+}
+```
+
+#### [L206-简单] 反转链表
+
+##### 描述
+
+给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+
+##### 示例
+
+```
+输入：head = [1,2,3,4,5]
+输出：[5,4,3,2,1]
+
+输入：head = [1,2]
+输出：[2,1]
+
+输入：head = []
+输出：[]
+```
+
+##### 题解
+
+先遍历链表，存在数组中，再遍历数组，构建新的链表
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func reverseList(head *ListNode) *ListNode {
+    if head == nil {
+		return head
+	}
+    arr := make([]int, 0)
+    for head != nil {
+        arr = append([]int{head.Val}, arr...)
+        head = head.Next
+    }
+    newHead := &ListNode{Val: arr[0], Next: nil}
+    tmpHead := newHead
+    for i := 1; i < len(arr); i++ {
+        tmpHead.Next = &ListNode{arr[i], nil}
+        tmpHead = tmpHead.Next
+    }
+    return newHead
+}
+```
+
+迭代：在遍历链表时，将当前节点的 next\textit{next}*next* 指针改为指向前一个节点
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func reverseList(head *ListNode) *ListNode {
+    var prev *ListNode
+    curr := head
+    for curr != nil {
+        next := curr.Next
+        curr.Next = prev
+        prev = curr
+        curr = next
+    }
+    return prev
+}
+```
+
+#### [L226-简单] 翻转二叉树
+
+##### 描述
+
+给你一棵二叉树的根节点 `root` ，翻转这棵二叉树，并返回其根节点。
+
+##### 示例
+
+```
+输入：root = [4,2,7,1,3,6,9]
+输出：[4,7,2,9,6,3,1]
+
+输入：root = [2,1,3]
+输出：[2,3,1]
+
+输入：root = []
+输出：[]
+```
+
+- 树中节点数目范围在 `[0, 100]` 内
+- `-100 <= Node.val <= 100`
+
+##### 题解
+
+递归
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func invertTree(root *TreeNode) *TreeNode {
+    if root == nil {
+        return nil
+    }
+    left := invertTree(root.Left)
+    right := invertTree(root.Right)
+    root.Left = right
+    root.Right = left
+    return root
+}
+```
+
+#### [L234-简单] 回文链表
+
+##### 描述
+
+给你一个单链表的头节点 `head` ，请你判断该链表是否为回文链表。如果是，返回 `true` ；否则，返回 `false` 。
+
+##### 示例
+
+```
+输入：head = [1,2,2,1]
+输出：true
+
+输入：head = [1,2]
+输出：false
+```
+
+##### 题解
+
+先遍历链表存入数组，再遍历数组进行判断
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func isPalindrome(head *ListNode) bool {
+    if head == nil {
+        return false
+    }
+    tmpArr := []int{}
+    for head != nil {
+        tmpArr = append(tmpArr, head.Val)
+        head = head.Next
+    }
+    n := len(tmpArr)
+    for i, v := range tmpArr[:n/2] {
+        if v != tmpArr[n-1-i] {
+            return false
+        }
+    }
+    return true
+}
+```
+
+#### [L283-简单] 移动零
+
+##### 描述
+
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+**请注意** ，必须在不复制数组的情况下原地对数组进行操作。
+
+##### 示例
+
+```
+输入: nums = [0,1,0,3,12]
+输出: [1,3,12,0,0]
+
+输入: nums = [0]
+输出: [0]
+```
+
+- `1 <= nums.length <= 104`
+- `-231 <= nums[i] <= 231 - 1`
+
+##### 题解
+
+双指针
+
+```go
+func moveZeroes(nums []int)  {
+    l, r, n := 0, 0, len(nums)
+    for r < n {
+        if nums[r] != 0 {
+            nums[l], nums[r] = nums[r], nums[l]
+            l++
+        }
+        r++
+    }
+}
+```
+
+#### [L338-简单] 比特位计数
+
+##### 描述
+
+给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 **`1` 的个数** ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
+
+##### 示例
+
+```
+输入：n = 2
+输出：[0,1,1]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+
+输入：n = 5
+输出：[0,1,1,2,1,2]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+3 --> 11
+4 --> 100
+5 --> 101
+```
+
+- `0 <= n <= 105`
+
+##### 题解
+
+```go
+func onesCount(x int) (ones int) {
+    for ; x > 0; x &= x - 1 {
+        ones++
+    }
+    return
+}
+
+func countBits(n int) []int {
+    bits := make([]int, n+1)
+    for i := range bits {
+        bits[i] = onesCount(i)
+    }
+    return bits
+}
+```
+
+##### 描述
+
+#### [L509-简单] 斐波那契数
+
+##### 描述
+
+**斐波那契数** （通常用 `F(n)` 表示）形成的序列称为 **斐波那契数列** 。该数列由 `0` 和 `1` 开始，后面的每一项数字都是前面两项数字的和。也就是：
+
+```
+F(0) = 0，F(1) = 1
+F(n) = F(n - 1) + F(n - 2)，其中 n > 1
+```
+
+给定 `n` ，请计算 `F(n)` 。
+
+#####  示例
+
+**示例 1：**
+
+```
+输入：n = 2
+输出：1
+解释：F(2) = F(1) + F(0) = 1 + 0 = 1
+```
+
+**示例 2：**
+
+```
+输入：n = 3
+输出：2
+解释：F(3) = F(2) + F(1) = 1 + 1 = 2
+```
+
+**示例 3：**
+
+```
+输入：n = 4
+输出：3
+解释：F(4) = F(3) + F(2) = 2 + 1 = 3
+```
+
+**提示：**
+
+- `0 <= n <= 30`
+
+##### 题解
+
+递归：
+
+```go
+func fib(n int) int {
+    if n < 2 {
+        return n
+    }
+    return fib(n - 1) + fib(n - 2)
+}
+```
+

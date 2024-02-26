@@ -4,7 +4,7 @@
 
 对于简单的项目，通常我们只需要将编译后的二进制文件拷贝到服务器上，然后设置为后台守护进程运行即可。
 
-本文以项目：https://github.com/johncxf/go_practice 为例
+本文以项目：https://github.com/johncxf/go-api 为例
 
 #### 编译
 
@@ -157,13 +157,13 @@ http {
 
 ```
 
-修改 ngxin 配置后重新 nginx 即可。
+修改 ngxin 配置后重启 nginx 即可。
 
 ## Docker 部署
 
 不管是开发还是生产环境，通过 docker 方式部署服务都是一种不错的选择，能够解决不同开发环境一致性的问题。
 
-本文以项目：https://github.com/johncxf/go_practice 为例。
+本文以项目：https://github.com/johncxf/go-api 为例。
 
 #### Dockerfile 构建 Go 运用环境
 
@@ -182,14 +182,10 @@ ENV GO111MODULE=on \
 # 设置后续指令的工作目录
 WORKDIR /build
 
-# 复制项目中的 go.mod 和 go.sum文件并下载依赖信息
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
-
 # 将代码复制到容器中
 COPY . .
-
+# 下载依赖
+RUN go mod download
 # 将代码编译成二进制可执行文件
 RUN go build -o go-api .
 
@@ -218,29 +214,29 @@ ENV GO111MODULE=on \
 # 设置后续指令的工作目录
 WORKDIR /build
 
-# 复制项目中的 go.mod 和 go.sum文件并下载依赖信息
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
-
 # 将代码复制到容器中
 COPY . .
 
+# 下载依赖
+RUN go mod download
+
 # 将代码编译成二进制可执行文件
 RUN go build -o go-api .
-
 
 # 创建一个小镜像
 #FROM scratch
 FROM debian:stretch-slim
 
+COPY ./wait-for-it.sh /
 COPY ./config /config
 
 # 从builder镜像中把 /build/go-api 拷贝到当前目录
 COPY --from=builder /build/go-api /
 
+RUN chmod 755 wait-for-it.sh
+
 # 需要运行的命令
-ENTRYPOINT ["/go-api", "config/env.yml"]
+#ENTRYPOINT ["/go-api", "config/env.yml"]
 ```
 
 注：镜像`scratch`没有bash，会导致无法通过`docker exec`进入容器，建议直接改成`debian:stretch-slim`镜像
