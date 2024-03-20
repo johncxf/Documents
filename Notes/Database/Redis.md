@@ -85,6 +85,7 @@ ps axu | grep redis
 
 # redis默认端口号6379，默认 auth 为空，输入以下命令即可连接
 redis-cli -h 127.0.0.1 -p 6379
+rsUgtuaDLmtP5sRf
 ```
 
 #### 设置密码

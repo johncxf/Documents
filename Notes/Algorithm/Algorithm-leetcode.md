@@ -1,8 +1,186 @@
 # 算法-Leetcode
 
-#### L1.两数之和
+### 回溯算法
 
-> 难度：简单
+#### [L39-中等] 组合总和
+
+给你一个 **无重复元素** 的整数数组 `candidates` 和一个目标整数 `target` ，找出 `candidates` 中可以使数字和为目标数 `target` 的 所有 **不同组合** ，并以列表形式返回。你可以按 **任意顺序** 返回这些组合。
+
+`candidates` 中的 **同一个** 数字可以 **无限制重复被选取** 。如果至少一个数字的被选数量不同，则两种组合是不同的。 
+
+对于给定的输入，保证和为 `target` 的不同组合数少于 `150` 个。
+
+**示例**
+
+```
+输入：candidates = [2,3,6,7], target = 7
+输出：[[2,2,3],[7]]
+解释：
+2 和 3 可以形成一组候选，2 + 2 + 3 = 7 。注意 2 可以使用多次。
+7 也是一个候选， 7 = 7 。
+仅有这两种组合。
+
+输入: candidates = [2,3,5], target = 8
+输出: [[2,2,2,2],[2,3,3],[3,5]]
+
+输入: candidates = [2], target = 1
+输出: []
+```
+
+**提示：**
+
+- `1 <= candidates.length <= 30`
+- `2 <= candidates[i] <= 40`
+- `candidates` 的所有元素 **互不相同**
+- `1 <= target <= 40`
+
+**题解**
+
+> 回溯算法
+>
+
+<img src="../../Image/image-202403202038.png" style="zoom:75%;" />
+
+代码实现：
+
+```go
+func combinationSum(candidates []int, target int) [][]int {
+	// 排序
+	sort.Ints(candidates)
+	// 过程数组
+	state := make([]int, 0)
+	// 结果数组
+	res := make([][]int, 0)
+	return backtrace(candidates, target, state, 0, res)
+}
+
+func backtrace(candidates []int, target int, state []int, start int, res [][]int) [][]int {
+	// 为0时符合，添加子集到结果集中
+	if target == 0 {
+		//res = append(res, state)
+		res = append(res, append([]int{}, state...))
+		return res
+	}
+	// 遍历，从 start 开始，避免重复子集
+	for i := start; i < len(candidates); i++ {
+		// 元素和不能超过 target
+		if target-candidates[i] < 0 {
+			break
+		}
+		// 更新子集
+		state = append(state, candidates[i])
+		// 递归，进行下一轮
+		res = backtrace(candidates, target-candidates[i], state, i, res)
+		// 回退
+		state = state[:len(state)-1]
+	}
+	return res
+}
+```
+
+#### [L46-简单] 全排列
+
+给定一个 **没有重复 ** 数字的序列，返回其所有可能的全排列。
+
+**示例**
+
+```
+输入: [1,2,3]
+输出:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+
+输入：nums = [0,1]
+输出：[[0,1],[1,0]]
+
+输入：nums = [1]
+输出：[[1]]
+```
+
+**题解**
+
+> 回溯算法
+
+![lt46-permute](../../Image/algorithm/lt46-permute.png)
+
+Go：
+
+```go
+func permute(nums []int) [][]int {
+    res := make([][]int, 0)
+    state := make([]int, 0)
+    return backtrace(nums, state, res)
+}
+
+func backtrace(nums []int, state []int, res [][]int) [][]int {
+    if len(nums) == len(state) {
+        res = append(res, append([]int{}, state...))
+        return res
+    }
+    for i := 0; i < len(nums); i++ {
+        if inArray(state, nums[i]) {
+            continue
+        }
+        state = append(state, nums[i])
+        res = backtrace(nums, state, res)
+        state = state[:len(state)-1]
+    }
+    return res
+}
+
+func inArray(arr []int, target int) bool {
+    exist := false
+    for _, v := range arr {
+        if target == v {
+            exist = true
+            break
+        }
+    }
+    return exist
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    public $res = [];
+    /**
+     * @param Integer[] $nums
+     * @return Integer[][]
+     */
+    function permute($nums) {
+        $this->do([], $nums);
+        return $this->res;
+    }
+    function do($arr, $nums) {
+        if (count($arr) == count($nums)) {
+            array_push($this->res, $arr);
+            return;
+        }
+        for ($i = 0; $i < count($nums); $i++) {
+            if (in_array($nums[$i], $arr)) continue;
+            array_push($arr, $nums[$i]);
+            $this->do($arr, $nums);
+            array_pop($arr);
+        }
+    }
+}
+```
+
+#### 
+
+### 动态规划
+
+### 其他
+
+#### [L1-简单] 两数之和
 
 ##### 描述
 
@@ -13,9 +191,15 @@
 ##### 示例
 
 ```
-给定 nums = [2, 7, 11, 15], target = 9
-因为 nums[0] + nums[1] = 2 + 7 = 9
-所以返回 [0, 1]
+输入：nums = [2,7,11,15], target = 9
+输出：[0,1]
+解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+
+输入：nums = [3,2,4], target = 6
+输出：[1,2]
+
+输入：nums = [3,3], target = 6
+输出：[0,1]
 ```
 
 ##### 题解
@@ -229,9 +413,7 @@ class Solution {
 }
 ```
 
-#### L3.无重复字符的最长子串
-
-> 难度：中等
+#### [L3-中等] 无重复字符的最长子串
 
 ##### 描述
 
@@ -245,19 +427,11 @@ class Solution {
 输入: "abcabcbb"
 输出: 3 
 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
-```
 
-**示例 2:**
-
-```
 输入: "bbbbb"
 输出: 1
 解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
-```
 
-**示例 3:**
-
-```
 输入: "pwwkew"
 输出: 3
 解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
@@ -265,6 +439,37 @@ class Solution {
 ```
 
 ##### 题解
+
+Go：
+
+滑动窗口
+
+```go
+func lengthOfLongestSubstring(s string) int {
+    n := len(s)
+    right, max := 0, 0
+    // hash map，存储不重复的字符串，用于判断字符串是否出现过
+    hash := make(map[byte]int)
+    for i := 0; i < n; i++ {
+        // 除了 i = 0 第一次，每一次移动左指针的时候都需要删除第一个hash元素
+        if i != 0 {
+            delete(hash, s[i-1])
+        }
+        // 不断移动右指针，直到出现重复字符退出
+        for right < n && hash[s[right]] == 0 {
+            hash[s[right]]++
+            right++
+        }
+        // 更新最大值
+        if right - i > max {
+            max = right - i
+        }
+    }
+    return max
+}
+```
+
+PHP：
 
 ```php
 class Solution {
@@ -2410,7 +2615,7 @@ class Solution {
 
 **解题思路**
 
-> 字典序：从右往左，找到第一个左值小于右值的数，然后从右往左，找到第一个大于该左值的数，交换这两个值，并将该左值(不包含)右边的进行从小到大进行排序(原来为降序，只需要改为升序)。结合下图理解
+字典序：从右往左，找到第一个左值小于右值的数，然后从右往左，找到第一个大于该左值的数，交换这两个值，并将该左值(不包含)右边的进行从小到大进行排序(原来为降序，只需要改为升序)。结合下图理解
 
 ![Next Permutation](../../Image/oldimg/1df4ae7eb275ba4ab944521f99c84d782d17df804d5c15e249881bafcf106173-file_1555696082944.gif)
 
@@ -2631,87 +2836,6 @@ class Solution {
             }
         }
         return $result;
-    }
-}
-```
-
-#### L46.全排列
-
-> 难度：中等
-
-##### 描述
-
-给定一个 **没有重复 ** 数字的序列，返回其所有可能的全排列。
-
-##### 示例
-
-```
-输入: [1,2,3]
-输出:
-[
-  [1,2,3],
-  [1,3,2],
-  [2,1,3],
-  [2,3,1],
-  [3,1,2],
-  [3,2,1]
-]
-```
-
-##### 题解
-
-> 滑动窗口
-
-Go：
-
-```go
-func lengthOfLongestSubstring(s string) int {
-    n := len(s)
-    if n < 2 {
-        return n
-    }
-
-    hash := map[byte]int{}
-    left, right, max := 0, 0, 1
-    for right < n {
-        hash[s[right]]++
-        for hash[s[right]] != 1 {
-            hash[s[left]]--
-            left++
-        }
-        max = int(math.Max(float64(max), float64(right-left+1)))
-        right++
-    }
-
-    return max
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    
-    public $res = [];
-    /**
-     * @param Integer[] $nums
-     * @return Integer[][]
-     */
-    function permute($nums) {
-        $this->do([], $nums);
-        return $this->res;
-    }
-    function do($arr, $nums) {
-        if (count($arr) == count($nums)) {
-            array_push($this->res, $arr);
-            return;
-        }
-        for ($i = 0; $i < count($nums); $i++) {
-            if (in_array($nums[$i], $arr)) continue;
-            array_push($arr, $nums[$i]);
-            $this->do($arr, $nums);
-            array_pop($arr);
-        }
     }
 }
 ```
@@ -3448,7 +3572,81 @@ func countBits(n int) []int {
 }
 ```
 
+#### [L448-简单] 找到数组中所有消失的数字
+
 ##### 描述
+
+给你一个含 `n` 个整数的数组 `nums` ，其中 `nums[i]` 在区间 `[1, n]` 内。请你找出所有在 `[1, n]` 范围内但没有出现在 `nums` 中的数字，并以数组的形式返回结果。
+
+##### 示例
+
+```
+输入：nums = [4,3,2,7,8,2,3,1]
+输出：[5,6]
+
+输入：nums = [1,1]
+输出：[2]
+```
+
+- `n == nums.length`
+- `1 <= n <= 105`
+- `1 <= nums[i] <= n`
+
+##### 题解
+
+```go
+func findDisappearedNumbers(nums []int) []int {
+    res := []int{}
+    n := len(nums)
+    for i := 1; i <= n; i++ {
+        flag := false
+        for j := 0; j < n; j++ {
+            if i == nums[j] {
+                flag = true
+                break
+            }
+        }
+        if flag == false {
+            res = append(res, i)
+        }
+    }
+    return res
+}
+```
+
+#### [L461-简单] 汉明距离
+
+##### 描述
+
+两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。
+
+给你两个整数 `x` 和 `y`，计算并返回它们之间的汉明距离。
+
+##### 示例
+
+```
+输入：x = 1, y = 4
+输出：2
+解释：
+1   (0 0 0 1)
+4   (0 1 0 0)
+       ↑   ↑
+上面的箭头指出了对应二进制位不同的位置。
+
+
+输入：x = 3, y = 1
+输出：1
+```
+
+- `0 <= x, y <= 231 - 1`
+
+##### 题解
+
+```go
+func hammingDistance(x int, y int) int {
+    return bits.OnesCount(uint(x ^ y))
+}
+```
 
 #### [L509-简单] 斐波那契数
 
@@ -3503,6 +3701,115 @@ func fib(n int) int {
         return n
     }
     return fib(n - 1) + fib(n - 2)
+}
+```
+
+#### [L543-简单] 二叉树的直径
+
+##### 描述
+
+给你一棵二叉树的根节点，返回该树的 **直径** 。
+
+二叉树的 **直径** 是指树中任意两个节点之间最长路径的 **长度** 。这条路径可能经过也可能不经过根节点 `root` 。
+
+两节点之间路径的 **长度** 由它们之间边数表示。
+
+##### 示例
+
+```
+输入：root = [1,2,3,4,5]
+输出：3
+解释：3 ，取路径 [4,2,1,3] 或 [5,2,1,3] 的长度。
+
+输入：root = [1,2]
+输出：1
+```
+
+- 树中节点数目在范围 `[1, 104]` 内
+- `-100 <= Node.val <= 100`
+
+##### 题解
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+var result int
+func diameterOfBinaryTree(root *TreeNode) int {
+    result = 1
+    depth(root)
+    return result - 1
+}
+    
+func depth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    l := depth(root.Left)
+    r := depth(root.Right)
+    if result < l + r + 1 {
+        result = l + r + 1
+    }
+    if l > r {
+        return l + 1
+    } else {
+        return r + 1
+    }
+}
+```
+
+#### [L617-简单] 合并二叉树
+
+##### 描述
+
+给你两棵二叉树： `root1` 和 `root2` 。
+
+想象一下，当你将其中一棵覆盖到另一棵之上时，两棵树上的一些节点将会重叠（而另一些不会）。你需要将这两棵树合并成一棵新二叉树。合并的规则是：如果两个节点重叠，那么将这两个节点的值相加作为合并后节点的新值；否则，**不为** null 的节点将直接作为新二叉树的节点。
+
+返回合并后的二叉树。
+
+**注意:** 合并过程必须从两个树的根节点开始。
+
+##### 示例
+
+```
+输入：root1 = [1,3,2,5], root2 = [2,1,3,null,4,null,7]
+输出：[3,4,5,5,4,null,7]
+
+输入：root1 = [1], root2 = [1,2]
+输出：[2,2]
+```
+
+- 两棵树中的节点数目在范围 `[0, 2000]` 内
+- `-104 <= Node.val <= 104`
+
+##### 题解
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
+    if root1 == nil {
+        return root2
+    }
+    if root2 == nil {
+        return root1
+    }
+    root1.Val += root2.Val
+    root1.Left = mergeTrees(root1.Left, root2.Left)
+    root1.Right = mergeTrees(root1.Right, root2.Right)
+    return root1
 }
 ```
 
