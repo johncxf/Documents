@@ -1,5 +1,13 @@
 # 算法-Leetcode
 
+### 链表
+
+
+
+### 二叉树
+
+
+
 ### 回溯算法
 
 #### [L39-中等] 组合总和
@@ -174,21 +182,192 @@ class Solution {
 }
 ```
 
-#### 
-
 ### 动态规划
 
-### 其他
+#### [L53-中等] 最大子数组和
+
+给你一个整数数组 `nums` ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+**子数组**是数组中的一个连续部分
+
+**示例**
+
+```
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+
+输入：nums = [1]
+输出：1
+
+输入：nums = [5,4,-1,7,8]
+输出：23
+```
+
+**题解**
+
+动态规划
+
+将问题分解成n个字问题：
+
+- 子问题 1：以 −2-2−2 结尾的连续子数组的最大和是多少；
+    - 以 −2 **结尾的**连续子数组是 `[-2]`，因此最大和就是 −2。
+- 子问题 2：以 111 结尾的连续子数组的最大和是多少；
+    - 以 1 结尾的连续子数组有 [-2,1] 和 [1] ，其中 [-2,1] 就是在「子问题 1」的后面加上 1 得到。−2+1=−1<1，因此「子问题 2」 的答案是 1。
+
+- 子问题 3：以 −3-3−3 结尾的连续子数组的最大和是多少；
+- 子问题 4：以 444 结尾的连续子数组的最大和是多少；
+- 子问题 5：以 −1-1−1 结尾的连续子数组的最大和是多少；
+- 子问题 6：以 222 结尾的连续子数组的最大和是多少；
+- 子问题 7：以 111 结尾的连续子数组的最大和是多少；
+- 子问题 8：以 −5-5−5 结尾的连续子数组的最大和是多少；
+- 子问题 9：以 444 结尾的连续子数组的最大和是多少。
+
+假设`dp[i]`表示以 `nums[i]` **结尾** 的 **连续** 子数组的最大和，则可以得出：
+
+- 当 `dp[i - 1] > 0` 时 `dp[i] = dp[i - 1] + nums[i]`
+
+- 当 `dp[i - 1] <= 0` 时 `dp[i] = nums[i]`
+
+```go
+func maxSubArray(nums []int) int {
+    n := len(nums)
+    dp := make([]int, n)
+    dp[0] = nums[0]
+    max := dp[0]
+    for i := 1; i < n; i++ {
+        if dp[i - 1] > 0 {
+            dp[i] = dp[i - 1] + nums[i]
+        } else {
+            dp[i] = nums[i]
+        }
+        if dp[i] > max {
+            max = dp[i]
+        }
+    }
+    return max
+}
+```
+
+### 贪心算法
+
+#### [L55-中等] 跳跃游戏
+
+给你一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个下标，如果可以，返回 `true` ；否则，返回 `false` 。
+
+**示例**
+
+```
+输入：nums = [2,3,1,1,4]
+输出：true
+解释：可以先跳 1 步，从下标 0 到达下标 1, 然后再从下标 1 跳 3 步到达最后一个下标。
+
+输入：nums = [3,2,1,0,4]
+输出：false
+解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
+```
+
+**题解**
+
+贪心算法
+
+由题意可知：
+
+尽可能到达最远位置（贪心）。
+如果能到达某个位置，那一定能到达它前面的所有位置。
+
+设 k 为最远可到达的位置，如果能到达当前位置（i < k），则最远位置`k=i+nums[i]`
+
+若最远位置k已经 >= 数组最大长度，则肯定可以达到，可直接返回 true
+
+```go
+func canJump(nums []int) bool {
+    k, n := 0, len(nums)
+    for i := 0; i < n; i++ {
+        if i > k {
+            return false
+        }
+        if i + nums[i] > k {
+            k = i + nums[i]
+        }
+        if k >= n - 1 {
+            return true
+        }
+    }
+    return true
+}
+```
+
+### 分治算法
+
+
+
+### 排序算法
+
+#### [L56-中等] 合并区间
+
+以数组 `intervals` 表示若干个区间的集合，其中单个区间为 `intervals[i] = [starti, endi]` 。请你合并所有重叠的区间，并返回 *一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间* 。
+
+**示例**
+
+```go
+输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出：[[1,6],[8,10],[15,18]]
+解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+
+输入：intervals = [[1,4],[4,5]]
+输出：[[1,5]]
+解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
+```
+
+- `1 <= intervals.length <= 104`
+- `intervals[i].length == 2`
+- `0 <= starti <= endi <= 104`
+
+**题解**
+
+1. 先根据数组左端大小进行排序
+2. 遍历数组，依次比较每个数组，将前一个数组的右端 r 和后一个数组的左端 l 比较，若 `r < l`则说明不重叠
+
+```go
+func merge(intervals [][]int) [][]int {
+    // 先安装数组左端元素从小到大进行排序
+	n := len(intervals)
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			if intervals[i][0] > intervals[j][0] {
+				intervals[i], intervals[j] = intervals[j], intervals[i]
+			}
+		}
+	}
+	res := make([][]int, 0)
+	tmp := intervals[0]
+	for i := 1; i < n; i++ {
+		if tmp[1] < intervals[i][0] { // 没有重合
+			res = append(res, tmp)
+			tmp = intervals[i]
+		} else { // 重合
+			if tmp[1] < intervals[i][1] {
+				tmp[1] = intervals[i][1]
+			}
+		}
+	}
+	res = append(res, tmp)
+	return res
+}
+```
+
+### 哈希表
 
 #### [L1-简单] 两数之和
-
-##### 描述
 
 给定一个整数数组 `nums` 和一个目标值 `target`，请你在该数组中找出和为目标值的那 **两个** 整数，并返回他们的数组下标。
 
 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
 
-##### 示例
+**示例**
 
 ```
 输入：nums = [2,7,11,15], target = 9
@@ -202,11 +381,55 @@ class Solution {
 输出：[0,1]
 ```
 
-##### 题解
+- `2 <= nums.length <= 104`
+- `-109 <= nums[i] <= 109`
+- `-109 <= target <= 109`
+- **只会存在一个有效答案**
 
-**暴力**
+**题解**
 
-Golang：
+哈希法:
+
+```go
+func twoSum(nums []int, target int) []int {
+    hash := map[int]int{}
+    for i, v := range nums {
+        if p, ok := hash[target-v]; ok {
+            return []int{p, i}
+        }
+        hash[v] = i
+    }
+    return nil
+}
+```
+
+数组查找
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[]
+     */
+    function twoSum($nums, $target) {
+        $count = count($nums);
+        for ($i=0; $i<$count-1; $i++) {
+            $tmp = $target - $nums[$i];
+            $newnums = $nums;
+            unset($newnums[$i]);
+            $res = array_search($tmp, $newnums);
+            if ($res !== false) {
+                return array($i, $res);
+                break;
+            }
+        }
+    }
+}
+```
+
+暴力：
 
 ```go
 func twoSum(nums []int, target int) []int {
@@ -245,24 +468,61 @@ class Solution {
 }
 ```
 
-**哈希法**
+### 双指针
 
-Golang：
 
-```go
-func twoSum(nums []int, target int) []int {
-    hash := map[int]int{}
-    for i, v := range nums {
-        if p, ok := hash[target-v]; ok {
-            return []int{p, i}
-        }
-        hash[v] = i
-    }
-    return nil
-}
+
+### 滑动窗口
+
+#### [L3-中等] 无重复字符的最长子串
+
+给定一个字符串，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+**示例**
+
+```
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+
+输入: "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
 ```
 
-**数组查找**
+**题解**
+
+滑动窗口
+
+```go
+func lengthOfLongestSubstring(s string) int {
+    n := len(s)
+    right, max := 0, 0
+    // hash map，存储不重复的字符串，用于判断字符串是否出现过
+    hash := make(map[byte]int)
+    for i := 0; i < n; i++ {
+        // 除了 i = 0 第一次，每一次移动左指针的时候都需要删除第一个hash元素
+        if i != 0 {
+            delete(hash, s[i-1])
+        }
+        // 不断移动右指针，直到出现重复字符退出
+        for right < n && hash[s[right]] == 0 {
+            hash[s[right]]++
+            right++
+        }
+        // 更新最大值
+        if right - i > max {
+            max = right - i
+        }
+    }
+    return max
+}
+```
 
 PHP：
 
@@ -270,25 +530,67 @@ PHP：
 class Solution {
 
     /**
-     * @param Integer[] $nums
-     * @param Integer $target
-     * @return Integer[]
+     * @param String $s
+     * @return Integer
      */
-    function twoSum($nums, $target) {
-        $count = count($nums);
-        for ($i=0; $i<$count-1; $i++) {
-            $tmp = $target - $nums[$i];
-            $newnums = $nums;
-            unset($newnums[$i]);
-            $res = array_search($tmp, $newnums);
-            if ($res !== false) {
-                return array($i, $res);
-                break;
-            }
+    function lengthOfLongestSubstring($s) {
+        //边界
+        if (!$s || strlen($s) == 0) return 0;
+        //初始化
+        $array= [];
+        $ret = 0;
+        $start = 0;
+        //遍历
+        for ($i = 0; $i < strlen($s); $i++) {
+           if (isset($array[$s[$i]]) && $start <= $array[$s[$i]]) {
+               $start = $array[$s[$i]] + 1;
+           } else {
+               $ret = max($ret, $i - $start + 1);
+           }
+            $array[$s[$i]] = $i;
         }
+        return $ret;
     }
 }
 ```
+
+### 位运算
+
+#### [L461-简单] 汉明距离
+
+##### 描述
+
+两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。
+
+给你两个整数 `x` 和 `y`，计算并返回它们之间的汉明距离。
+
+##### 示例
+
+```
+输入：x = 1, y = 4
+输出：2
+解释：
+1   (0 0 0 1)
+4   (0 1 0 0)
+       ↑   ↑
+上面的箭头指出了对应二进制位不同的位置。
+
+
+输入：x = 3, y = 1
+输出：1
+```
+
+- `0 <= x, y <= 231 - 1`
+
+##### 题解
+
+```go
+func hammingDistance(x int, y int) int {
+    return bits.OnesCount(uint(x ^ y))
+}
+```
+
+### 未归类
 
 #### L2.两数相加
 
@@ -409,92 +711,6 @@ class Solution {
             $current->next = new ListNode($add);
         }
         return $list->next;
-    }
-}
-```
-
-#### [L3-中等] 无重复字符的最长子串
-
-##### 描述
-
-给定一个字符串，请你找出其中不含有重复字符的 **最长子串** 的长度。
-
-##### 示例
-
-**示例 1:**
-
-```
-输入: "abcabcbb"
-输出: 3 
-解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
-
-输入: "bbbbb"
-输出: 1
-解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
-
-输入: "pwwkew"
-输出: 3
-解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
-     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
-```
-
-##### 题解
-
-Go：
-
-滑动窗口
-
-```go
-func lengthOfLongestSubstring(s string) int {
-    n := len(s)
-    right, max := 0, 0
-    // hash map，存储不重复的字符串，用于判断字符串是否出现过
-    hash := make(map[byte]int)
-    for i := 0; i < n; i++ {
-        // 除了 i = 0 第一次，每一次移动左指针的时候都需要删除第一个hash元素
-        if i != 0 {
-            delete(hash, s[i-1])
-        }
-        // 不断移动右指针，直到出现重复字符退出
-        for right < n && hash[s[right]] == 0 {
-            hash[s[right]]++
-            right++
-        }
-        // 更新最大值
-        if right - i > max {
-            max = right - i
-        }
-    }
-    return max
-}
-```
-
-PHP：
-
-```php
-class Solution {
-
-    /**
-     * @param String $s
-     * @return Integer
-     */
-    function lengthOfLongestSubstring($s) {
-        //边界
-        if (!$s || strlen($s) == 0) return 0;
-        //初始化
-        $array= [];
-        $ret = 0;
-        $start = 0;
-        //遍历
-        for ($i = 0; $i < strlen($s); $i++) {
-           if (isset($array[$s[$i]]) && $start <= $array[$s[$i]]) {
-               $start = $array[$s[$i]] + 1;
-           } else {
-               $ret = max($ret, $i - $start + 1);
-           }
-            $array[$s[$i]] = $i;
-        }
-        return $ret;
     }
 }
 ```
@@ -2842,15 +3058,11 @@ class Solution {
 
 #### [L70-简单] 爬楼梯
 
-##### 描述
-
 假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。
 
 每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
 
 ##### 示例
-
-**示例 1：**
 
 ```
 输入：n = 2
@@ -2858,11 +3070,7 @@ class Solution {
 解释：有两种方法可以爬到楼顶。
 1. 1 阶 + 1 阶
 2. 2 阶
-```
 
-**示例 2：**
-
-```
 输入：n = 3
 输出：3
 解释：有三种方法可以爬到楼顶。
@@ -3611,40 +3819,6 @@ func findDisappearedNumbers(nums []int) []int {
         }
     }
     return res
-}
-```
-
-#### [L461-简单] 汉明距离
-
-##### 描述
-
-两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。
-
-给你两个整数 `x` 和 `y`，计算并返回它们之间的汉明距离。
-
-##### 示例
-
-```
-输入：x = 1, y = 4
-输出：2
-解释：
-1   (0 0 0 1)
-4   (0 1 0 0)
-       ↑   ↑
-上面的箭头指出了对应二进制位不同的位置。
-
-
-输入：x = 3, y = 1
-输出：1
-```
-
-- `0 <= x, y <= 231 - 1`
-
-##### 题解
-
-```go
-func hammingDistance(x int, y int) int {
-    return bits.OnesCount(uint(x ^ y))
 }
 ```
 
