@@ -578,22 +578,16 @@ func uniquePaths(m, n int) int {
 
 动态规划
 
-设 `dp[i][j]` 是到达 `i, j` 最多长路径，则 `dp[i][j]=min(dp[i-1][j], dp[i][j-1]) + grid[i][j]`
+设 `dp[i][j]` 是到达 `i, j` 最多长路径，则：
 
-先初始化数组
-
-第一个最小路径为：`dp[0][0] = grid[0`][0]
-
-第一行最小路径为：`dp[i][0] = dp[i-1][0] + grid[i][0]`
-
-第一列最小路径为：`dp[0][j] = dp[0][j-1] + grid[0][j]`
-
-第`i` 、`j`个元素的最小路径为： `dp[i][j]=min(dp[i-1][j], dp[i][j-1]) + grid[i][j]`
+- 当`i=0,j=0`时：`dp[0][0] = grid[0`][0]
+- 当`i>0,j=0`时：`dp[i][0] = dp[i-1][0] + grid[i][0]`
+- 当`i=0,j>0`时：`dp[0][j] = dp[0][j-1] + grid[0][j]`
+- 当`i>0,j>0`时： `dp[i][j]=min(dp[i-1][j], dp[i][j-1]) + grid[i][j]`
 
 ```go
 func minPathSum(grid [][]int) int {
-	m := len(grid)
-	n := len(grid[0])
+	m, n := len(grid), len(grid[0])
 	dp := make([][]int, m)
 	for i := range dp {
 		dp[i] = make([]int, n)
