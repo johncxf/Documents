@@ -184,6 +184,252 @@ class Solution {
 
 ### 动态规划
 
+#### [L5-中等] 最长回文子串
+
+给定一个字符串 `s`，找到 `s` 中最长的回文子串。你可以假设 `s` 的最大长度为 1000。
+
+- `1 <= s.length <= 1000`
+- `s` 仅由数字和英文字母组成
+
+**示例**
+
+```
+输入: "babad"
+输出: "bab"
+注意: "aba" 也是一个有效答案。
+
+输入: "cbbd"
+输出: "bb"
+```
+
+**题解**
+
+**暴力法**
+
+> 时间复杂度-O(n^3)
+>
+> 空间复杂度-O(1)
+
+GO：
+
+```go
+func longestPalindrome(s string) string {
+    n := len(s)
+    if (n < 2) {
+        return s
+    }
+
+    max, index := 1, 0
+    for i := 0; i < n - 1; i++ {
+        for j := i + 1; j < n; j++ {
+            if j - i + 1 > max && isPalindrome(s, i, j) {
+                max = j - i + 1
+                index = i
+            }
+        }
+    }
+
+    return s[index: index+max]
+}
+
+func isPalindrome(s string, left int, right int) bool {
+    for left < right {
+        if s[left] != s[right] {
+            return false
+        }
+        left++
+        right--
+    }
+    return true
+}
+```
+
+JavaScript：
+
+```go
+var longestPalindrome = function(s) {
+    let n = s.length;
+    if (n < 2) {
+        return s;
+    }
+
+    let maxLen = 1;
+    let index = 0;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = i + 1; j < n; j++) {
+            if (j - i + 1 > maxLen && isPalindrome(s, i ,j)) {
+                maxLen = j - i + 1;
+                index = i;
+            }
+        }
+    }
+
+    return s.slice(index, index + maxLen);
+};
+
+function isPalindrome(str, left, right) {
+    while(left < right) {
+        if (str[left] !== str[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+```
+
+**中心扩散法**
+
+> 时间复杂度-O(n^2)
+>
+> 空间复杂度-O(1)
+
+GO：
+
+```go
+func longestPalindrome(s string) string {
+    n := len(s)
+    if (n < 2) {
+        return s
+    }
+
+    left, right := 0, 0
+    for i := 0; i < n - 1; i++ {
+        left1, right1 := expandAroundCenter(s, i, i);
+        left2, right2 := expandAroundCenter(s, i, i + 1);
+        if right1 - left1 > right - left {
+            left, right = left1, right1
+        }
+        if right2 - left2 > right - left {
+            left, right = left2, right2
+        }
+    }
+
+    return s[left: right+1]
+}
+
+func expandAroundCenter(s string, left, right int) (int, int) {
+    for left >= 0 && right < len(s) {
+        if s[left] == s[right] {
+            left--
+            right++
+        } else {
+            break
+        }
+    }
+    return left + 1, right - 1
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    //定义全局
+    public $res = "";
+    public $max = 0;
+    //比较左右
+    private function diff($s, $left, $right) {
+        while ($left >=0 && $right < strlen($s) && $s[$left] == $s[$right]) {
+            if ($right - $left + 1 > $this->max) {
+                $this->max = $right - $left + 1;
+                $this->res = substr($s, $left, $right-$left+1);
+            }
+            $left--;
+            $right++;
+        }
+    }
+    /**
+     * @param String $s
+     * @return String
+     */
+    function longestPalindrome($s) {
+        if (strlen($s) <= 1) return $s;
+        for ($i = 0; $i < strlen($s); $i++) {
+            $this->diff($s, $i, $i);
+            $this->diff($s, $i, $i + 1);
+        }
+        return $this->res;
+    }
+}
+```
+
+**动态规划**
+
+> 时间复杂度-O(n^2)
+>
+> 空间复杂度-O(n^2)
+
+GO：
+
+```go
+func longestPalindrome(s string) string {
+    n := len(s)
+    if (n < 2) {
+        return s
+    }
+
+    dp := make([][]bool, n)
+    for i,_ := range dp {
+        dp[i] = make([]bool, n)
+    }
+
+    max, index := 1, 0
+    for j := 1; j < n; j++ {
+        for i := 0; i < j; i++ {
+            if s[i] != s[j] {
+                dp[i][j] = false
+            } else {
+                if j - i < 3 {
+                    dp[i][j] = true
+                } else {
+                    dp[i][j] = dp[i + 1][j - 1]
+                }
+            }
+            if dp[i][j] == true && j - i + 1 > max {
+                max = j - i + 1
+                index = i
+            }
+        }
+    }
+
+    return s[index: index+max]
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    /**
+     * @param String $s
+     * @return String
+     */
+    function longestPalindrome($s) {
+        if (strlen($s) <= 1) return $s;
+        $res = $s[0];
+        $max = 0;
+        if ($s[0] == $s[1]) {
+            $res = substr($s, 0, 2);
+        }
+        for ($j = 2; $j < strlen($s); $j++) {
+            $dp[$j][$j] = true;
+            for ($i = 0; $i < $j; $i++) {
+                $dp[$i][$j] = $s[$i] == $s[$j] && ($j - $i <= 2 || $dp[$i + 1][$j - 1]);
+                if ($dp[$i][$j] && $max < $j - $i + 1) {
+                    $max = $j - $i + 1;
+                    $res = substr($s, $i, $j - $i + 1);
+                }
+            }
+        }
+        return $res;
+    }
+}
+```
+
+
+
 #### [L53-中等] 最大子数组和
 
 给你一个整数数组 `nums` ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
@@ -246,6 +492,129 @@ func maxSubArray(nums []int) int {
         }
     }
     return max
+}
+```
+
+#### [L62-中等] 不同路径
+
+一个机器人位于一个 `m x n` 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+**示例**
+
+```
+输入：m = 3, n = 7
+输出：28
+
+输入：m = 3, n = 2
+输出：3
+解释：
+从左上角开始，总共有 3 条路径可以到达右下角。
+1. 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右
+3. 向下 -> 向右 -> 向下
+
+输入：m = 7, n = 3
+输出：28
+
+输入：m = 3, n = 3
+输出：6
+```
+
+- `1 <= m, n <= 100`
+- 题目数据保证答案小于等于 `2 * 109`
+
+**题解**
+
+动态规划
+
+`dp[i][j]` 是到达 `i, j` 最多路径，表达式：`dp[i][j] = dp[i-1][j] + dp[i`][j-1]
+
+```go
+func uniquePaths(m, n int) int {
+	dp := make([][]int, m)
+	for i := range dp {
+		dp[i] = make([]int, n)
+		dp[i][0] = 1
+	}
+	for j := 0; j < n; j++ {
+		dp[0][j] = 1
+	}
+	for i := 1; i < m; i++ {
+		for j := 1; j < n; j++ {
+			dp[i][j] = dp[i-1][j] + dp[i][j-1]
+		}
+	}
+	return dp[m-1][n-1]
+}
+```
+
+#### [L64-中等] 最小路径和
+
+给定一个包含非负整数的 `*m* x *n*` 网格 `grid` ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+**说明：**每次只能向下或者向右移动一步。
+
+**示例**
+
+```
+输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
+输出：7
+解释：因为路径 1→3→1→1→1 的总和最小。
+
+输入：grid = [[1,2,3],[4,5,6]]
+输出：12
+```
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 200`
+- `0 <= grid[i][j] <= 200`
+
+**题解**
+
+动态规划
+
+设 `dp[i][j]` 是到达 `i, j` 最多长路径，则 `dp[i][j]=min(dp[i-1][j], dp[i][j-1]) + grid[i][j]`
+
+先初始化数组
+
+第一个最小路径为：`dp[0][0] = grid[0`][0]
+
+第一行最小路径为：`dp[i][0] = dp[i-1][0] + grid[i][0]`
+
+第一列最小路径为：`dp[0][j] = dp[0][j-1] + grid[0][j]`
+
+第`i` 、`j`个元素的最小路径为： `dp[i][j]=min(dp[i-1][j], dp[i][j-1]) + grid[i][j]`
+
+```go
+func minPathSum(grid [][]int) int {
+	m := len(grid)
+	n := len(grid[0])
+	dp := make([][]int, m)
+	for i := range dp {
+		dp[i] = make([]int, n)
+	}
+	dp[0][0] = grid[0][0]
+	for i := 1; i < m; i++ {
+		dp[i][0] = dp[i-1][0] + grid[i][0]
+	}
+	for j := 1; j < n; j++ {
+		dp[0][j] = dp[0][j-1] + grid[0][j]
+	}
+	for i := 1; i < m; i++ {
+		for j := 1; j < n; j++ {
+			if dp[i-1][j] > dp[i][j-1] {
+				dp[i][j] = dp[i][j-1] + grid[i][j]
+			} else {
+				dp[i][j] = dp[i-1][j] + grid[i][j]
+			}
+		}
+	}
+	return dp[m-1][n-1]
 }
 ```
 
@@ -711,260 +1080,6 @@ class Solution {
             $current->next = new ListNode($add);
         }
         return $list->next;
-    }
-}
-```
-
-#### L5.最长回文子串
-
-> 难度：中等
-
-##### 描述
-
-给定一个字符串 `s`，找到 `s` 中最长的回文子串。你可以假设 `s` 的最大长度为 1000。
-
-- `1 <= s.length <= 1000`
-- `s` 仅由数字和英文字母组成
-
-##### 示例
-
-```
-输入: "babad"
-输出: "bab"
-注意: "aba" 也是一个有效答案。
-
-输入: "cbbd"
-输出: "bb"
-```
-
-##### 解题思路
-
-1. 暴力法
-2. 中心扩散法
-3. 动态规划法
-
-##### 题解
-
-**暴力法**
-
-> 时间复杂度-O(n^3)
->
-> 空间复杂度-O(1)
-
-GO：
-
-```go
-func longestPalindrome(s string) string {
-    n := len(s)
-    if (n < 2) {
-        return s
-    }
-
-    max, index := 1, 0
-    for i := 0; i < n - 1; i++ {
-        for j := i + 1; j < n; j++ {
-            if j - i + 1 > max && isPalindrome(s, i, j) {
-                max = j - i + 1
-                index = i
-            }
-        }
-    }
-
-    return s[index: index+max]
-}
-
-func isPalindrome(s string, left int, right int) bool {
-    for left < right {
-        if s[left] != s[right] {
-            return false
-        }
-        left++
-        right--
-    }
-    return true
-}
-```
-
-JavaScript：
-
-```go
-var longestPalindrome = function(s) {
-    let n = s.length;
-    if (n < 2) {
-        return s;
-    }
-
-    let maxLen = 1;
-    let index = 0;
-    for (let i = 0; i < n - 1; i++) {
-        for (let j = i + 1; j < n; j++) {
-            if (j - i + 1 > maxLen && isPalindrome(s, i ,j)) {
-                maxLen = j - i + 1;
-                index = i;
-            }
-        }
-    }
-
-    return s.slice(index, index + maxLen);
-};
-
-function isPalindrome(str, left, right) {
-    while(left < right) {
-        if (str[left] !== str[right]) {
-            return false;
-        }
-        left++;
-        right--;
-    }
-    return true;
-}
-```
-
-**中心扩散法**
-
-> 时间复杂度-O(n^2)
->
-> 空间复杂度-O(1)
-
-GO：
-
-```go
-func longestPalindrome(s string) string {
-    n := len(s)
-    if (n < 2) {
-        return s
-    }
-
-    left, right := 0, 0
-    for i := 0; i < n - 1; i++ {
-        left1, right1 := expandAroundCenter(s, i, i);
-        left2, right2 := expandAroundCenter(s, i, i + 1);
-        if right1 - left1 > right - left {
-            left, right = left1, right1
-        }
-        if right2 - left2 > right - left {
-            left, right = left2, right2
-        }
-    }
-
-    return s[left: right+1]
-}
-
-func expandAroundCenter(s string, left, right int) (int, int) {
-    for left >= 0 && right < len(s) {
-        if s[left] == s[right] {
-            left--
-            right++
-        } else {
-            break
-        }
-    }
-    return left + 1, right - 1
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    //定义全局
-    public $res = "";
-    public $max = 0;
-    //比较左右
-    private function diff($s, $left, $right) {
-        while ($left >=0 && $right < strlen($s) && $s[$left] == $s[$right]) {
-            if ($right - $left + 1 > $this->max) {
-                $this->max = $right - $left + 1;
-                $this->res = substr($s, $left, $right-$left+1);
-            }
-            $left--;
-            $right++;
-        }
-    }
-    /**
-     * @param String $s
-     * @return String
-     */
-    function longestPalindrome($s) {
-        if (strlen($s) <= 1) return $s;
-        for ($i = 0; $i < strlen($s); $i++) {
-            $this->diff($s, $i, $i);
-            $this->diff($s, $i, $i + 1);
-        }
-        return $this->res;
-    }
-}
-```
-
-**动态规划**
-
-> 时间复杂度-O(n^2)
->
-> 空间复杂度-O(n^2)
-
-GO：
-
-```go
-func longestPalindrome(s string) string {
-    n := len(s)
-    if (n < 2) {
-        return s
-    }
-
-    dp := make([][]bool, n)
-    for i,_ := range dp {
-        dp[i] = make([]bool, n)
-    }
-
-    max, index := 1, 0
-    for j := 1; j < n; j++ {
-        for i := 0; i < j; i++ {
-            if s[i] != s[j] {
-                dp[i][j] = false
-            } else {
-                if j - i < 3 {
-                    dp[i][j] = true
-                } else {
-                    dp[i][j] = dp[i + 1][j - 1]
-                }
-            }
-            if dp[i][j] == true && j - i + 1 > max {
-                max = j - i + 1
-                index = i
-            }
-        }
-    }
-
-    return s[index: index+max]
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    /**
-     * @param String $s
-     * @return String
-     */
-    function longestPalindrome($s) {
-        if (strlen($s) <= 1) return $s;
-        $res = $s[0];
-        $max = 0;
-        if ($s[0] == $s[1]) {
-            $res = substr($s, 0, 2);
-        }
-        for ($j = 2; $j < strlen($s); $j++) {
-            $dp[$j][$j] = true;
-            for ($i = 0; $i < $j; $i++) {
-                $dp[$i][$j] = $s[$i] == $s[$j] && ($j - $i <= 2 || $dp[$i + 1][$j - 1]);
-                if ($dp[$i][$j] && $max < $j - $i + 1) {
-                    $max = $j - $i + 1;
-                    $res = substr($s, $i, $j - $i + 1);
-                }
-            }
-        }
-        return $res;
     }
 }
 ```
