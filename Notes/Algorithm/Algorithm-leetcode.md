@@ -2,7 +2,128 @@
 
 ### 链表
 
+#### [L2-中等] 两数相加
 
+给出两个 **非空** 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 **逆序** 的方式存储的，并且它们的每个节点只能存储 **一位** 数字。
+
+如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
+
+您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+**示例**
+
+```
+2 -> 4 -> 3
+5 -> 6 -> 4
+输入：l1 = [2,4,3], l2 = [5,6,4]
+输出：[7,0,8]
+解释：342 + 465 = 807
+
+输入：l1 = [0], l2 = [0]
+输出：[0]
+
+输入：l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
+输出：[8,9,9,9,0,0,0,1]
+```
+
+- 每个链表中的节点数在范围 `[1, 100]` 内
+- `0 <= Node.val <= 9`
+- 题目数据保证列表表示的数字不含前导零
+
+**题解**
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+    var head, cur *ListNode
+    add := 0
+    for l1 != nil || l2 != nil {
+        n1, n2 := 0, 0
+        if l1 != nil {
+            n1 = l1.Val
+            l1 = l1.Next
+        }
+        if l2 != nil {
+            n2 = l2.Val
+            l2 = l2.Next
+        }
+
+        sum := n1 + n2 + add
+        sum, add = sum % 10, sum / 10
+
+        if head == nil {
+            head = &ListNode{Val: sum}
+            cur = head
+        } else {
+            cur.Next = &ListNode{Val: sum}
+            cur = cur.Next
+        }
+    }
+
+    if add > 0 {
+        cur.Next = &ListNode{Val: add}
+    }
+
+    return head
+}
+```
+
+PHP：
+
+```php
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $l1
+     * @param ListNode $l2
+     * @return ListNode
+     */
+    function addTwoNumbers($l1, $l2) {
+        $add = 0;
+        $list = new ListNode(0);
+        $current = $list;
+        while($l1 || $l2) {
+            $x = 0;
+            $y = 0;
+            if ($l1 != null) {
+                $x = $l1->val;
+                $l1 = $l1->next;
+            }
+            if ($l2 != null) {
+                $y = $l2->val;
+                $l2 = $l2->next;
+            }
+            
+            $val = ($x + $y + $add) % 10;
+            $add = intval(($x + $y + $add) / 10);
+            
+            $new = new ListNode($val);
+            $current->next = $new;
+            $current = $current->next;
+        }
+        if ($add > 0) {
+            $current->next = new ListNode($add);
+        }
+        return $list->next;
+    }
+}
+```
 
 ### 二叉树
 
@@ -930,6 +1051,54 @@ class Solution {
 }
 ```
 
+#### [L169-简单] 多数元素
+
+给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+**示例**
+
+```
+输入：nums = [3,2,3]
+输出：3
+
+输入：nums = [2,2,1,1,1,2,2]
+输出：2
+```
+
+- `n == nums.length`
+- `1 <= n <= 5 * 104`
+- `-109 <= nums[i] <= 109`
+
+**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
+
+**题解**
+
+哈希表
+
+```go
+func majorityElement(nums []int) int {
+    hash := map[int]int{}
+    for _, num := range nums {
+        if _, ok := hash[num]; ok {
+            hash[num] = hash[num] + 1
+        } else {
+            hash[num] = 1
+        }
+    }
+    maxKey := 0
+    maxValue := 0
+    for k, v := range hash {
+        if v > maxValue {
+            maxKey = k
+            maxValue = v
+        }
+    }
+    return maxKey
+}
+```
+
 ### 双指针
 
 #### [L75-中等] 颜色分类
@@ -1147,129 +1316,6 @@ func fib(n int) int {
 ```
 
 ### 未归类
-
-#### L2.两数相加
-
-> 难度：中等
-
-##### 描述
-
-给出两个 **非空** 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 **逆序** 的方式存储的，并且它们的每个节点只能存储 **一位** 数字。
-
-如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
-
-您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
-
-##### 示例
-
-```
-2 -> 4 -> 3
-5 -> 6 -> 4
-输入：l1 = [2,4,3], l2 = [5,6,4]
-输出：[7,0,8]
-解释：342 + 465 = 807
-
-输入：l1 = [0], l2 = [0]
-输出：[0]
-
-输入：l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
-输出：[8,9,9,9,0,0,0,1]
-```
-
-##### 题解
-
-Go：
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-    var head, cur *ListNode
-    add := 0
-    for l1 != nil || l2 != nil {
-        n1, n2 := 0, 0
-        if l1 != nil {
-            n1 = l1.Val
-            l1 = l1.Next
-        }
-        if l2 != nil {
-            n2 = l2.Val
-            l2 = l2.Next
-        }
-
-        sum := n1 + n2 + add
-        sum, add = sum % 10, sum / 10
-
-        if head == nil {
-            head = &ListNode{Val: sum}
-            cur = head
-        } else {
-            cur.Next = &ListNode{Val: sum}
-            cur = cur.Next
-        }
-    }
-
-    if add > 0 {
-        cur.Next = &ListNode{Val: add}
-    }
-
-    return head
-}
-```
-
-PHP：
-
-```php
-/**
- * Definition for a singly-linked list.
- * class ListNode {
- *     public $val = 0;
- *     public $next = null;
- *     function __construct($val) { $this->val = $val; }
- * }
- */
-class Solution {
-
-    /**
-     * @param ListNode $l1
-     * @param ListNode $l2
-     * @return ListNode
-     */
-    function addTwoNumbers($l1, $l2) {
-        $add = 0;
-        $list = new ListNode(0);
-        $current = $list;
-        while($l1 || $l2) {
-            $x = 0;
-            $y = 0;
-            if ($l1 != null) {
-                $x = $l1->val;
-                $l1 = $l1->next;
-            }
-            if ($l2 != null) {
-                $y = $l2->val;
-                $l2 = $l2->next;
-            }
-            
-            $val = ($x + $y + $add) % 10;
-            $add = intval(($x + $y + $add) / 10);
-            
-            $new = new ListNode($val);
-            $current->next = $new;
-            $current = $current->next;
-        }
-        if ($add > 0) {
-            $current->next = new ListNode($add);
-        }
-        return $list->next;
-    }
-}
-```
 
 #### L6.Z 字变换
 
@@ -3673,62 +3719,6 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
         }
     }
     return pa
-}
-```
-
-#### [L169-简单] 多数元素
-
-##### 描述
-
-给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
-
-你可以假设数组是非空的，并且给定的数组总是存在多数元素。
-
-#####  示例
-
-**示例 1：**
-
-```
-输入：nums = [3,2,3]
-输出：3
-```
-
-**示例 2：**
-
-```
-输入：nums = [2,2,1,1,1,2,2]
-输出：2
-```
-
-**提示：**
-
-- `n == nums.length`
-- `1 <= n <= 5 * 104`
-- `-109 <= nums[i] <= 109`
-
-**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
-
-##### 题解
-
-```go
-func majorityElement(nums []int) int {
-    hash := map[int]int{}
-    for _, num := range nums {
-        if _, ok := hash[num]; ok {
-            hash[num] = hash[num] + 1
-        } else {
-            hash[num] = 1
-        }
-    }
-    maxKey := 0
-    maxValue := 0
-    for k, v := range hash {
-        if v > maxValue {
-            maxKey = k
-            maxValue = v
-        }
-    }
-    return maxKey
 }
 ```
 
