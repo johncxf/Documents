@@ -125,6 +125,51 @@ class Solution {
 }
 ```
 
+#### [L234-简单] 回文链表
+
+给你一个单链表的头节点 `head` ，请你判断该链表是否为回文链表。如果是，返回 `true` ；否则，返回 `false` 。
+
+**示例**
+
+```
+输入：head = [1,2,2,1]
+输出：true
+
+输入：head = [1,2]
+输出：false
+```
+
+**题解**
+
+先遍历链表存入数组，再遍历数组进行判断
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func isPalindrome(head *ListNode) bool {
+    if head == nil {
+        return false
+    }
+    tmp := make([]int, 0)
+    for head != nil {
+        tmp = append(tmp, head.Val)
+        head = head.Next
+    }
+    n := len(tmp)
+    for i := 0; i < n/2; i++ {
+        if tmp[i] != tmp[n-1-i] {
+            return false
+        }
+    }
+    return true
+}
+```
+
 ### 二叉树
 
 
@@ -3839,53 +3884,6 @@ func invertTree(root *TreeNode) *TreeNode {
     root.Left = right
     root.Right = left
     return root
-}
-```
-
-#### [L234-简单] 回文链表
-
-##### 描述
-
-给你一个单链表的头节点 `head` ，请你判断该链表是否为回文链表。如果是，返回 `true` ；否则，返回 `false` 。
-
-##### 示例
-
-```
-输入：head = [1,2,2,1]
-输出：true
-
-输入：head = [1,2]
-输出：false
-```
-
-##### 题解
-
-先遍历链表存入数组，再遍历数组进行判断
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func isPalindrome(head *ListNode) bool {
-    if head == nil {
-        return false
-    }
-    tmpArr := []int{}
-    for head != nil {
-        tmpArr = append(tmpArr, head.Val)
-        head = head.Next
-    }
-    n := len(tmpArr)
-    for i, v := range tmpArr[:n/2] {
-        if v != tmpArr[n-1-i] {
-            return false
-        }
-    }
-    return true
 }
 ```
 
