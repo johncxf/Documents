@@ -125,6 +125,196 @@ class Solution {
 }
 ```
 
+#### [L141-简单] 环形链表
+
+给你一个链表的头节点 `head` ，判断链表中是否有环。
+
+如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（索引从 0 开始）。**注意：`pos` 不作为参数进行传递** 。仅仅是为了标识链表的实际情况。
+
+*如果链表中存在环* ，则返回 `true` 。 否则，返回 `false` 。
+
+**示例**
+
+```
+输入：head = [3,2,0,-4], pos = 1
+输出：true
+解释：链表中有一个环，其尾部连接到第二个节点。
+
+输入：head = [1,2], pos = 0
+输出：true
+解释：链表中有一个环，其尾部连接到第一个节点。
+
+输入：head = [1], pos = -1
+输出：false
+解释：链表中没有环。
+```
+
+- 链表中节点的数目范围是 `[0, 104]`
+- `-105 <= Node.val <= 105`
+- `pos` 为 `-1` 或者链表中的一个 **有效索引** 。
+
+**题解**
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func hasCycle(head *ListNode) bool {
+    if head == nil {
+        return false
+    }
+
+    hash := map[*ListNode]struct{}{}
+    for head != nil {
+        if _, ok := hash[head]; ok {
+            return true
+        }
+        hash[head] = struct{}{}
+        head = head.Next
+    }
+    return false
+}
+```
+
+#### [L160-简单] 相交链表
+
+给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 。
+
+**题解**
+
+哈希表，先遍历链表A，存入hash，再遍历链表B，如果当前节点在hash表中，且后面的节点都在，则相交
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    hash := map[*ListNode]int{}
+    tmpA, tmpB := headA, headB
+    for tmpA != nil {
+        hash[tmpA] = tmpA.Val
+        tmpA = tmpA.Next
+    }
+    for tmpB != nil {
+        if hash[tmpB] == tmpB.Val {
+            return tmpB
+        }
+        tmpB = tmpB.Next
+    }
+    return nil
+}
+```
+
+双指针
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    if headA == nil || headB == nil {
+        return nil
+    }
+    pa, pb := headA, headB
+    for pa != pb {
+        if pa == nil {
+            pa = headB
+        } else {
+            pa = pa.Next
+        }
+        if pb == nil {
+            pb = headA
+        } else {
+            pb = pb.Next
+        }
+    }
+    return pa
+}
+```
+
+#### [L206-简单] 反转链表
+
+给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+
+**示例**
+
+```
+输入：head = [1,2,3,4,5]
+输出：[5,4,3,2,1]
+
+输入：head = [1,2]
+输出：[2,1]
+
+输入：head = []
+输出：[]
+```
+
+**题解**
+
+先遍历链表，存在数组中，再遍历数组，构建新的链表
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func reverseList(head *ListNode) *ListNode {
+    if head == nil {
+		return head
+	}
+    arr := make([]int, 0)
+    for head != nil {
+        arr = append([]int{head.Val}, arr...)
+        head = head.Next
+    }
+    newHead := &ListNode{Val: arr[0], Next: nil}
+    tmpHead := newHead
+    for i := 1; i < len(arr); i++ {
+        tmpHead.Next = &ListNode{arr[i], nil}
+        tmpHead = tmpHead.Next
+    }
+    return newHead
+}
+```
+
+迭代：在遍历链表时，将当前节点的 next\textit{next}*next* 指针改为指向前一个节点
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func reverseList(head *ListNode) *ListNode {
+    var prev *ListNode
+    curr := head
+    for curr != nil {
+        next := curr.Next
+        curr.Next = prev
+        prev = curr
+        curr = next
+    }
+    return prev
+}
+```
+
 #### [L234-简单] 回文链表
 
 给你一个单链表的头节点 `head` ，请你判断该链表是否为回文链表。如果是，返回 `true` ；否则，返回 `false` 。
@@ -172,7 +362,314 @@ func isPalindrome(head *ListNode) bool {
 
 ### 二叉树
 
+#### [L94-简单] 二叉树的中序遍历
 
+给定一个二叉树的根节点 `root` ，返回 *它的 **中序** 遍历* 。
+
+**示例**
+
+```
+输入：root = [1,null,2,3]
+输出：[1,3,2]
+
+输入：root = []
+输出：[]
+
+输入：root = [1]
+输出：[1]
+```
+
+- 树中节点数目在范围 `[0, 100]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func inorderTraversal(root *TreeNode) (res []int) {
+    var inorder func(node *TreeNode)
+    inorder = func(node *TreeNode) {
+        if node == nil {
+            return
+        }
+        inorder(node.Left)
+        res = append(res, node.Val)
+        inorder(node.Right)
+    }
+    inorder(root)
+    return
+}
+```
+
+#### [L101-简单] 对称二叉树
+
+给你一个二叉树的根节点 `root` ， 检查它是否轴对称。
+
+**示例**
+
+```
+输入：root = [1,2,2,3,4,4,3]
+输出：true
+
+输入：root = [1,2,2,null,3,null,3]
+输出：false
+```
+
+- 树中节点数目在范围 `[1, 1000]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func isSymmetric(root *TreeNode) bool {
+    return check(root, root)
+}
+
+func check(p, q *TreeNode) bool {
+    if p == nil && q == nil {
+        return true
+    }
+    if p == nil || q == nil {
+        return false
+    }
+    return p.Val == q.Val && check(p.Left, q.Right) && check(p.Right, q.Left)
+}
+```
+
+#### [L102-简单] 二叉树的层次遍历
+
+给你二叉树的根节点 `root` ，返回其节点值的 **层序遍历** 。 （即逐层地，从左到右访问所有节点）。
+
+**示例**
+
+```
+输入：root = [3,9,20,null,null,15,7]
+输出：[[3],[9,20],[15,7]]
+
+输入：root = [1]
+输出：[[1]]
+
+输入：root = []
+输出：[]
+```
+
+- 树中节点数目在范围 `[0, 2000]` 内
+- `-1000 <= Node.val <= 1000`
+
+**题解**
+
+```go
+func levelOrder(root *TreeNode) [][]int {
+	ret := make([][]int, 0)
+	if root == nil {
+		return ret
+	}
+	q := []*TreeNode{root}
+	for i := 0; len(q) > 0; i++ {
+		ret = append(ret, []int{})
+		p := make([]*TreeNode, 0)
+		for j := 0; j < len(q); j++ {
+			node := q[j]
+			ret[i] = append(ret[i], node.Val)
+			if node.Left != nil {
+				p = append(p, node.Left)
+			}
+			if node.Right != nil {
+				p = append(p, node.Right)
+			}
+		}
+		q = p
+	}
+	return ret
+}
+```
+
+#### [L104-简单] 二叉树的最大深度
+
+给定一个二叉树 `root` ，返回其最大深度。
+
+二叉树的 **最大深度** 是指从根节点到最远叶子节点的最长路径上的节点数。
+
+**示例**
+
+```
+输入：root = [3,9,20,null,null,15,7]
+输出：3
+
+输入：root = [1,null,2]
+输出：2
+```
+
+- 树中节点的数量在 `[0, 104]` 区间内。
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+> 深度优先搜索
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func maxDepth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+```
+
+#### [L144-简单] 二叉树的前序遍历
+
+给你一棵二叉树的根节点 `root` ，返回其节点值的 **后前遍历** 。
+
+**示例**
+
+```
+输入：root = [1,null,2,3]
+输出：[1,2,3]
+
+输入：root = []
+输出：[]
+
+输入：root = [1]
+输出：[1]
+```
+
+- 树中节点的数目在范围 `[0, 100]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+```go
+func preorderTraversal(root *TreeNode) (res []int) {
+	var preorder func(node *TreeNode)
+	preorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		res = append(res, node.Val)
+		preorder(node.Left)
+		preorder(node.Right)
+	}
+	preorder(root)
+	return
+}
+```
+
+#### [L145-简单] 二叉树的后序遍历
+
+给你一棵二叉树的根节点 `root` ，返回其节点值的 **后序遍历** 。
+
+**示例**
+
+```
+输入：root = [1,null,2,3]
+输出：[3,2,1]
+
+输入：root = []
+输出：[]
+
+输入：root = [1]
+输出：[1]
+```
+
+- 树中节点的数目在范围 `[0, 100]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+```go
+func postorderTraversal(root *TreeNode) (res []int) {
+	var postorder func(node *TreeNode)
+	postorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		postorder(node.Left)
+		postorder(node.Right)
+		res = append(res, node.Val)
+	}
+	postorder(root)
+	return
+}
+```
+
+#### [L226-简单] 翻转二叉树
+
+给你一棵二叉树的根节点 `root` ，翻转这棵二叉树，并返回其根节点。
+
+**示例**
+
+```
+输入：root = [4,2,7,1,3,6,9]
+输出：[4,7,2,9,6,3,1]
+
+输入：root = [2,1,3]
+输出：[2,3,1]
+
+输入：root = []
+输出：[]
+```
+
+- 树中节点数目范围在 `[0, 100]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+> 递归
+>
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func invertTree(root *TreeNode) *TreeNode {
+    if root == nil {
+		return nil
+	}
+	// 交换左右节点位置
+	tmp := root.Left
+	root.Left = root.Right
+	root.Right = tmp
+	// 递归
+	invertTree(root.Left)
+	invertTree(root.Right)
+	return root
+}
+```
 
 ### 回溯算法
 
@@ -3449,148 +3946,6 @@ class Solution {
 }
 ```
 
-#### [L94-简单] 二叉树的中序遍历
-
-##### 描述
-
-给定一个二叉树的根节点 `root` ，返回 *它的 **中序** 遍历* 。
-
-##### 示例
-
-```
-输入：root = [1,null,2,3]
-输出：[1,3,2]
-
-输入：root = []
-输出：[]
-
-输入：root = [1]
-输出：[1]
-```
-
-- 树中节点数目在范围 `[0, 100]` 内
-- `-100 <= Node.val <= 100`
-
-##### 题解
-
-```go
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func inorderTraversal(root *TreeNode) (res []int) {
-    var inorder func(node *TreeNode)
-    inorder = func(node *TreeNode) {
-        if node == nil {
-            return
-        }
-        inorder(node.Left)
-        res = append(res, node.Val)
-        inorder(node.Right)
-    }
-    inorder(root)
-    return
-}
-```
-
-#### [L101-简单] 对称二叉树
-
-##### 描述
-
-给你一个二叉树的根节点 `root` ， 检查它是否轴对称。
-
-##### 示例
-
-```
-输入：root = [1,2,2,3,4,4,3]
-输出：true
-
-输入：root = [1,2,2,null,3,null,3]
-输出：false
-```
-
-- 树中节点数目在范围 `[1, 1000]` 内
-- `-100 <= Node.val <= 100`
-
-##### 题解
-
-```go
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func isSymmetric(root *TreeNode) bool {
-    return check(root, root)
-}
-
-func check(p, q *TreeNode) bool {
-    if p == nil && q == nil {
-        return true
-    }
-    if p == nil || q == nil {
-        return false
-    }
-    return p.Val == q.Val && check(p.Left, q.Right) && check(p.Right, q.Left)
-}
-```
-
-#### [L104-简单] 二叉树的最大深度
-
-##### 描述
-
-给定一个二叉树 `root` ，返回其最大深度。
-
-二叉树的 **最大深度** 是指从根节点到最远叶子节点的最长路径上的节点数。
-
-##### 示例
-
-```
-输入：root = [3,9,20,null,null,15,7]
-输出：3
-
-输入：root = [1,null,2]
-输出：2
-```
-
-- 树中节点的数量在 `[0, 104]` 区间内。
-- `-100 <= Node.val <= 100`
-
-##### 题解
-
-> 深度优先搜索
-
-```go
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func maxDepth(root *TreeNode) int {
-    if root == nil {
-        return 0
-    }
-    return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
-}
-
-func max(a, b int) int {
-    if a > b {
-        return a
-    }
-    return b
-}
-```
-
 #### [L136-简单] 只出现一次的数字
 
 ##### 描述
@@ -3641,249 +3996,6 @@ func singleNumber(nums []int) int {
         single ^= num
     }
     return single
-}
-```
-
-#### [L141-简单] 环形链表
-
-##### 描述
-
-给你一个链表的头节点 `head` ，判断链表中是否有环。
-
-如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（索引从 0 开始）。**注意：`pos` 不作为参数进行传递** 。仅仅是为了标识链表的实际情况。
-
-*如果链表中存在环* ，则返回 `true` 。 否则，返回 `false` 。
-
-##### 示例
-
-```
-输入：head = [3,2,0,-4], pos = 1
-输出：true
-解释：链表中有一个环，其尾部连接到第二个节点。
-
-输入：head = [1,2], pos = 0
-输出：true
-解释：链表中有一个环，其尾部连接到第一个节点。
-
-输入：head = [1], pos = -1
-输出：false
-解释：链表中没有环。
-```
-
-- 链表中节点的数目范围是 `[0, 104]`
-- `-105 <= Node.val <= 105`
-- `pos` 为 `-1` 或者链表中的一个 **有效索引** 。
-
-##### 题解
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func hasCycle(head *ListNode) bool {
-    if head == nil {
-        return false
-    }
-
-    hash := map[*ListNode]struct{}{}
-    for head != nil {
-        if _, ok := hash[head]; ok {
-            return true
-        }
-        hash[head] = struct{}{}
-        head = head.Next
-    }
-    return false
-}
-```
-
-#### [L160-简单] 相交链表
-
-##### 描述
-
-给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 。
-
-##### 题解
-
-哈希表，先遍历链表A，存入hash，再遍历链表B，如果当前节点在hash表中，且后面的节点都在，则相交
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func getIntersectionNode(headA, headB *ListNode) *ListNode {
-    hash := map[*ListNode]int{}
-    tmpA, tmpB := headA, headB
-    for tmpA != nil {
-        hash[tmpA] = tmpA.Val
-        tmpA = tmpA.Next
-    }
-    for tmpB != nil {
-        if hash[tmpB] == tmpB.Val {
-            return tmpB
-        }
-        tmpB = tmpB.Next
-    }
-    return nil
-}
-```
-
-双指针
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func getIntersectionNode(headA, headB *ListNode) *ListNode {
-    if headA == nil || headB == nil {
-        return nil
-    }
-    pa, pb := headA, headB
-    for pa != pb {
-        if pa == nil {
-            pa = headB
-        } else {
-            pa = pa.Next
-        }
-        if pb == nil {
-            pb = headA
-        } else {
-            pb = pb.Next
-        }
-    }
-    return pa
-}
-```
-
-#### [L206-简单] 反转链表
-
-##### 描述
-
-给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
-
-##### 示例
-
-```
-输入：head = [1,2,3,4,5]
-输出：[5,4,3,2,1]
-
-输入：head = [1,2]
-输出：[2,1]
-
-输入：head = []
-输出：[]
-```
-
-##### 题解
-
-先遍历链表，存在数组中，再遍历数组，构建新的链表
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func reverseList(head *ListNode) *ListNode {
-    if head == nil {
-		return head
-	}
-    arr := make([]int, 0)
-    for head != nil {
-        arr = append([]int{head.Val}, arr...)
-        head = head.Next
-    }
-    newHead := &ListNode{Val: arr[0], Next: nil}
-    tmpHead := newHead
-    for i := 1; i < len(arr); i++ {
-        tmpHead.Next = &ListNode{arr[i], nil}
-        tmpHead = tmpHead.Next
-    }
-    return newHead
-}
-```
-
-迭代：在遍历链表时，将当前节点的 next\textit{next}*next* 指针改为指向前一个节点
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func reverseList(head *ListNode) *ListNode {
-    var prev *ListNode
-    curr := head
-    for curr != nil {
-        next := curr.Next
-        curr.Next = prev
-        prev = curr
-        curr = next
-    }
-    return prev
-}
-```
-
-#### [L226-简单] 翻转二叉树
-
-##### 描述
-
-给你一棵二叉树的根节点 `root` ，翻转这棵二叉树，并返回其根节点。
-
-##### 示例
-
-```
-输入：root = [4,2,7,1,3,6,9]
-输出：[4,7,2,9,6,3,1]
-
-输入：root = [2,1,3]
-输出：[2,3,1]
-
-输入：root = []
-输出：[]
-```
-
-- 树中节点数目范围在 `[0, 100]` 内
-- `-100 <= Node.val <= 100`
-
-##### 题解
-
-递归
-
-```go
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func invertTree(root *TreeNode) *TreeNode {
-    if root == nil {
-        return nil
-    }
-    left := invertTree(root.Left)
-    right := invertTree(root.Right)
-    root.Left = right
-    root.Right = left
-    return root
 }
 ```
 
