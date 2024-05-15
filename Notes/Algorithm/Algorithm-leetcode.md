@@ -671,6 +671,111 @@ func invertTree(root *TreeNode) *TreeNode {
 }
 ```
 
+#### [L543-简单] 二叉树的直径
+
+给你一棵二叉树的根节点，返回该树的 **直径** 。
+
+二叉树的 **直径** 是指树中任意两个节点之间最长路径的 **长度** 。这条路径可能经过也可能不经过根节点 `root` 。
+
+两节点之间路径的 **长度** 由它们之间边数表示。
+
+**示例**
+
+```
+输入：root = [1,2,3,4,5]
+输出：3
+解释：3 ，取路径 [4,2,1,3] 或 [5,2,1,3] 的长度。
+
+输入：root = [1,2]
+输出：1
+```
+
+- 树中节点数目在范围 `[1, 104]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+var result int
+func diameterOfBinaryTree(root *TreeNode) int {
+    result = 1
+    depth(root)
+    return result - 1
+}
+    
+func depth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    l := depth(root.Left)
+    r := depth(root.Right)
+    if result < l + r + 1 {
+        result = l + r + 1
+    }
+    if l > r {
+        return l + 1
+    } else {
+        return r + 1
+    }
+}
+```
+
+#### [L617-简单] 合并二叉树
+
+给你两棵二叉树： `root1` 和 `root2` 。
+
+想象一下，当你将其中一棵覆盖到另一棵之上时，两棵树上的一些节点将会重叠（而另一些不会）。你需要将这两棵树合并成一棵新二叉树。合并的规则是：如果两个节点重叠，那么将这两个节点的值相加作为合并后节点的新值；否则，**不为** null 的节点将直接作为新二叉树的节点。
+
+返回合并后的二叉树。
+
+**注意:** 合并过程必须从两个树的根节点开始。
+
+**示例**
+
+```
+输入：root1 = [1,3,2,5], root2 = [2,1,3,null,4,null,7]
+输出：[3,4,5,5,4,null,7]
+
+输入：root1 = [1], root2 = [1,2]
+输出：[2,2]
+```
+
+- 两棵树中的节点数目在范围 `[0, 2000]` 内
+- `-104 <= Node.val <= 104`
+
+**题解**
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
+    if root1 == nil {
+        return root2
+    }
+    if root2 == nil {
+        return root1
+    }
+    root1.Val += root2.Val
+    root1.Left = mergeTrees(root1.Left, root2.Left)
+    root1.Right = mergeTrees(root1.Right, root2.Right)
+    return root1
+}
+```
+
 ### 回溯算法
 
 #### [L39-中等] 组合总和
@@ -1641,7 +1746,313 @@ func majorityElement(nums []int) int {
 }
 ```
 
+#### [L49-中等] 字母异位词分组
+
+给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
+
+**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。
+
+**示例**
+
+```
+输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+输入: strs = [""]
+输出: [[""]]
+
+输入: strs = ["a"]
+输出: [["a"]]
+```
+
+- `1 <= strs.length <= 104`
+- `0 <= strs[i].length <= 100`
+- `strs[i]` 仅包含小写字母
+
+**题解**
+
+```go
+func groupAnagrams(strs []string) [][]string {
+	hash := map[string][]string{}
+	for _, str := range strs {
+		// 将字符串转化成数组
+		s := []byte(str)
+		// 对字符串数组进行排序
+		sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })
+		// 将字符串数组中的元素类型进行转化
+		sortedStr := string(s)
+		// 以字符串为key构建map
+		hash[sortedStr] = append(hash[sortedStr], str)
+	}
+	// 重新组装成数组
+	ans := make([][]string, 0, len(hash))
+	for _, v := range hash {
+		ans = append(ans, v)
+	}
+	return ans
+}
+```
+
+#### [L128-中等] 最长连续序列
+
+给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+请你设计并实现时间复杂度为 `O(n)` 的算法解决此问题。
+
+**示例**
+
+```
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+
+输入：nums = [0,3,7,2,5,8,4,6,0,1]
+输出：9
+```
+
+- `0 <= nums.length <= 105`
+- `-109 <= nums[i] <= 109`
+
+**题解**
+
+```go
+func longestConsecutive(nums []int) int {
+	// 构建 hash 表
+	hash := map[int]bool{}
+	for _, v := range nums {
+		hash[v] = true
+	}
+	max := 0
+	// 遍历 hash 表
+	for num := range hash {
+		// 只取 num 为最小值的情况
+		if !hash[num-1] {
+			// 当前值
+			current := num
+			// 以当前值为最小值情况下的递增序列长度
+			count := 1
+			// 查找依次增加的序列
+			for hash[current+1] {
+				current++
+				count++
+			}
+			// 更新最大序列长度值
+			if count > max {
+				max = count
+			}
+		}
+	}
+	return max
+}
+```
+
 ### 双指针
+
+#### [L283-简单] 移动零
+
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+**请注意** ，必须在不复制数组的情况下原地对数组进行操作。
+
+**示例**
+
+```
+输入: nums = [0,1,0,3,12]
+输出: [1,3,12,0,0]
+
+输入: nums = [0]
+输出: [0]
+```
+
+- `1 <= nums.length <= 104`
+- `-231 <= nums[i] <= 231 - 1`
+
+**题解**
+
+```go
+func moveZeroes(nums []int)  {
+    l, r, n := 0, 0, len(nums)
+    for r < n {
+        if nums[r] != 0 {
+            nums[l], nums[r] = nums[r], nums[l]
+            l++
+        }
+        r++
+    }
+}
+```
+
+#### [L11-中等] 盛最多水的容器
+
+给定 *n* 个非负整数 *a*1，*a*2，...，*a*n，每个数代表坐标中的一个点 (*i*, *ai*) 。在坐标内画 *n* 条垂直线，垂直线 *i* 的两个端点分别为 (*i*, *ai*) 和 (*i*, 0)。找出其中的两条线，使得它们与 *x* 轴共同构成的容器可以容纳最多的水。
+
+**说明：**你不能倾斜容器，且 *n* 的值至少为 2。
+
+![img](../../Image/oldimg/question_11.jpg)
+
+图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+
+**示例**
+
+```
+输入: [1,8,6,2,5,4,8,3,7]
+输出: 49
+
+输入：height = [1,1]
+输出：1
+```
+
+**题解**
+
+Go：
+
+```go
+func maxArea(height []int) int {
+    n := len(height)
+    left, right, max, tmp := 0, n - 1, 0, 0
+    for left < right {
+        if height[left] < height[right] {
+            tmp = height[left] * (right - left)
+            left++
+        } else {
+            tmp = height[right] * (right - left)
+            right--
+        }
+        if tmp > max {
+            max = tmp
+        }
+    }
+    return max
+}
+```
+
+PHP：
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $height
+     * @return Integer
+     */
+    function maxArea($height) {
+        $left = 0;
+        $right = count($height) -1;
+        $maxarea = 0;
+        while ($left < $right) {
+        	$maxarea = max($maxarea, min($height[$left], $height[$right]) * ($right - $left));
+        	if ($height[$left] < $height[$right]) {
+        		$left++;
+        	} else {
+        		$right--;
+        	}
+        }
+        return $maxarea;
+    }
+}
+```
+
+#### [L15-中等] 三数之和
+
+给定一个包含 *n* 个整数的数组 `nums`，判断 `nums` 中是否存在三个元素 *a，b，c ，*使得 *a + b + c =* 0 ？找出所有满足条件且不重复的三元组。
+
+**注意：**答案中不可以包含重复的三元组。
+
+**示例**
+
+```
+例如, 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+```
+
+**题解**
+
+**排序+双指针**
+
+Go：
+
+```go
+func threeSum(nums []int) [][]int {
+    n := len(nums)
+    if n < 3 {
+        return [][]int{}
+    }
+
+    // 不能重复，所以先进行排序
+    sort.Ints(nums)
+
+    ret := make([][]int, 0)
+    for i := 0; i < n - 2; i++ {
+        if i > 0 && nums[i] == nums[i - 1] {
+            continue
+        }
+        left, right := i + 1, n - 1
+        need := 0 - nums[i]
+        for left < right {
+            if nums[left] + nums[right] == need {
+                ret = append(ret, []int{nums[i], nums[left], nums[right]})
+                for left < right && nums[left] == nums[left + 1] {
+                    left++
+                }
+                for left < right && nums[right] == nums[right - 1] {
+                    right--
+                }
+                left++
+                right--
+            } else if nums[left] + nums[right] < need {
+                left++
+            } else {
+                right--
+            }
+        }
+    }
+    return ret
+}
+```
+
+PHP：
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @return Integer[][]
+     */
+    function threeSum($nums) {
+        if (!$nums) return [];
+        sort($nums);
+        $ret = [];
+        for ($i = 0; $i < count($nums) - 2; $i++) {
+            if ($i > 0 && $nums[$i] == $nums[$i - 1]) continue;
+            $left = $i + 1;
+            $right = count($nums) - 1;
+            
+            $need = 0 - $nums[$i];
+            
+            while ($left < $right) {
+                if ($nums[$left] + $nums[$right] == $need) {
+                    array_push($ret, [$nums[$i], $nums[$left], $nums[$right]]);
+                    while ($left < $right && $nums[$left] == $nums[$left + 1]) $left++;
+                    while ($left < $right && $nums[$right] == $nums[$right - 1]) $right--;
+                    $left++;
+                    $right--;
+                } else if ($nums[$left] + $nums[$right] > $need) {
+                    $right--;
+                } else {
+                    $left++;
+                }
+            }
+        }
+        return $ret;
+    }
+}
+```
 
 #### [L75-中等] 颜色分类
 
@@ -1696,6 +2107,106 @@ func sortColors(nums []int) {
     }
 }
 ```
+
+#### [L42-困难] 接雨水
+
+给定 `n` 个非负整数表示每个宽度为 `1` 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+**示例**
+
+![img](../../Image/algorithm/lt42-rainwatertrap.png)
+
+```
+输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+输出：6
+解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 
+
+输入：height = [4,2,0,3,2,5]
+输出：9
+```
+
+- `n == height.length`
+- `1 <= n <= 2 * 104`
+- `0 <= height[i] <= 105`
+
+**题解**
+
+动态规划：
+
+```go
+func trap(height []int) int {
+	n := len(height)
+	if n == 0 {
+		return -1
+	}
+
+	leftMax := make([]int, n)
+	leftMax[0] = height[0]
+	for i := 1; i < n; i++ {
+		if leftMax[i-1] > height[i] {
+			leftMax[i] = leftMax[i-1]
+		} else {
+			leftMax[i] = height[i]
+		}
+	}
+
+	rightMax := make([]int, n)
+	rightMax[n-1] = height[n-1]
+	for i := n - 2; i >= 0; i-- {
+		if rightMax[i+1] > height[i] {
+			rightMax[i] = rightMax[i+1]
+		} else {
+			rightMax[i] = height[i]
+		}
+	}
+	ans := 0
+	for i, h := range height {
+		if leftMax[i] < rightMax[i] {
+			ans += leftMax[i] - h
+		} else {
+			ans += rightMax[i] - h
+		}
+	}
+	return ans
+}
+```
+
+- 时间复杂度：O(n)
+- 空间复杂度：O(n)
+
+滑动窗口
+
+> 在动态规划解法基础上进行优化
+
+```go
+func trap2(height []int) int {
+	n := len(height)
+	if n == 0 {
+		return -1
+	}
+	ans := 0
+	left, right, leftMax, rightMax := 0, n-1, 0, 0
+	for left < right {
+		if height[left] > leftMax {
+			leftMax = height[left]
+		}
+		if height[right] > rightMax {
+			rightMax = height[right]
+		}
+		if leftMax < rightMax {
+			ans += leftMax - height[left]
+			left++
+		} else {
+			ans += rightMax - height[right]
+			right--
+		}
+	}
+	return ans
+}
+```
+
+- 时间复杂度：O(n)
+- 空间复杂度：O(1)
 
 ### 滑动窗口
 
@@ -1776,6 +2287,64 @@ class Solution {
         }
         return $ret;
     }
+}
+```
+
+#### [L438-中等] 找到字符串中所有字母异位词
+
+给定两个字符串 `s` 和 `p`，找到 `s` 中所有 `p` 的 **异位词** 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+
+**异位词** 指由相同字母重排列形成的字符串（包括相同的字符串）。
+
+**示例**
+
+```
+输入: s = "cbaebabacd", p = "abc"
+输出: [0,6]
+解释:
+起始索引等于 0 的子串是 "cba", 它是 "abc" 的异位词。
+起始索引等于 6 的子串是 "bac", 它是 "abc" 的异位词。
+
+输入: s = "abab", p = "ab"
+输出: [0,1,2]
+解释:
+起始索引等于 0 的子串是 "ab", 它是 "ab" 的异位词。
+起始索引等于 1 的子串是 "ba", 它是 "ab" 的异位词。
+起始索引等于 2 的子串是 "ab", 它是 "ab" 的异位词。
+```
+
+- `1 <= s.length, p.length <= 3 * 104`
+- `s` 和 `p` 仅包含小写字母
+
+**题解**
+
+```go
+func findAnagrams(s string, p string) []int {
+	n, m := len(s), len(p)
+	if n < m {
+		return nil
+	}
+
+	// 维护2个m个元素的数组，统计每个字符出现的次数
+	// 利用golang数组可以使用==比较的特性，判断2个窗口数组是否相等
+	var sCount, pCount [123]int
+	for i, ch := range p {
+		sCount[s[i]]++
+		pCount[ch]++
+	}
+
+	var ans []int
+	if sCount == pCount {
+		ans = append(ans, 0)
+	}
+	for i, ch := range s[:n-m] {
+		sCount[ch]--
+		sCount[s[i+m]]++
+		if sCount == pCount {
+			ans = append(ans, i+1)
+		}
+	}
+	return ans
 }
 ```
 
@@ -2222,103 +2791,6 @@ class Solution {
 }
 ```
 
-#### [L11-中等] 盛最多水的容器
-
-给定 *n* 个非负整数 *a*1，*a*2，...，*a*n，每个数代表坐标中的一个点 (*i*, *ai*) 。在坐标内画 *n* 条垂直线，垂直线 *i* 的两个端点分别为 (*i*, *ai*) 和 (*i*, 0)。找出其中的两条线，使得它们与 *x* 轴共同构成的容器可以容纳最多的水。
-
-**说明：**你不能倾斜容器，且 *n* 的值至少为 2。
-
-![img](../../Image/oldimg/question_11.jpg)
-
-图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
-
-**示例**
-
-```
-输入: [1,8,6,2,5,4,8,3,7]
-输出: 49
-
-输入：height = [1,1]
-输出：1
-```
-
-**题解**
-
-**暴力法**
-
-> 暴力，超时
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $height
-     * @return Integer
-     */
-    function maxArea($height) {
-        $n = count($height);
-        if ($n < 2) return 0;
-        $maxarea = 0;
-        for ($i = 0; $i < $n; $i++) {
-            for ($j = $i + 1; $j < $n; $j++) {
-                $maxarea = max($maxarea, min($height[$i], $height[$j]) * ($j - $i));
-            }
-        }
-        return $maxarea;
-    }
-}
-```
-
-**左右指针**
-
-Go：
-
-```go
-func maxArea(height []int) int {
-    n := len(height)
-    left, right, max, tmp := 0, n - 1, 0, 0
-    for left < right {
-        if height[left] < height[right] {
-            tmp = height[left] * (right - left)
-            left++
-        } else {
-            tmp = height[right] * (right - left)
-            right--
-        }
-        if tmp > max {
-            max = tmp
-        }
-    }
-    return max
-}
-```
-
-PHP：
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $height
-     * @return Integer
-     */
-    function maxArea($height) {
-        $left = 0;
-        $right = count($height) -1;
-        $maxarea = 0;
-        while ($left < $right) {
-        	$maxarea = max($maxarea, min($height[$left], $height[$right]) * ($right - $left));
-        	if ($height[$left] < $height[$right]) {
-        		$left++;
-        	} else {
-        		$right--;
-        	}
-        }
-        return $maxarea;
-    }
-}
-```
-
 #### [L12-中等] 整数转罗马数字
 
 罗马数字包含以下七种字符： `I`， `V`， `X`， `L`，`C`，`D` 和 `M`。
@@ -2538,108 +3010,6 @@ class Solution {
             $firstLen > $tempLen && $firstLen = $tempLen;
         }
         return substr($first, 0, $firstLen);
-    }
-}
-```
-
-#### [L15-中等] 三数之和
-
-给定一个包含 *n* 个整数的数组 `nums`，判断 `nums` 中是否存在三个元素 *a，b，c ，*使得 *a + b + c =* 0 ？找出所有满足条件且不重复的三元组。
-
-**注意：**答案中不可以包含重复的三元组。
-
-**示例**
-
-```
-例如, 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
-
-满足要求的三元组集合为：
-[
-  [-1, 0, 1],
-  [-1, -1, 2]
-]
-```
-
-**题解**
-
-**排序+双指针**
-
-Go：
-
-```go
-func threeSum(nums []int) [][]int {
-    n := len(nums)
-    if n < 3 {
-        return [][]int{}
-    }
-
-    // 不能重复，所以先进行排序
-    sort.Ints(nums)
-
-    ret := make([][]int, 0)
-    for i := 0; i < n - 2; i++ {
-        if i > 0 && nums[i] == nums[i - 1] {
-            continue
-        }
-        left, right := i + 1, n - 1
-        need := 0 - nums[i]
-        for left < right {
-            if nums[left] + nums[right] == need {
-                ret = append(ret, []int{nums[i], nums[left], nums[right]})
-                for left < right && nums[left] == nums[left + 1] {
-                    left++
-                }
-                for left < right && nums[right] == nums[right - 1] {
-                    right--
-                }
-                left++
-                right--
-            } else if nums[left] + nums[right] < need {
-                left++
-            } else {
-                right--
-            }
-        }
-    }
-    return ret
-}
-```
-
-PHP：
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @return Integer[][]
-     */
-    function threeSum($nums) {
-        if (!$nums) return [];
-        sort($nums);
-        $ret = [];
-        for ($i = 0; $i < count($nums) - 2; $i++) {
-            if ($i > 0 && $nums[$i] == $nums[$i - 1]) continue;
-            $left = $i + 1;
-            $right = count($nums) - 1;
-            
-            $need = 0 - $nums[$i];
-            
-            while ($left < $right) {
-                if ($nums[$left] + $nums[$right] == $need) {
-                    array_push($ret, [$nums[$i], $nums[$left], $nums[$right]]);
-                    while ($left < $right && $nums[$left] == $nums[$left + 1]) $left++;
-                    while ($left < $right && $nums[$right] == $nums[$right - 1]) $right--;
-                    $left++;
-                    $right--;
-                } else if ($nums[$left] + $nums[$right] > $need) {
-                    $right--;
-                } else {
-                    $left++;
-                }
-            }
-        }
-        return $ret;
     }
 }
 ```
@@ -3766,42 +4136,6 @@ func singleNumber(nums []int) int {
 }
 ```
 
-#### [L283-简单] 移动零
-
-给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
-
-**请注意** ，必须在不复制数组的情况下原地对数组进行操作。
-
-**示例**
-
-```
-输入: nums = [0,1,0,3,12]
-输出: [1,3,12,0,0]
-
-输入: nums = [0]
-输出: [0]
-```
-
-- `1 <= nums.length <= 104`
-- `-231 <= nums[i] <= 231 - 1`
-
-**题解**
-
-双指针
-
-```go
-func moveZeroes(nums []int)  {
-    l, r, n := 0, 0, len(nums)
-    for r < n {
-        if nums[r] != 0 {
-            nums[l], nums[r] = nums[r], nums[l]
-            l++
-        }
-        r++
-    }
-}
-```
-
 #### [L338-简单] 比特位计数
 
 给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 **`1` 的个数** ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
@@ -3887,109 +4221,3 @@ func findDisappearedNumbers(nums []int) []int {
     return res
 }
 ```
-
-#### [L543-简单] 二叉树的直径
-
-给你一棵二叉树的根节点，返回该树的 **直径** 。
-
-二叉树的 **直径** 是指树中任意两个节点之间最长路径的 **长度** 。这条路径可能经过也可能不经过根节点 `root` 。
-
-两节点之间路径的 **长度** 由它们之间边数表示。
-
-**示例**
-
-```
-输入：root = [1,2,3,4,5]
-输出：3
-解释：3 ，取路径 [4,2,1,3] 或 [5,2,1,3] 的长度。
-
-输入：root = [1,2]
-输出：1
-```
-
-- 树中节点数目在范围 `[1, 104]` 内
-- `-100 <= Node.val <= 100`
-
-**题解**
-
-```go
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-var result int
-func diameterOfBinaryTree(root *TreeNode) int {
-    result = 1
-    depth(root)
-    return result - 1
-}
-    
-func depth(root *TreeNode) int {
-    if root == nil {
-        return 0
-    }
-    l := depth(root.Left)
-    r := depth(root.Right)
-    if result < l + r + 1 {
-        result = l + r + 1
-    }
-    if l > r {
-        return l + 1
-    } else {
-        return r + 1
-    }
-}
-```
-
-#### [L617-简单] 合并二叉树
-
-给你两棵二叉树： `root1` 和 `root2` 。
-
-想象一下，当你将其中一棵覆盖到另一棵之上时，两棵树上的一些节点将会重叠（而另一些不会）。你需要将这两棵树合并成一棵新二叉树。合并的规则是：如果两个节点重叠，那么将这两个节点的值相加作为合并后节点的新值；否则，**不为** null 的节点将直接作为新二叉树的节点。
-
-返回合并后的二叉树。
-
-**注意:** 合并过程必须从两个树的根节点开始。
-
-**示例**
-
-```
-输入：root1 = [1,3,2,5], root2 = [2,1,3,null,4,null,7]
-输出：[3,4,5,5,4,null,7]
-
-输入：root1 = [1], root2 = [1,2]
-输出：[2,2]
-```
-
-- 两棵树中的节点数目在范围 `[0, 2000]` 内
-- `-104 <= Node.val <= 104`
-
-**题解**
-
-```go
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
-    if root1 == nil {
-        return root2
-    }
-    if root2 == nil {
-        return root1
-    }
-    root1.Val += root2.Val
-    root1.Left = mergeTrees(root1.Left, root2.Left)
-    root1.Right = mergeTrees(root1.Right, root2.Right)
-    return root1
-}
-```
-
