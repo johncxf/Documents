@@ -4221,3 +4221,43 @@ func findDisappearedNumbers(nums []int) []int {
     return res
 }
 ```
+
+#### [L560-中等] 和为 K 的子数组
+
+给你一个整数数组 `nums` 和一个整数 `k` ，请你统计并返回 *该数组中和为 `k` 的子数组的个数* 。
+
+子数组是数组中元素的连续非空序列。
+
+**示例**
+
+```go
+输入：nums = [1,1,1], k = 2
+输出：2
+
+输入：nums = [1,2,3], k = 3
+输出：2
+```
+
+- `1 <= nums.length <= 2 * 104`
+- `-1000 <= nums[i] <= 1000`
+- `-107 <= k <= 107`
+
+**代码实现**
+
+```go
+func subarraySum(nums []int, k int) int {
+    count, sum := 0, 0
+	prefixSums := make(map[int]int)
+	prefixSums[0] = 1
+
+	for _, num := range nums {
+		sum += num
+		if val, ok := prefixSums[sum-k]; ok {
+			count += val
+		}
+		prefixSums[sum]++
+	}
+	return count
+}
+```
+
