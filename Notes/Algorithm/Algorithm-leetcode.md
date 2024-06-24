@@ -125,6 +125,328 @@ class Solution {
 }
 ```
 
+#### [L19-中等] 删除链表的倒数第N个节点
+
+给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+
+给定的 n 保证是有效的。
+
+**示例**
+
+```
+给定一个链表: 1->2->3->4->5, 和 n = 2.
+当删除了倒数第二个节点后，链表变为 1->2->3->5.
+```
+
+**题解**
+
+Go:
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+    dummy := &ListNode{0, head}
+    fast, slow := dummy, dummy
+	for i := 0; i <= n; i++ {
+        fast = fast.Next
+	}
+    for fast != nil {
+        fast = fast.Next
+        slow = slow.Next
+    }
+    slow.Next = slow.Next.Next
+	return dummy.Next
+}
+```
+
+PHP:
+
+```php
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $head
+     * @param Integer $n
+     * @return ListNode
+     */
+    function removeNthFromEnd($head, $n) {
+        $dummy = new ListNode(0);
+        $dummy->next = $head;
+        $slow = $dummy;
+        $first = $dummy;
+        for ($i = 0; $i <= $n; $i++) {
+            $first = $first->next;
+        }
+        while($first) {
+            $slow = $slow->next;
+            $first = $first->next;
+        }
+        $slow->next = $slow->next->next;
+        return $dummy->next;
+    }
+}
+```
+
+#### [L21-简单] 合并两个有序链表
+
+将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+**示例**
+
+```
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+```
+
+**题解**
+
+**递归：**
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+    if l1 == nil{
+        return l2
+    }  
+    if l2 == nil{
+        return l1
+    }
+    var res *ListNode
+    if l1.Val >= l2.Val{
+        res = l2
+        res.Next = mergeTwoLists(l1,l2.Next)
+    }else{
+        res = l1
+        res.Next = mergeTwoLists(l1.Next,l2)
+    }
+    return res
+}
+```
+
+**迭代：**
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+    if list1 == nil {
+        return list2
+    }
+    if list2 == nil {
+        return list1
+    }
+
+    dummy := &ListNode{0, nil}
+    current := dummy
+    for list1 != nil || list2 != nil {
+        if list1 == nil {
+            current.Next = list2
+            break
+        }
+        if list2 == nil {
+            current.Next = list1
+            break
+        }
+        if list1.Val < list2.Val {
+            current.Next = list1
+            current = current.Next
+            list1 = list1.Next
+        } else {
+            current.Next = list2
+            current = current.Next
+            list2 = list2.Next
+        }
+    }
+    return dummy.Next
+}
+```
+
+PHP：
+
+```php
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $l1
+     * @param ListNode $l2
+     * @return ListNode
+     */
+    function mergeTwoLists($l1, $l2) {
+        if (!$l1) return $l2;
+        if (!$l2) return $l1;
+        
+        $dummyhead = new ListNode(0);
+        $current = $dummyhead;
+        while ($l1 || $l2) {
+            if (!$l1) {
+                $current->next = $l2;
+                break;
+            }
+            if (!$l2) {
+                $current->next = $l1;
+                break;
+            }
+            if ($l1->val < $l2->val) {
+                $current->next = $l1;
+                $current = $current->next;
+                $l1 = $l1->next;
+            } else {
+                $current->next = $l2;
+                $current = $current->next;
+                $l2 = $l2->next;
+            }
+        }
+        return $dummyhead->next;
+    }
+}
+```
+
+有关php实现链表可以参考以下文章：https://www.cnblogs.com/sunshineliulu/p/7717301.html
+
+#### [L24-中等] 两两交换链表中的节点
+
+给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+**示例**
+
+```
+给定 1->2->3->4, 你应该返回 2->1->4->3.
+
+输入：head = [1,2,3,4]
+输出：[2,1,4,3]
+
+输入：head = []
+输出：[]
+
+输入：head = [1]
+输出：[1]
+```
+
+- 链表中节点的数目在范围 `[0, 100]` 内
+- `0 <= Node.val <= 100`
+
+**解题**
+
+```
+		  node1   node2   next
+     dummy->1 ->    2  ->   3  -> 4
+     dummy->2 -> 1 -> 3 -> 4
+```
+
+**代码实现**
+
+递归：
+
+```go
+func swapPairs(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	newHead := head.Next
+	head.Next = swapPairs(newHead.Next)
+	newHead.Next = head
+	return newHead
+}
+```
+
+迭代：
+
+Go：
+
+```go
+func swapPairs(head *ListNode) *ListNode {
+    dummyHead := &ListNode{0, head}
+    temp := dummyHead
+    for temp.Next != nil && temp.Next.Next != nil {
+        node1 := temp.Next
+        node2 := temp.Next.Next
+
+        temp.Next = node2
+        node1.Next = node2.Next
+        node2.Next = node1
+        
+        temp = node1
+    }
+    return dummyHead.Next
+}
+```
+
+PHP：
+
+```php
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $head
+     * @return ListNode
+     */
+    function swapPairs($head) {
+        $dummyhead = new ListNode(0);
+        $dummyhead->next = $head;
+        $q = $dummyhead;
+        while ($q->next && $q->next->next) {
+            $node1 = $q->next;
+            $node2 = $node1->next;
+            $next = $node2->next;
+            
+            $node2->next = $node1;
+            $node1->next = $next;
+            $q->next = $node2;
+
+            $q = $node1;
+        }
+        return $dummyhead->next;
+    }
+}
+```
+
 #### [L141-简单] 环形链表
 
 给你一个链表的头节点 `head` ，判断链表中是否有环。
@@ -182,7 +504,7 @@ func hasCycle(head *ListNode) bool {
 
 #### [L160-简单] 相交链表
 
-给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 。
+给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 
 
 **题解**
 
@@ -292,7 +614,7 @@ func reverseList(head *ListNode) *ListNode {
 }
 ```
 
-迭代：在遍历链表时，将当前节点的 next\textit{next}*next* 指针改为指向前一个节点
+迭代：在遍历链表时，将当前节点的 next 指针改为指向前一个节点
 
 ```go
 /**
@@ -480,12 +802,12 @@ func levelOrder(root *TreeNode) [][]int {
 		return ret
 	}
 	q := []*TreeNode{root}
-	for i := 0; len(q) > 0; i++ {
-		ret = append(ret, []int{})
+	for len(q) > 0 {
+		// 收集当前层的所有值
+		level := make([]int, 0)
 		p := make([]*TreeNode, 0)
-		for j := 0; j < len(q); j++ {
-			node := q[j]
-			ret[i] = append(ret[i], node.Val)
+		for _, node := range q {
+			level = append(level, node.Val)
 			if node.Left != nil {
 				p = append(p, node.Left)
 			}
@@ -493,6 +815,9 @@ func levelOrder(root *TreeNode) [][]int {
 				p = append(p, node.Right)
 			}
 		}
+		// 将收集到的值添加到结果集中
+		ret = append(ret, level)
+		// 更新队列为下一层的节点
 		q = p
 	}
 	return ret
@@ -778,6 +1103,186 @@ func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
 
 ### 回溯算法
 
+#### [L17-中等] 电话号码的字母组合
+
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+<img src="../../Image/oldimg/17_telephone_keypad.png" alt="17_telephone_keypad" style="zoom:50%;" />
+
+**示例**
+
+```
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+说明：尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+
+输入：digits = "2"
+输出：["a","b","c"]
+
+输入：digits = ""
+输出：[]
+```
+
+**题解**
+
+**回溯法：**
+
+<img src="../../Image/algorithm/lt17-letterCombinations.png" alt="image-20240624213814028" style="zoom:50%;" />
+
+Go：
+
+```go
+var phoneMap map[string]string = map[string]string{
+	"2": "abc",
+	"3": "def",
+	"4": "ghi",
+	"5": "jkl",
+	"6": "mno",
+	"7": "pqrs",
+	"8": "tuv",
+	"9": "wxyz",
+}
+
+func backtrackLetter(digits string, index int, combination string, res *[]string) {
+	if index == len(digits) {
+		*res = append(*res, combination)
+		return
+	}
+	digit := string(digits[index])
+	letters := phoneMap[digit]
+	for i := 0; i < len(letters); i++ {
+		backtrackLetter(digits, index+1, combination+string(letters[i]), res)
+	}
+}
+
+func letterCombinations(digits string) []string {
+	if len(digits) == 0 {
+		return []string{}
+	}
+	res := make([]string, 0)
+	backtrackLetter(digits, 0, "", &res)
+	return res
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    public $res = [];
+    public $str = "";
+    public $array = [
+        '2' => ['a', 'b', 'c'],
+        '3' => ['d', 'e', 'f'],
+        '4' => ['g', 'h', 'i'],
+        '5' => ['j', 'k', 'l'],
+        '6' => ['m', 'n', 'o'],
+        '7' => ['p', 'q', 'r', 's'],
+        '8' => ['t', 'u', 'v'],
+        '9' => ['w', 'x', 'y', 'z'],
+    ];
+
+    /**
+     * @param String $digits
+     * @return String[]
+     */
+    function letterCombinations($digits) {
+        if (!$digits) return [];
+        $this->_dfs($digits, 0);
+        return $this->res;
+    }
+
+    private function _dfs($digits, $step) {
+        if ($step == strlen($digits)) {
+            $this->res[] = $this->str;
+            return;
+        }
+        $key = substr($digits, $step, 1);
+        $chars = $this->array[$key];
+        foreach ($chars as $v) {
+            $this->str .=$v;
+            $this->_dfs($digits, $step + 1);
+            $this->str = substr($this->str, 0, strlen($this->str) - 1);
+        }
+    }
+}
+```
+
+#### [L22-中等] 括号生成
+
+给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
+
+**示例**
+
+例如，给出 n = 3，生成结果为：
+
+```
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+```
+
+**题解**
+
+回溯法
+
+Go:
+
+```go
+func backtrackGenPas(left, right, n int, state string, res *[]string) {
+	if left == n && right == n {
+		*res = append(*res, state)
+		return
+	}
+	if left < n {
+		backtrackGenPas(left+1, right, n, state+"(", res)
+	}
+	if right < n && left > right {
+		backtrackGenPas(left, right+1, n, state+")", res)
+	}
+}
+
+func generateParenthesis(n int) []string {
+	res := make([]string, 0)
+	backtrackGenPas(0, 0, n, "", &res)
+	return res
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    public $list = [];
+    /**
+     * @param Integer $n
+     * @return String[]
+     */
+    function generateParenthesis($n) {
+        $this->_gen(0, 0, $n, '');
+        return $this->list;
+    }
+    private function _gen($left, $right, $num, $result) {
+        if ($left == $num && $right == $num) {
+            array_push($this->list, $result);
+            return;
+        }
+        if ($left < $num) {
+            $this->_gen($left + 1, $right, $num, $result.'(');
+        }
+        if ($right < $num && $left > $right) {
+            $this->_gen($left, $right + 1, $num, $result.')');
+        }
+    }
+}
+```
+
 #### [L39-中等] 组合总和
 
 给你一个 **无重复元素** 的整数数组 `candidates` 和一个目标整数 `target` ，找出 `candidates` 中可以使数字和为目标数 `target` 的 所有 **不同组合** ，并以列表形式返回。你可以按 **任意顺序** 返回这些组合。
@@ -820,36 +1325,36 @@ func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
 代码实现：
 
 ```go
-func combinationSum(candidates []int, target int) [][]int {
-	// 排序
-	sort.Ints(candidates)
-	// 过程数组
-	state := make([]int, 0)
-	// 结果数组
-	res := make([][]int, 0)
-	return backtrace(candidates, target, state, 0, res)
-}
-
-func backtrace(candidates []int, target int, state []int, start int, res [][]int) [][]int {
-	// 为0时符合，添加子集到结果集中
+// 回溯
+func backtraceCombinationSum(start, target int, state, choices []int, res *[][]int) {
+	// 子集和等于 target 时，记录解
 	if target == 0 {
-		//res = append(res, state)
-		res = append(res, append([]int{}, state...))
-		return res
+		*res = append(*res, append([]int{}, state...))
+		return
 	}
-	// 遍历，从 start 开始，避免重复子集
-	for i := start; i < len(candidates); i++ {
-		// 元素和不能超过 target
-		if target-candidates[i] < 0 {
+	// 遍历所有选择
+	// 剪枝二：从 start 开始遍历，避免生成重复子集
+	for i := start; i < len(choices); i++ {
+		// 剪枝一：若子集和超过 target ，则直接结束循环
+		// 这是因为数组已排序，后边元素更大，子集和一定超过 target
+		if target-choices[i] < 0 {
 			break
 		}
-		// 更新子集
-		state = append(state, candidates[i])
-		// 递归，进行下一轮
-		res = backtrace(candidates, target-candidates[i], state, i, res)
+		// 更新状态
+		state = append(state, choices[i])
+		// // 进行下一轮选择
+		backtraceCombinationSum(i, target-choices[i], state, choices, res)
 		// 回退
 		state = state[:len(state)-1]
 	}
+}
+
+func combinationSum(candidates []int, target int) [][]int {
+	// 先进行排序，为去重
+	sort.Ints(candidates)
+	res := make([][]int, 0)
+	state := make([]int, 0)
+	backtraceCombinationSum(0, target, state, candidates, &res)
 	return res
 }
 ```
@@ -881,44 +1386,43 @@ func backtrace(candidates []int, target int, state []int, start int, res [][]int
 
 **题解**
 
-> 回溯算法
+回溯算法
 
 ![lt46-permute](../../Image/algorithm/lt46-permute.png)
 
 Go：
 
 ```go
+// 回溯算法
+func backtracePermute(nums []int, state []int, selected []bool, res [][]int) [][]int {
+	// 当状态长度等于元素数量时，记录解
+	if len(nums) == len(state) {
+		res = append(res, append([]int{}, state...))
+		return res
+	}
+	// 遍历所有选择
+	for i := 0; i < len(nums); i++ {
+		if selected[i] {
+			continue
+		}
+		// 更新状态
+		selected[i] = true
+		state = append(state, nums[i])
+		// 进行下一轮选择
+		res = backtracePermute(nums, state, selected, res)
+		// 回退：撤销选择，恢复到之前的状态
+		selected[i] = false
+		state = state[:len(state)-1]
+	}
+	return res
+}
+
+// [L46-简单] 全排列
 func permute(nums []int) [][]int {
-    res := make([][]int, 0)
-    state := make([]int, 0)
-    return backtrace(nums, state, res)
-}
-
-func backtrace(nums []int, state []int, res [][]int) [][]int {
-    if len(nums) == len(state) {
-        res = append(res, append([]int{}, state...))
-        return res
-    }
-    for i := 0; i < len(nums); i++ {
-        if inArray(state, nums[i]) {
-            continue
-        }
-        state = append(state, nums[i])
-        res = backtrace(nums, state, res)
-        state = state[:len(state)-1]
-    }
-    return res
-}
-
-func inArray(arr []int, target int) bool {
-    exist := false
-    for _, v := range arr {
-        if target == v {
-            exist = true
-            break
-        }
-    }
-    return exist
+	res := make([][]int, 0)
+	state := make([]int, 0)
+	selected := make([]bool, len(nums))
+	return backtracePermute(nums, state, selected, res)
 }
 ```
 
@@ -947,6 +1451,52 @@ class Solution {
             array_pop($arr);
         }
     }
+}
+```
+
+#### [L78-中等] 子集
+
+给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+**示例**
+
+```
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+
+输入：nums = [0]
+输出：[[],[0]]
+```
+
+- `1 <= nums.length <= 10`
+- `-10 <= nums[i] <= 10`
+- `nums` 中的所有元素 **互不相同**
+
+**题解**
+
+```go
+// 回溯
+func backtrackSubsets(nums []int, path []int, start int, res *[][]int) {
+	// 记录结果
+	*res = append(*res, append([]int{}, path...))
+	// 遍历所有选择
+	for i := start; i < len(nums); i++ {
+		// 更新状态
+		path = append(path, nums[i])
+		// 进行下一次选择
+		backtrackSubsets(nums, path, i+1, res)
+		// 回退
+		path = path[:len(path)-1]
+	}
+}
+
+func subsets(nums []int) [][]int {
+	res := make([][]int, 0)
+	path := make([]int, 0)
+	backtrackSubsets(nums, path, 0, &res)
+	return res
 }
 ```
 
@@ -2426,6 +2976,10 @@ func fib(n int) int {
 }
 ```
 
+### 矩阵
+
+
+
 ### 未归类
 
 #### [L6-中等] Z 字变换
@@ -3059,115 +3613,6 @@ class Solution {
 }
 ```
 
-#### [L17-中等] 电话号码的字母组合
-
-给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
-
-给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
-
-<img src="../../Image/oldimg/17_telephone_keypad.png" alt="17_telephone_keypad" style="zoom:50%;" />
-
-**示例**
-
-```
-输入："23"
-输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
-说明：尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
-
-输入：digits = "2"
-输出：["a","b","c"]
-
-输入：digits = ""
-输出：[]
-```
-
-**题解**
-
-**回溯法：**
-
-Go：
-
-```go
-var phoneMap map[string]string = map[string]string {
-	"2": "abc",
-	"3": "def",
-	"4": "ghi",
-	"5": "jkl",
-	"6": "mno",
-	"7": "pqrs",
-	"8": "tuv",
-	"9": "wxyz",
-}
-
-var combinations []string
-
-func letterCombinations(digits string) []string {
-	if len(digits) == 0 {
-		return []string{}
-	}
-
-    combinations = []string{}
-	dfs(digits, 0, "")
-	return combinations
-}
-
-func dfs(digits string, index int, combination string) {
-	if len(digits) == index {
-		combinations = append(combinations, combination)
-		return
-	}
-
-	digit := string(digits[index])
-	letters := phoneMap[digit]
-	for i := 0; i < len(letters); i++ {
-		dfs(digits, index+1, combination+string(letters[i]))
-	}
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    public $res = [];
-    public $str = "";
-    public $array = [
-        '2' => ['a', 'b', 'c'],
-        '3' => ['d', 'e', 'f'],
-        '4' => ['g', 'h', 'i'],
-        '5' => ['j', 'k', 'l'],
-        '6' => ['m', 'n', 'o'],
-        '7' => ['p', 'q', 'r', 's'],
-        '8' => ['t', 'u', 'v'],
-        '9' => ['w', 'x', 'y', 'z'],
-    ];
-
-    /**
-     * @param String $digits
-     * @return String[]
-     */
-    function letterCombinations($digits) {
-        if (!$digits) return [];
-        $this->_dfs($digits, 0);
-        return $this->res;
-    }
-
-    private function _dfs($digits, $step) {
-        if ($step == strlen($digits)) {
-            $this->res[] = $this->str;
-            return;
-        }
-        $key = substr($digits, $step, 1);
-        $chars = $this->array[$key];
-        foreach ($chars as $v) {
-            $this->str .=$v;
-            $this->_dfs($digits, $step + 1);
-            $this->str = substr($this->str, 0, strlen($this->str) - 1);
-        }
-    }
-}
-```
-
 #### [L18-中等] 四数之和
 
 给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
@@ -3224,82 +3669,6 @@ class Solution {
             }
         }
         return $ret;
-    }
-}
-```
-
-#### [L19-中等] 删除链表的倒数第N个节点
-
-给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
-
-给定的 n 保证是有效的。
-
-**示例**
-
-```
-给定一个链表: 1->2->3->4->5, 和 n = 2.
-当删除了倒数第二个节点后，链表变为 1->2->3->5.
-```
-
-**题解**
-
-Go:
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func removeNthFromEnd(head *ListNode, n int) *ListNode {
-    dummy := &ListNode{0, head}
-    fast, slow := dummy, dummy
-	for i := 0; i <= n; i++ {
-        fast = fast.Next
-	}
-    for fast != nil {
-        fast = fast.Next
-        slow = slow.Next
-    }
-    slow.Next = slow.Next.Next
-	return dummy.Next
-}
-```
-
-PHP:
-
-```php
-/**
- * Definition for a singly-linked list.
- * class ListNode {
- *     public $val = 0;
- *     public $next = null;
- *     function __construct($val) { $this->val = $val; }
- * }
- */
-class Solution {
-
-    /**
-     * @param ListNode $head
-     * @param Integer $n
-     * @return ListNode
-     */
-    function removeNthFromEnd($head, $n) {
-        $dummy = new ListNode(0);
-        $dummy->next = $head;
-        $slow = $dummy;
-        $first = $dummy;
-        for ($i = 0; $i <= $n; $i++) {
-            $first = $first->next;
-        }
-        while($first) {
-            $slow = $slow->next;
-            $first = $first->next;
-        }
-        $slow->next = $slow->next->next;
-        return $dummy->next;
     }
 }
 ```
@@ -3400,276 +3769,6 @@ class Solution {
             }
         }
         return count($end) === 0;
-    }
-}
-```
-
-#### [L21-简单] 合并两个有序链表
-
-将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
-
-**示例**
-
-```
-输入：1->2->4, 1->3->4
-输出：1->1->2->3->4->4
-```
-
-**题解**
-
-**递归：**
-
-Go：
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
-    if l1 == nil{
-        return l2
-    }  
-    if l2 == nil{
-        return l1
-    }
-    var res *ListNode
-    if l1.Val >= l2.Val{
-        res = l2
-        res.Next = mergeTwoLists(l1,l2.Next)
-    }else{
-        res = l1
-        res.Next = mergeTwoLists(l1.Next,l2)
-    }
-    return res
-}
-```
-
-**迭代：**
-
-Go：
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-    if list1 == nil {
-        return list2
-    }
-    if list2 == nil {
-        return list1
-    }
-
-    dummy := &ListNode{0, nil}
-    current := dummy
-    for list1 != nil || list2 != nil {
-        if list1 == nil {
-            current.Next = list2
-            break
-        }
-        if list2 == nil {
-            current.Next = list1
-            break
-        }
-        if list1.Val < list2.Val {
-            current.Next = list1
-            current = current.Next
-            list1 = list1.Next
-        } else {
-            current.Next = list2
-            current = current.Next
-            list2 = list2.Next
-        }
-    }
-    return dummy.Next
-}
-```
-
-PHP：
-
-```php
-/**
- * Definition for a singly-linked list.
- * class ListNode {
- *     public $val = 0;
- *     public $next = null;
- *     function __construct($val) { $this->val = $val; }
- * }
- */
-class Solution {
-
-    /**
-     * @param ListNode $l1
-     * @param ListNode $l2
-     * @return ListNode
-     */
-    function mergeTwoLists($l1, $l2) {
-        if (!$l1) return $l2;
-        if (!$l2) return $l1;
-        
-        $dummyhead = new ListNode(0);
-        $current = $dummyhead;
-        while ($l1 || $l2) {
-            if (!$l1) {
-                $current->next = $l2;
-                break;
-            }
-            if (!$l2) {
-                $current->next = $l1;
-                break;
-            }
-            if ($l1->val < $l2->val) {
-                $current->next = $l1;
-                $current = $current->next;
-                $l1 = $l1->next;
-            } else {
-                $current->next = $l2;
-                $current = $current->next;
-                $l2 = $l2->next;
-            }
-        }
-        return $dummyhead->next;
-    }
-}
-```
-
-有关php实现链表可以参考以下文章：https://www.cnblogs.com/sunshineliulu/p/7717301.html
-
-#### [L22-中等] 括号生成
-
-给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
-
-**示例**
-
-例如，给出 n = 3，生成结果为：
-
-```
-[
-  "((()))",
-  "(()())",
-  "(())()",
-  "()(())",
-  "()()()"
-]
-```
-
-**题解**
-
-回溯法
-
-Go:
-
-```go
-var result []string
-
-func generateParenthesis(n int) []string {
-    dfs(0, 0, n, "")
-    return result
-}
-
-func dfs(left int, right int, n int, str string) {
-    if left == n && right == n {
-        result = append(result, str)
-        return
-    }
-    if left < n {
-        dfs(left + 1, right, n, str + "(")
-    }
-    if right < n && left > right {
-        dfs(left, right + 1, n, str + ")")
-    }
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    public $list = [];
-    /**
-     * @param Integer $n
-     * @return String[]
-     */
-    function generateParenthesis($n) {
-        $this->_gen(0, 0, $n, '');
-        return $this->list;
-    }
-    private function _gen($left, $right, $num, $result) {
-        if ($left == $num && $right == $num) {
-            array_push($this->list, $result);
-            return;
-        }
-        if ($left < $num) {
-            $this->_gen($left + 1, $right, $num, $result.'(');
-        }
-        if ($right < $num && $left > $right) {
-            $this->_gen($left, $right + 1, $num, $result.')');
-        }
-    }
-}
-```
-
-#### [L24-中等] 两两交换链表中的节点
-
-给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
-
-你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
-
-**示例**
-
-```
-给定 1->2->3->4, 你应该返回 2->1->4->3.
-```
-
-**解题**
-
-```
-		  node1   node2   next
-     dummy->1 ->    2  ->   3  -> 4
-     dummy->2 -> 1 -> 3 -> 4
-```
-
-代码实现
-
-```php
-/**
- * Definition for a singly-linked list.
- * class ListNode {
- *     public $val = 0;
- *     public $next = null;
- *     function __construct($val) { $this->val = $val; }
- * }
- */
-class Solution {
-
-    /**
-     * @param ListNode $head
-     * @return ListNode
-     */
-    function swapPairs($head) {
-        $dummyhead = new ListNode(0);
-        $dummyhead->next = $head;
-        $q = $dummyhead;
-        while ($q->next && $q->next->next) {
-            $node1 = $q->next;
-            $node2 = $node1->next;
-            $next = $node2->next;
-            
-            $node2->next = $node1;
-            $node1->next = $next;
-            $q->next = $node2;
-
-            $q = $node1;
-        }
-        return $dummyhead->next;
     }
 }
 ```
@@ -4133,6 +4232,95 @@ func singleNumber(nums []int) int {
         single ^= num
     }
     return single
+}
+```
+
+#### [L189-中等] 轮转数组
+
+给定一个整数数组 `nums`，将数组中的元素向右轮转 `k` 个位置，其中 `k` 是非负数。
+
+**示例：**
+
+```
+输入: nums = [1,2,3,4,5,6,7], k = 3
+输出: [5,6,7,1,2,3,4]
+解释:
+向右轮转 1 步: [7,1,2,3,4,5,6]
+向右轮转 2 步: [6,7,1,2,3,4,5]
+向右轮转 3 步: [5,6,7,1,2,3,4]
+
+输入：nums = [-1,-100,3,99], k = 2
+输出：[3,99,-1,-100]
+解释: 
+向右轮转 1 步: [99,-1,-100,3]
+向右轮转 2 步: [3,99,-1,-100]
+```
+
+- `1 <= nums.length <= 105`
+- `-231 <= nums[i] <= 231 - 1`
+- `0 <= k <= 105`
+
+**题解：**
+
+根据k值切分两个数组，再合并数组，再将新数组copy给原数组
+
+```go
+func rotateArray(nums []int, k int) {
+	n := len(nums)
+	// 处理 k > n 的情况
+	k = k % n
+	arr1 := nums[:n-k]
+	arr2 := nums[n-k:]
+	ans := append(arr2, arr1...)
+	copy(nums, ans)
+}
+```
+
+#### [L238-中等] 除自身以外数组的乘积
+
+给你一个整数数组 `nums`，返回 *数组 `answer` ，其中 `answer[i]` 等于 `nums` 中除 `nums[i]` 之外其余各元素的乘积* 。
+
+题目数据 **保证** 数组 `nums`之中任意元素的全部前缀元素和后缀的乘积都在 **32 位** 整数范围内。
+
+请 **不要使用除法，**且在 `O(n)` 时间复杂度内完成此题。
+
+**示例：**
+
+```
+输入: nums = [1,2,3,4]
+输出: [24,12,8,6]
+
+输入: nums = [-1,1,0,-3,3]
+输出: [0,0,9,0,0]
+```
+
+- `2 <= nums.length <= 105`
+- `-30 <= nums[i] <= 30`
+- **保证** 数组 `nums`之中任意元素的全部前缀元素和后缀的乘积都在 **32 位** 整数范围内
+
+**题解：**
+
+`ans[i]`的乘机等于`ans[i-1]` * `ans[i+1]`，因此，需要计算两侧每个位置的乘机值
+
+```go
+func productExceptSelf(nums []int) []int {
+	n := len(nums)
+	// 初始化两个数组，分别存储 i 左右两侧的乘机
+	lArr, rArr := make([]int, n), make([]int, n)
+	lArr[0] = 1
+	for i := 1; i < n; i++ {
+		lArr[i] = lArr[i-1] * nums[i-1]
+	}
+	rArr[n-1] = 1
+	for i := n - 2; i >= 0; i-- {
+		rArr[i] = rArr[i+1] * nums[i+1]
+	}
+	// i 的值为左右两侧乘机
+	ans := make([]int, n)
+	for i := 0; i < n; i++ {
+		ans[i] = lArr[i] * rArr[i]
+	}
+	return ans
 }
 ```
 
