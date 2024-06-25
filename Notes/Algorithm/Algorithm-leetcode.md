@@ -1101,6 +1101,720 @@ func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
 }
 ```
 
+### 栈
+
+#### [L20-简单] 有效的括号
+
+给定一个只包括 `'('`，`')'`，`'{'`，`'}'`，`'['`，`']'` 的字符串，判断字符串是否有效。
+
+有效字符串需满足：
+
+1. 左括号必须用相同类型的右括号闭合。
+2. 左括号必须以正确的顺序闭合。
+
+注意空字符串可被认为是有效字符串。
+
+**示例**
+
+```
+输入: "()"
+输出: true
+
+输入: "()[]{}"
+输出: true
+
+输入: "(]"
+输出: false
+
+输入: "([)]"
+输出: false
+
+输入: "{[]}"
+输出: true
+```
+
+**题解**
+
+如果属于左侧括号，则向数组end中插入对应的右侧括号；如果属于右侧括号则查找end数组中是否有一样的，如果有则删去
+类似于用栈实现
+
+Go：
+
+```go
+
+func isValid(s string) bool {
+	bracketsMap := map[byte]byte{
+		'(': ')',
+		'{': '}',
+		'[': ']',
+	}
+	stack := make([]byte, 0)
+	for i := 0; i < len(s); i++ {
+		if bracketsMap[s[i]] > 0 {
+			// 左括号，将对应右括号入栈
+			stack = append(stack, bracketsMap[s[i]])
+		} else { // 右括号，判断栈中是否有匹配
+			// 无匹配，返回 false
+			if len(stack) == 0 || stack[len(stack)-1] != s[i] {
+				return false
+			}
+			// 有匹配，进行出栈
+			stack = stack[:len(stack)-1]
+		}
+	}
+	return len(stack) == 0
+}
+```
+
+PHP：
+
+```php
+class Solution {
+
+    /**
+     * @param String $s
+     * @return Boolean
+     */
+    function isValid($s) {
+        if (empty($s)) {
+            return true;
+        }
+        $arr = array(
+            "(" => ")",
+            "{" => "}",
+            "[" => "]",
+        );
+        $end = [];
+        for ($i = 0; $i < strlen($s); $i++) {
+            if (isset($arr[$s[$i]])) {
+                $end[] = $arr[$s[$i]];
+            } elseif (end($end) == $s[$i]){
+                array_pop($end);
+            } else {
+                return false;
+            }
+        }
+        return count($end) === 0;
+    }
+}
+```
+
+### 哈希
+
+#### [L1-简单] 两数之和
+
+给定一个整数数组 `nums` 和一个目标值 `target`，请你在该数组中找出和为目标值的那 **两个** 整数，并返回他们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
+
+**示例**
+
+```
+输入：nums = [2,7,11,15], target = 9
+输出：[0,1]
+解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+
+输入：nums = [3,2,4], target = 6
+输出：[1,2]
+
+输入：nums = [3,3], target = 6
+输出：[0,1]
+```
+
+- `2 <= nums.length <= 104`
+- `-109 <= nums[i] <= 109`
+- `-109 <= target <= 109`
+- **只会存在一个有效答案**
+
+**题解**
+
+哈希法:
+
+```go
+func twoSum(nums []int, target int) []int {
+    hash := map[int]int{}
+    for i, v := range nums {
+        if p, ok := hash[target-v]; ok {
+            return []int{p, i}
+        }
+        hash[v] = i
+    }
+    return nil
+}
+```
+
+数组查找
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[]
+     */
+    function twoSum($nums, $target) {
+        $count = count($nums);
+        for ($i=0; $i<$count-1; $i++) {
+            $tmp = $target - $nums[$i];
+            $newnums = $nums;
+            unset($newnums[$i]);
+            $res = array_search($tmp, $newnums);
+            if ($res !== false) {
+                return array($i, $res);
+                break;
+            }
+        }
+    }
+}
+```
+
+暴力：
+
+```go
+func twoSum(nums []int, target int) []int {
+    n := len(nums)
+    for i := 0; i < n - 1; i++ {
+        for j := i + 1; j < n; j++ {
+            if nums[i] + nums[j] == target {
+                return []int{i, j}
+            }
+        }
+    }
+    return []int{}
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[]
+     */
+    function twoSum($nums, $target) {
+        $count = count($nums);
+        for ($i=0; $i<$count-1; $i++) {
+            for ($j=$i+1; $j<$count; $j++) {
+            if(($nums[$i] + $nums[$j]) == $target ){
+                    return array($i, $j);
+                    break;
+                }
+            }
+        }
+    }
+}
+```
+
+#### [L169-简单] 多数元素
+
+给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+**示例**
+
+```
+输入：nums = [3,2,3]
+输出：3
+
+输入：nums = [2,2,1,1,1,2,2]
+输出：2
+```
+
+- `n == nums.length`
+- `1 <= n <= 5 * 104`
+- `-109 <= nums[i] <= 109`
+
+**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
+
+**题解**
+
+哈希表
+
+```go
+func majorityElement(nums []int) int {
+    hash := map[int]int{}
+    for _, num := range nums {
+        if _, ok := hash[num]; ok {
+            hash[num] = hash[num] + 1
+        } else {
+            hash[num] = 1
+        }
+    }
+    maxKey := 0
+    maxValue := 0
+    for k, v := range hash {
+        if v > maxValue {
+            maxKey = k
+            maxValue = v
+        }
+    }
+    return maxKey
+}
+```
+
+#### [L49-中等] 字母异位词分组
+
+给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
+
+**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。
+
+**示例**
+
+```
+输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+输入: strs = [""]
+输出: [[""]]
+
+输入: strs = ["a"]
+输出: [["a"]]
+```
+
+- `1 <= strs.length <= 104`
+- `0 <= strs[i].length <= 100`
+- `strs[i]` 仅包含小写字母
+
+**题解**
+
+```go
+func groupAnagrams(strs []string) [][]string {
+	hash := map[string][]string{}
+	for _, str := range strs {
+		// 将字符串转化成数组
+		s := []byte(str)
+		// 对字符串数组进行排序
+		sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })
+		// 将字符串数组中的元素类型进行转化
+		sortedStr := string(s)
+		// 以字符串为key构建map
+		hash[sortedStr] = append(hash[sortedStr], str)
+	}
+	// 重新组装成数组
+	ans := make([][]string, 0, len(hash))
+	for _, v := range hash {
+		ans = append(ans, v)
+	}
+	return ans
+}
+```
+
+#### [L128-中等] 最长连续序列
+
+给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+请你设计并实现时间复杂度为 `O(n)` 的算法解决此问题。
+
+**示例**
+
+```
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+
+输入：nums = [0,3,7,2,5,8,4,6,0,1]
+输出：9
+```
+
+- `0 <= nums.length <= 105`
+- `-109 <= nums[i] <= 109`
+
+**题解**
+
+```go
+func longestConsecutive(nums []int) int {
+	// 构建 hash 表
+	hash := map[int]bool{}
+	for _, v := range nums {
+		hash[v] = true
+	}
+	max := 0
+	// 遍历 hash 表
+	for num := range hash {
+		// 只取 num 为最小值的情况
+		if !hash[num-1] {
+			// 当前值
+			current := num
+			// 以当前值为最小值情况下的递增序列长度
+			count := 1
+			// 查找依次增加的序列
+			for hash[current+1] {
+				current++
+				count++
+			}
+			// 更新最大序列长度值
+			if count > max {
+				max = count
+			}
+		}
+	}
+	return max
+}
+```
+
+### 排序算法
+
+#### [L56-中等] 合并区间
+
+以数组 `intervals` 表示若干个区间的集合，其中单个区间为 `intervals[i] = [starti, endi]` 。请你合并所有重叠的区间，并返回 *一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间* 。
+
+**示例**
+
+```go
+输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出：[[1,6],[8,10],[15,18]]
+解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+
+输入：intervals = [[1,4],[4,5]]
+输出：[[1,5]]
+解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
+```
+
+- `1 <= intervals.length <= 104`
+- `intervals[i].length == 2`
+- `0 <= starti <= endi <= 104`
+
+**题解**
+
+1. 先根据数组左端大小进行排序
+2. 遍历数组，依次比较每个数组，将前一个数组的右端 r 和后一个数组的左端 l 比较，若 `r < l`则说明不重叠
+
+```go
+func merge(intervals [][]int) [][]int {
+    // 先安装数组左端元素从小到大进行排序
+	n := len(intervals)
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			if intervals[i][0] > intervals[j][0] {
+				intervals[i], intervals[j] = intervals[j], intervals[i]
+			}
+		}
+	}
+	res := make([][]int, 0)
+	tmp := intervals[0]
+	for i := 1; i < n; i++ {
+		if tmp[1] < intervals[i][0] { // 没有重合
+			res = append(res, tmp)
+			tmp = intervals[i]
+		} else { // 重合
+			if tmp[1] < intervals[i][1] {
+				tmp[1] = intervals[i][1]
+			}
+		}
+	}
+	res = append(res, tmp)
+	return res
+}
+```
+
+### 二分查找
+
+#### [L35-简单] 搜索插入位置
+
+给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+
+请必须使用时间复杂度为 `O(log n)` 的算法。
+
+**示例**
+
+```go
+输入: nums = [1,3,5,6], target = 5
+输出: 2
+
+输入: nums = [1,3,5,6], target = 2
+输出: 1
+
+输入: nums = [1,3,5,6], target = 7
+输出: 4
+```
+
+- `1 <= nums.length <= 104`
+- `-104 <= nums[i] <= 104`
+- `nums` 为 **无重复元素** 的 **升序** 排列数组
+- `-104 <= target <= 104`
+
+**题解**
+
+```go
+func searchInsert(nums []int, target int) int {
+	n := len(nums)
+	left, right := 0, n-1
+	insert := n
+	for left <= right {
+		mid := (right + left) / 2
+		if target == nums[mid] { // 找到
+			return mid
+		} else if target < nums[mid] { // 目标值小于中间值，且找不到
+			insert = mid
+			right = mid - 1
+		} else { // 目标值大于中间值，且找不到
+			left = mid + 1
+		}
+	}
+	return insert
+}
+```
+
+#### [L33-中等] 搜索旋转排序数组
+
+假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+
+( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
+
+搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
+
+你可以假设数组中不存在重复的元素。
+
+你的算法时间复杂度必须是 O(log n) 级别。
+
+**示例**
+
+```
+输入: nums = [4,5,6,7,0,1,2], target = 0
+输出: 4
+
+输入: nums = [4,5,6,7,0,1,2], target = 3
+输出: -1
+```
+
+**题解**
+
+> 二分查找，外加一些判断条件
+
+GO:
+
+```go
+func searchOrderArray(nums []int, target int) int {
+	left, right := 0, len(nums)-1
+	for left <= right {
+		mid := (left + right) / 2
+		if target == nums[mid] {
+			return mid
+		}
+		if nums[mid] >= nums[left] {
+			if nums[left] <= target && target <= nums[mid] {
+				right = mid - 1
+			} else {
+				left = mid + 1
+			}
+		} else {
+			if nums[mid] <= target && target <= nums[right] {
+				left = mid + 1
+			} else {
+				right = mid - 1
+			}
+		}
+	}
+	return -1
+}
+```
+
+PHP:
+
+```Php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer
+     */
+    function search($nums, $target) {
+        if (!$nums) return -1;
+        $low = 0;
+        $high = count($nums) - 1;
+        while ($low <= $high) {
+            $mid = floor(($high - $low) / 2) + $low;
+            if ($target == $nums[$mid]) return $mid;
+            if ($nums[$low] <= $nums[$mid]) {
+                if ($nums[$low] <= $target && $target < $nums[$mid]) {
+                    $high = $mid - 1;
+                } else {
+                    $low = $mid + 1;
+                }
+            } else {
+                if ($nums[$mid] < $target && $target <= $nums[$high]) {
+                    $low = $mid + 1;
+                } else {
+                    $high = $mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+}
+```
+
+#### [L34-中等] 在排序数组中查找元素的第一个和最后一个位置
+
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+
+你的算法时间复杂度必须是 O(log n) 级别。
+
+如果数组中不存在目标值，返回 [-1, -1]。
+
+**示例**
+
+```
+输入: nums = [5,7,7,8,8,10], target = 8
+输出: [3,4]
+
+输入: nums = [5,7,7,8,8,10], target = 6
+输出: [-1,-1]
+```
+
+**题解**
+
+> 由题意中复杂度O(log n) ，可知应该用二分思想
+
+二分法：
+
+GO：
+
+```go
+func searchRange(nums []int, target int) []int {
+    res := []int{-1, -1}
+    left, right := 0, len(nums) - 1
+    for left <= right {
+        mid := (left + right) / 2
+        if target == nums[mid] {
+            tmp := mid
+            for mid >= left && target == nums[mid] {
+                mid--
+            }
+            res[0] = mid + 1
+            mid = tmp
+            for mid <= right && target == nums[mid] {
+                mid++
+            }
+            res[1] = mid - 1
+            break
+        } else if target > nums[mid] {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    return res
+}
+```
+
+PHP：
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[]
+     */
+    function searchRange($nums, $target) {
+        $left = 0;
+        $right = count($nums) - 1;
+        $result = [-1, -1];
+        while ($left <= $right) {
+            $mid = floor(($right + $left) / 2);
+            if($nums[$mid] == $target) {
+                while ($mid >= $left && $nums[$mid] == $target) {
+                    $mid--;
+                }
+                $result[0] = $mid + 1;
+                $mid = floor(($right + $left) / 2);
+                while ($mid <= $right && $nums[$mid] == $target) {
+                    $mid++;
+                }
+                $result[1] = $mid - 1;
+                break;
+            } elseif($nums[$mid] > $target) {
+                $right = $mid - 1;
+            } else {
+                $left = $mid + 1;
+            }
+        }
+        return $result;
+    }
+}
+```
+
+暴力：
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[]
+     */
+    function searchRange($nums, $target) {
+        $a = -1;
+        $b = -1;
+        for ($i = 0; $i < count($nums); $i++) {
+            if($nums[$i] == $target){
+                $a = $i;
+                break;
+            }
+        }
+        for ($j = count($nums) - 1; $j >= $a; $j--){
+            if($nums[$j] == $target){
+                $b= $j;
+                break;
+            }
+        }
+        return [$a,$b];
+    }
+}
+```
+
+### 递归
+
+#### [L509-简单] 斐波那契数
+
+**斐波那契数** （通常用 `F(n)` 表示）形成的序列称为 **斐波那契数列** 。该数列由 `0` 和 `1` 开始，后面的每一项数字都是前面两项数字的和。也就是：
+
+```
+F(0) = 0，F(1) = 1
+F(n) = F(n - 1) + F(n - 2)，其中 n > 1
+```
+
+给定 `n` ，请计算 `F(n)` 。
+
+**示例**
+
+```
+输入：n = 2
+输出：1
+解释：F(2) = F(1) + F(0) = 1 + 0 = 1
+
+输入：n = 3
+输出：2
+解释：F(3) = F(2) + F(1) = 1 + 1 = 2
+
+输入：n = 4
+输出：3
+解释：F(4) = F(3) + F(2) = 2 + 1 = 3
+```
+
+- `0 <= n <= 30`
+
+**题解**
+
+递归：
+
+```go
+func fib(n int) int {
+    if n < 2 {
+        return n
+    }
+    return fib(n - 1) + fib(n - 2)
+}
+```
+
 ### 回溯算法
 
 #### [L17-中等] 电话号码的字母组合
@@ -1687,31 +2401,31 @@ func longestPalindrome(s string) string {
     if (n < 2) {
         return s
     }
-
+    // 构建dp表：dp[i][j] 表示 s[i..j] 是否是回文串
     dp := make([][]bool, n)
-    for i,_ := range dp {
+    for i := range dp {
         dp[i] = make([]bool, n)
     }
-
+    // 最大长度和开始下标
     max, index := 1, 0
     for j := 1; j < n; j++ {
         for i := 0; i < j; i++ {
             if s[i] != s[j] {
                 dp[i][j] = false
             } else {
-                if j - i < 3 {
+                if j - i < 3 {// 长度小于2，1个字母为回文串，2个字母相等也是回文串
                     dp[i][j] = true
                 } else {
                     dp[i][j] = dp[i + 1][j - 1]
                 }
             }
+            // 更新回文长度和起始位置
             if dp[i][j] == true && j - i + 1 > max {
                 max = j - i + 1
                 index = i
             }
         }
     }
-
     return s[index: index+max]
 }
 ```
@@ -1746,7 +2460,64 @@ class Solution {
 }
 ```
 
+#### [L70-简单] 爬楼梯
 
+假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。
+
+每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+**示例**
+
+```
+输入：n = 2
+输出：2
+解释：有两种方法可以爬到楼顶。
+1. 1 阶 + 1 阶
+2. 2 阶
+
+输入：n = 3
+输出：3
+解释：有三种方法可以爬到楼顶。
+1. 1 阶 + 1 阶 + 1 阶
+2. 1 阶 + 2 阶
+3. 2 阶 + 1 阶
+```
+
+- `1 <= n <= 45`
+
+**题解**
+
+> 本题推导出公式为：*f*(*x*)=*f*(*x*−1)+*f*(*x*−2)，是斐波那契数，因此可以使用递归和动态规划求解，但是递归在本题中时间复杂度较高
+
+动态规划：
+
+```go
+func climbStairs(n int) int {
+	if n <= 2 {
+		return n
+	}
+    dp := make([]int, n)
+	dp[0] = 1
+	dp[1] = 2
+	for i := 2; i < n; i++ {
+		dp[i] = dp[i-1] + dp[i-2]
+	}
+	return dp[n-1]
+}
+
+// 优化空间
+func climbStairs2(n int) int {
+    if n == 1 || n == 2 {
+        return n
+    }
+    a, b := 1, 2
+    // 状态转移：从较小子问题逐步求解较大子问题
+    for i := 3; i <= n; i++ {
+        a, b = b, a+b
+    }
+    return b
+}
+```
 
 #### [L53-中等] 最大子数组和
 
@@ -1928,62 +2699,119 @@ func minPathSum(grid [][]int) int {
 	}
 	return dp[m-1][n-1]
 }
+
+// 优化
+func minPathSum(grid [][]int) int {
+	m, n := len(grid), len(grid[0])
+	// 直接以 grid 为 dp 表结构
+	// 初始化 dp[i][0]
+	for i := 1; i < m; i++ {
+		grid[i][0] = grid[i-1][0] + grid[i][0]
+	}
+	// 初始化 dp[0][j]
+	for j := 1; j < n; j++ {
+		grid[0][j] = grid[0][j-1] + grid[0][j]
+	}
+	// 求解
+	for i := 1; i < m; i++ {
+		for j := 1; j < n; j++ {
+			if grid[i-1][j] > grid[i][j-1] {
+				grid[i][j] = grid[i][j-1] + grid[i][j]
+			} else {
+				grid[i][j] = grid[i-1][j] + grid[i][j]
+			}
+		}
+	}
+	return grid[m-1][n-1]
+}
 ```
 
-#### [L70-简单] 爬楼梯
+#### [L118-简单] 杨辉三角
 
-假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。
+给定一个非负整数 *`numRows`，*生成「杨辉三角」的前 *`numRows`* 行。
 
-每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+
+![img](../../Image/algorithm/lt118-generate.gif)
 
 **示例**
 
 ```
-输入：n = 2
-输出：2
-解释：有两种方法可以爬到楼顶。
-1. 1 阶 + 1 阶
-2. 2 阶
+输入: numRows = 5
+输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
 
-输入：n = 3
-输出：3
-解释：有三种方法可以爬到楼顶。
-1. 1 阶 + 1 阶 + 1 阶
-2. 1 阶 + 2 阶
-3. 2 阶 + 1 阶
+输入: numRows = 1
+输出: [[1]]
 ```
 
-- `1 <= n <= 45`
+- `1 <= numRows <= 30`
 
 **题解**
 
-> 本题推导出公式为：*f*(*x*)=*f*(*x*−1)+*f*(*x*−2)，是斐波那契数，因此可以使用递归和动态规划求解，但是递归在本题中时间复杂度较高
+```go
+func generate(numRows int) [][]int {
+    ans := make([][]int, numRows)
+    for i := 0; i < numRows; i++ {
+        ans[i] = make([]int, i+1)
+        ans[i][0] = 1
+        ans[i][i] = 1
+        for j := 1; j < i; j++ {
+            ans[i][j] = ans[i-1][j-1] + ans[i-1][j]
+        }
+    }
+    return ans
+}
+```
 
-动态规划：
+### 贪心算法
+
+#### [L55-中等] 跳跃游戏
+
+给你一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个下标，如果可以，返回 `true` ；否则，返回 `false` 。
+
+**示例**
+
+```
+输入：nums = [2,3,1,1,4]
+输出：true
+解释：可以先跳 1 步，从下标 0 到达下标 1, 然后再从下标 1 跳 3 步到达最后一个下标。
+
+输入：nums = [3,2,1,0,4]
+输出：false
+解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
+```
+
+**题解**
+
+> 贪心算法
+>
+
+由题意可知：
+
+尽可能到达最远位置（贪心）。
+如果能到达某个位置，那一定能到达它前面的所有位置。
+
+设 k 为最远可到达的位置，如果能到达当前位置（i < k），则最远位置`k=i+nums[i]`
+
+若最远位置k已经 >= 数组最大长度，则肯定可以达到，可直接返回 true
 
 ```go
-func climbStairs(n int) int {
-    dp := make([]int, n)
-	if n <= 2 {
-		return n
-	}
-	dp[0] = 1
-	dp[1] = 2
-	for i := 2; i < n; i++ {
-		dp[i] = dp[i-1] + dp[i-2]
-	}
-	return dp[n-1]
-}
-
-// 写法2
-func climbStairs2(n int) int {
-    p, q, r := 0, 0, 1
-    for i := 1; i <= n; i++ {
-        p = q
-        q = r
-        r = p + q
+func canJump(nums []int) bool {
+    k, n := 0, len(nums)
+    for i := 0; i < n; i++ {
+        if i > k {
+            return false
+        }
+        if i + nums[i] > k {
+            k = i + nums[i]
+        }
+        if k >= n - 1 {
+            return true
+        }
     }
-    return r
+    return true
 }
 ```
 
@@ -2029,372 +2857,9 @@ func maxProfit(prices []int) int {
 }
 ```
 
-### 贪心算法
-
-#### [L55-中等] 跳跃游戏
-
-给你一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
-
-判断你是否能够到达最后一个下标，如果可以，返回 `true` ；否则，返回 `false` 。
-
-**示例**
-
-```
-输入：nums = [2,3,1,1,4]
-输出：true
-解释：可以先跳 1 步，从下标 0 到达下标 1, 然后再从下标 1 跳 3 步到达最后一个下标。
-
-输入：nums = [3,2,1,0,4]
-输出：false
-解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
-```
-
-**题解**
-
-贪心算法
-
-由题意可知：
-
-尽可能到达最远位置（贪心）。
-如果能到达某个位置，那一定能到达它前面的所有位置。
-
-设 k 为最远可到达的位置，如果能到达当前位置（i < k），则最远位置`k=i+nums[i]`
-
-若最远位置k已经 >= 数组最大长度，则肯定可以达到，可直接返回 true
-
-```go
-func canJump(nums []int) bool {
-    k, n := 0, len(nums)
-    for i := 0; i < n; i++ {
-        if i > k {
-            return false
-        }
-        if i + nums[i] > k {
-            k = i + nums[i]
-        }
-        if k >= n - 1 {
-            return true
-        }
-    }
-    return true
-}
-```
-
 ### 分治算法
 
 
-
-### 排序算法
-
-#### [L56-中等] 合并区间
-
-以数组 `intervals` 表示若干个区间的集合，其中单个区间为 `intervals[i] = [starti, endi]` 。请你合并所有重叠的区间，并返回 *一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间* 。
-
-**示例**
-
-```go
-输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
-输出：[[1,6],[8,10],[15,18]]
-解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
-
-输入：intervals = [[1,4],[4,5]]
-输出：[[1,5]]
-解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
-```
-
-- `1 <= intervals.length <= 104`
-- `intervals[i].length == 2`
-- `0 <= starti <= endi <= 104`
-
-**题解**
-
-1. 先根据数组左端大小进行排序
-2. 遍历数组，依次比较每个数组，将前一个数组的右端 r 和后一个数组的左端 l 比较，若 `r < l`则说明不重叠
-
-```go
-func merge(intervals [][]int) [][]int {
-    // 先安装数组左端元素从小到大进行排序
-	n := len(intervals)
-	for i := 0; i < n; i++ {
-		for j := i + 1; j < n; j++ {
-			if intervals[i][0] > intervals[j][0] {
-				intervals[i], intervals[j] = intervals[j], intervals[i]
-			}
-		}
-	}
-	res := make([][]int, 0)
-	tmp := intervals[0]
-	for i := 1; i < n; i++ {
-		if tmp[1] < intervals[i][0] { // 没有重合
-			res = append(res, tmp)
-			tmp = intervals[i]
-		} else { // 重合
-			if tmp[1] < intervals[i][1] {
-				tmp[1] = intervals[i][1]
-			}
-		}
-	}
-	res = append(res, tmp)
-	return res
-}
-```
-
-### 哈希
-
-#### [L1-简单] 两数之和
-
-给定一个整数数组 `nums` 和一个目标值 `target`，请你在该数组中找出和为目标值的那 **两个** 整数，并返回他们的数组下标。
-
-你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
-
-**示例**
-
-```
-输入：nums = [2,7,11,15], target = 9
-输出：[0,1]
-解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
-
-输入：nums = [3,2,4], target = 6
-输出：[1,2]
-
-输入：nums = [3,3], target = 6
-输出：[0,1]
-```
-
-- `2 <= nums.length <= 104`
-- `-109 <= nums[i] <= 109`
-- `-109 <= target <= 109`
-- **只会存在一个有效答案**
-
-**题解**
-
-哈希法:
-
-```go
-func twoSum(nums []int, target int) []int {
-    hash := map[int]int{}
-    for i, v := range nums {
-        if p, ok := hash[target-v]; ok {
-            return []int{p, i}
-        }
-        hash[v] = i
-    }
-    return nil
-}
-```
-
-数组查找
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @param Integer $target
-     * @return Integer[]
-     */
-    function twoSum($nums, $target) {
-        $count = count($nums);
-        for ($i=0; $i<$count-1; $i++) {
-            $tmp = $target - $nums[$i];
-            $newnums = $nums;
-            unset($newnums[$i]);
-            $res = array_search($tmp, $newnums);
-            if ($res !== false) {
-                return array($i, $res);
-                break;
-            }
-        }
-    }
-}
-```
-
-暴力：
-
-```go
-func twoSum(nums []int, target int) []int {
-    n := len(nums)
-    for i := 0; i < n - 1; i++ {
-        for j := i + 1; j < n; j++ {
-            if nums[i] + nums[j] == target {
-                return []int{i, j}
-            }
-        }
-    }
-    return []int{}
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    /**
-     * @param Integer[] $nums
-     * @param Integer $target
-     * @return Integer[]
-     */
-    function twoSum($nums, $target) {
-        $count = count($nums);
-        for ($i=0; $i<$count-1; $i++) {
-            for ($j=$i+1; $j<$count; $j++) {
-            if(($nums[$i] + $nums[$j]) == $target ){
-                    return array($i, $j);
-                    break;
-                }
-            }
-        }
-    }
-}
-```
-
-#### [L169-简单] 多数元素
-
-给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
-
-你可以假设数组是非空的，并且给定的数组总是存在多数元素。
-
-**示例**
-
-```
-输入：nums = [3,2,3]
-输出：3
-
-输入：nums = [2,2,1,1,1,2,2]
-输出：2
-```
-
-- `n == nums.length`
-- `1 <= n <= 5 * 104`
-- `-109 <= nums[i] <= 109`
-
-**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
-
-**题解**
-
-哈希表
-
-```go
-func majorityElement(nums []int) int {
-    hash := map[int]int{}
-    for _, num := range nums {
-        if _, ok := hash[num]; ok {
-            hash[num] = hash[num] + 1
-        } else {
-            hash[num] = 1
-        }
-    }
-    maxKey := 0
-    maxValue := 0
-    for k, v := range hash {
-        if v > maxValue {
-            maxKey = k
-            maxValue = v
-        }
-    }
-    return maxKey
-}
-```
-
-#### [L49-中等] 字母异位词分组
-
-给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
-
-**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。
-
-**示例**
-
-```
-输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
-输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
-
-输入: strs = [""]
-输出: [[""]]
-
-输入: strs = ["a"]
-输出: [["a"]]
-```
-
-- `1 <= strs.length <= 104`
-- `0 <= strs[i].length <= 100`
-- `strs[i]` 仅包含小写字母
-
-**题解**
-
-```go
-func groupAnagrams(strs []string) [][]string {
-	hash := map[string][]string{}
-	for _, str := range strs {
-		// 将字符串转化成数组
-		s := []byte(str)
-		// 对字符串数组进行排序
-		sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })
-		// 将字符串数组中的元素类型进行转化
-		sortedStr := string(s)
-		// 以字符串为key构建map
-		hash[sortedStr] = append(hash[sortedStr], str)
-	}
-	// 重新组装成数组
-	ans := make([][]string, 0, len(hash))
-	for _, v := range hash {
-		ans = append(ans, v)
-	}
-	return ans
-}
-```
-
-#### [L128-中等] 最长连续序列
-
-给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
-
-请你设计并实现时间复杂度为 `O(n)` 的算法解决此问题。
-
-**示例**
-
-```
-输入：nums = [100,4,200,1,3,2]
-输出：4
-解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
-
-输入：nums = [0,3,7,2,5,8,4,6,0,1]
-输出：9
-```
-
-- `0 <= nums.length <= 105`
-- `-109 <= nums[i] <= 109`
-
-**题解**
-
-```go
-func longestConsecutive(nums []int) int {
-	// 构建 hash 表
-	hash := map[int]bool{}
-	for _, v := range nums {
-		hash[v] = true
-	}
-	max := 0
-	// 遍历 hash 表
-	for num := range hash {
-		// 只取 num 为最小值的情况
-		if !hash[num-1] {
-			// 当前值
-			current := num
-			// 以当前值为最小值情况下的递增序列长度
-			count := 1
-			// 查找依次增加的序列
-			for hash[current+1] {
-				current++
-				count++
-			}
-			// 更新最大序列长度值
-			if count > max {
-				max = count
-			}
-		}
-	}
-	return max
-}
-```
 
 ### 双指针
 
@@ -2900,6 +3365,49 @@ func findAnagrams(s string, p string) []int {
 
 ### 位运算
 
+#### [L136-简单] 只出现一次的数字
+
+你一个 **非空** 整数数组 `nums` ，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+你必须设计并实现线性时间复杂度的算法来解决此问题，且该算法只使用常量额外空间。
+
+**示例**
+
+```
+输入：nums = [2,2,1]
+输出：1
+
+输入：nums = [4,1,2,1,2]
+输出：4
+
+输入：nums = [1]
+输出：1
+```
+
+- `1 <= nums.length <= 3 * 104`
+- `-3 * 104 <= nums[i] <= 3 * 104`
+- 除了某个元素只出现一次以外，其余每个元素均出现两次。
+
+**题解**
+
+本题的注意点是要做到线性时间复杂度和常数空间复杂度
+
+这里可以使用位运算中的异或运算（相同数异或运算为0，0和任何数异或运算为该数）
+
+1. 任何数和 0 做异或运算，结果仍然是原来的数，即 a⊕0=a。
+2. 任何数和其自身做异或运算，结果是 0，即 a⊕a=0。
+3. 异或运算满足交换律和结合律，即 a⊕b⊕a=b⊕a⊕a=b⊕(a⊕a)=b⊕0=b。
+
+```go
+func singleNumber(nums []int) int {
+    single := 0
+    for _, num := range nums {
+        single ^= num
+    }
+    return single
+}
+```
+
 #### [L461-简单] 汉明距离
 
 两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。
@@ -2932,55 +3440,7 @@ func hammingDistance(x int, y int) int {
 }
 ```
 
-### 递归
-
-#### [L509-简单] 斐波那契数
-
-**斐波那契数** （通常用 `F(n)` 表示）形成的序列称为 **斐波那契数列** 。该数列由 `0` 和 `1` 开始，后面的每一项数字都是前面两项数字的和。也就是：
-
-```
-F(0) = 0，F(1) = 1
-F(n) = F(n - 1) + F(n - 2)，其中 n > 1
-```
-
-给定 `n` ，请计算 `F(n)` 。
-
-**示例**
-
-```
-输入：n = 2
-输出：1
-解释：F(2) = F(1) + F(0) = 1 + 0 = 1
-
-输入：n = 3
-输出：2
-解释：F(3) = F(2) + F(1) = 1 + 1 = 2
-
-输入：n = 4
-输出：3
-解释：F(4) = F(3) + F(2) = 2 + 1 = 3
-```
-
-- `0 <= n <= 30`
-
-**题解**
-
-递归：
-
-```go
-func fib(n int) int {
-    if n < 2 {
-        return n
-    }
-    return fib(n - 1) + fib(n - 2)
-}
-```
-
-### 矩阵
-
-
-
-### 未归类
+### 其他
 
 #### [L6-中等] Z 字变换
 
@@ -3673,106 +4133,6 @@ class Solution {
 }
 ```
 
-#### [L20-简单] 有效的括号
-
-给定一个只包括 `'('`，`')'`，`'{'`，`'}'`，`'['`，`']'` 的字符串，判断字符串是否有效。
-
-有效字符串需满足：
-
-1. 左括号必须用相同类型的右括号闭合。
-2. 左括号必须以正确的顺序闭合。
-
-注意空字符串可被认为是有效字符串。
-
-**示例**
-
-```
-输入: "()"
-输出: true
-
-输入: "()[]{}"
-输出: true
-
-输入: "(]"
-输出: false
-
-输入: "([)]"
-输出: false
-
-输入: "{[]}"
-输出: true
-```
-
-**题解**
-
-如果属于左侧括号，则向数组end中插入对应的右侧括号；如果属于右侧括号则查找end数组中是否有一样的，如果有则删去
-类似于用栈实现
-
-Go：
-
-```go
-func isValid(s string) bool {
-	length := len(s)
-	if length == 0 {
-		return true
-	}
-
-	bracketsMap := map[byte]byte{
-		'(': ')',
-		'{': '}',
-		'[': ']',
-	}
-
-	stack := []byte{}
-	for i := 0; i < length; i++ {
-		if bracketsMap[s[i]] != 0 {
-			stack = append(stack, bracketsMap[s[i]])
-		} else {
-			if len(stack) == 0 || stack[len(stack)-1] != s[i] {
-				return false
-			} else {
-				stack = stack[:len(stack)-1]
-			}
-		}
-	}
-
-	return len(stack) == 0
-}
-```
-
-PHP：
-
-```php
-class Solution {
-
-    /**
-     * @param String $s
-     * @return Boolean
-     */
-    function isValid($s) {
-        if (empty($s)) {
-            return true;
-        }
-        $arr = array(
-            "(" => ")",
-            "{" => "}",
-            "[" => "]",
-        );
-        $end = [];
-        for ($i = 0; $i < strlen($s); $i++) {
-            if (isset($arr[$s[$i]])) {
-                $end[] = $arr[$s[$i]];
-            } elseif (end($end) == $s[$i]){
-                array_pop($end);
-            } else {
-                return false;
-            }
-        }
-        return count($end) === 0;
-    }
-}
-```
-
 #### [L26-中等] 删除排序数组中的重复项
 
 给定一个排序数组，你需要在**原地**删除重复出现的元素，使得每个元素只出现一次，返回移除后数组的新长度。
@@ -4035,203 +4395,6 @@ class Solution {
             $right--;
         }
     }
-}
-```
-
-#### [L33-中等] 搜索旋转排序数组
-
-假设按照升序排序的数组在预先未知的某个点上进行了旋转。
-
-( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
-
-搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
-
-你可以假设数组中不存在重复的元素。
-
-你的算法时间复杂度必须是 O(log n) 级别。
-
-**示例**
-
-```
-输入: nums = [4,5,6,7,0,1,2], target = 0
-输出: 4
-
-输入: nums = [4,5,6,7,0,1,2], target = 3
-输出: -1
-```
-
-**思路**
-
-> 二分查找，外加一些判断条件
-
-**题解**
-
-PHP:
-
-```Php
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @param Integer $target
-     * @return Integer
-     */
-    function search($nums, $target) {
-        if (!$nums) return -1;
-        $low = 0;
-        $high = count($nums) - 1;
-        while ($low <= $high) {
-            $mid = floor(($high - $low) / 2) + $low;
-            if ($target == $nums[$mid]) return $mid;
-            if ($nums[$low] <= $nums[$mid]) {
-                if ($nums[$low] <= $target && $target < $nums[$mid]) {
-                    $high = $mid - 1;
-                } else {
-                    $low = $mid + 1;
-                }
-            } else {
-                if ($nums[$mid] < $target && $target <= $nums[$high]) {
-                    $low = $mid + 1;
-                } else {
-                    $high = $mid - 1;
-                }
-            }
-        }
-        return -1;
-    }
-}
-```
-
-#### [L34-中等] 在排序数组中查找元素的第一个和最后一个位置
-
-给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
-
-你的算法时间复杂度必须是 O(log n) 级别。
-
-如果数组中不存在目标值，返回 [-1, -1]。
-
-**示例**
-
-```
-输入: nums = [5,7,7,8,8,10], target = 8
-输出: [3,4]
-
-输入: nums = [5,7,7,8,8,10], target = 6
-输出: [-1,-1]
-```
-
-**解题思路**
-
-> 由题意中复杂度O(log n) ，可知应该用二分思想
->
-> 下面是暴力和二分实现代码示例
-
-**题解**
-
-暴力
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @param Integer $target
-     * @return Integer[]
-     */
-    function searchRange($nums, $target) {
-        $a = -1;
-        $b = -1;
-        for ($i = 0; $i < count($nums); $i++) {
-            if($nums[$i] == $target){
-                $a = $i;
-                break;
-            }
-        }
-        for ($j = count($nums) - 1; $j >= $a; $j--){
-            if($nums[$j] == $target){
-                $b= $j;
-                break;
-            }
-        }
-        return [$a,$b];
-    }
-}
-```
-
-二分实现
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @param Integer $target
-     * @return Integer[]
-     */
-    function searchRange($nums, $target) {
-        $left = 0;
-        $right = count($nums) - 1;
-        $result = [-1, -1];
-        while ($left <= $right) {
-            $mid = floor(($right + $left) / 2);
-            if($nums[$mid] == $target) {
-                while ($mid >= $left && $nums[$mid] == $target) {
-                    $mid--;
-                }
-                $result[0] = $mid + 1;
-                $mid = floor(($right + $left) / 2);
-                while ($mid <= $right && $nums[$mid] == $target) {
-                    $mid++;
-                }
-                $result[1] = $mid - 1;
-                break;
-            } elseif($nums[$mid] > $target) {
-                $right = $mid - 1;
-            } else {
-                $left = $mid + 1;
-            }
-        }
-        return $result;
-    }
-}
-```
-
-#### [L136-简单] 只出现一次的数字
-
-你一个 **非空** 整数数组 `nums` ，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
-
-你必须设计并实现线性时间复杂度的算法来解决此问题，且该算法只使用常量额外空间。
-
-**示例**
-
-```
-输入：nums = [2,2,1]
-输出：1
-
-输入：nums = [4,1,2,1,2]
-输出：4
-
-输入：nums = [1]
-输出：1
-```
-
-- `1 <= nums.length <= 3 * 104`
-- `-3 * 104 <= nums[i] <= 3 * 104`
-- 除了某个元素只出现一次以外，其余每个元素均出现两次。
-
-**题解**
-
-本题的注意点是要做到线性时间复杂度和常数空间复杂度
-
-这里可以使用位运算中的异或运算（相同数异或运算为0，0和任何数异或运算为该数）
-
-```go
-func singleNumber(nums []int) int {
-    single := 0
-    for _, num := range nums {
-        single ^= num
-    }
-    return single
 }
 ```
 
