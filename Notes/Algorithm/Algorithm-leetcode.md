@@ -1308,54 +1308,6 @@ class Solution {
 }
 ```
 
-#### [L169-简单] 多数元素
-
-给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
-
-你可以假设数组是非空的，并且给定的数组总是存在多数元素。
-
-**示例**
-
-```
-输入：nums = [3,2,3]
-输出：3
-
-输入：nums = [2,2,1,1,1,2,2]
-输出：2
-```
-
-- `n == nums.length`
-- `1 <= n <= 5 * 104`
-- `-109 <= nums[i] <= 109`
-
-**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
-
-**题解**
-
-哈希表
-
-```go
-func majorityElement(nums []int) int {
-    hash := map[int]int{}
-    for _, num := range nums {
-        if _, ok := hash[num]; ok {
-            hash[num] = hash[num] + 1
-        } else {
-            hash[num] = 1
-        }
-    }
-    maxKey := 0
-    maxValue := 0
-    for k, v := range hash {
-        if v > maxValue {
-            maxKey = k
-            maxValue = v
-        }
-    }
-    return maxKey
-}
-```
-
 #### [L49-中等] 字母异位词分组
 
 给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
@@ -1453,6 +1405,54 @@ func longestConsecutive(nums []int) int {
 		}
 	}
 	return max
+}
+```
+
+#### [L169-简单] 多数元素
+
+给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+**示例**
+
+```
+输入：nums = [3,2,3]
+输出：3
+
+输入：nums = [2,2,1,1,1,2,2]
+输出：2
+```
+
+- `n == nums.length`
+- `1 <= n <= 5 * 104`
+- `-109 <= nums[i] <= 109`
+
+**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
+
+**题解**
+
+哈希表
+
+```go
+func majorityElement(nums []int) int {
+    hash := map[int]int{}
+    for _, num := range nums {
+        if _, ok := hash[num]; ok {
+            hash[num] = hash[num] + 1
+        } else {
+            hash[num] = 1
+        }
+    }
+    maxKey := 0
+    maxValue := 0
+    for k, v := range hash {
+        if v > maxValue {
+            maxKey = k
+            maxValue = v
+        }
+    }
+    return maxKey
 }
 ```
 
@@ -3440,6 +3440,119 @@ func hammingDistance(x int, y int) int {
 }
 ```
 
+### 矩阵
+
+#### [L54-中等] 螺旋矩阵
+
+给你一个 `m` 行 `n` 列的矩阵 `matrix` ，请按照 **顺时针螺旋顺序** ，返回矩阵中的所有元素。
+
+```
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[1,2,3,6,9,8,7,4,5]
+
+输入：matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+输出：[1,2,3,4,8,12,11,10,9,5,6,7]
+```
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= m, n <= 10`
+- `-100 <= matrix[i][j] <= 100`
+
+**题解**
+
+```go
+func spiralOrder(matrix [][]int) []int {
+    // 定义4个边界
+    upper, down, left, right := 0, len(matrix)-1, 0, len(matrix[0]) - 1
+    ans := make([]int, 0)
+    for {
+        // 向右移动直到最右
+        for i := left; i <= right; i++ {
+            ans = append(ans, matrix[upper][i])
+        }
+        // 重新设定上边界
+        upper++
+        if upper > down {
+            break
+        }
+        // 向下
+        for i := upper; i <= down; i++ {
+            ans = append(ans, matrix[i][right])
+        }
+        // 重新设定右边界
+        right--
+        if right < left {
+            break
+        }
+        // 向左
+        for i := right; i >= left; i-- {
+            ans = append(ans, matrix[down][i])
+        }
+        // 重新设定下边界
+        down--
+        if down < upper {
+            break
+        }
+        // 向上
+        for i := down; i >= upper; i-- {
+            ans = append(ans, matrix[i][left])
+        }
+        // 重新设定左边界
+        left++
+        if left > right {
+            break
+        }
+    }
+    return ans
+}
+```
+
+#### [L73-中等] 矩阵置零
+
+给定一个 `m x n` 的矩阵，如果一个元素为 **0** ，则将其所在行和列的所有元素都设为 **0** 。请使用 **[原地](http://baike.baidu.com/item/原地算法)** 算法**。**
+
+**示例**
+
+```
+输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]
+输出：[[1,0,1],[0,0,0],[1,0,1]]
+
+输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
+输出：[[0,0,0,0],[0,4,5,0],[0,3,1,0]]
+```
+
+- `m == matrix.length`
+- `n == matrix[0].length`
+- `1 <= m, n <= 200`
+- `-231 <= matrix[i][j] <= 231 - 1`
+
+**题解**
+
+```go
+func setZeroes(matrix [][]int)  {
+    // 初始化两个数组，存放横纵每个位置是否为0
+    row, col := make([]bool, len(matrix)), make([]bool, len(matrix[0]))
+    // 遍历矩阵，进行标记
+    for i := 0; i < len(matrix); i++ {
+        for j := 0; j < len(matrix[i]); j++ {
+            if matrix[i][j] == 0 {
+                row[i] = true
+                col[j] = true
+            }
+        }
+    }
+    // 遍历矩阵，对标记位置进行更新
+    for i, v := range matrix {
+        for j := range v {
+            if row[i] || col[j] {
+                v[j] = 0
+            }
+        }
+    }
+}
+```
+
 ### 其他
 
 #### [L6-中等] Z 字变换
@@ -4333,29 +4446,79 @@ class Solution {
 
 #### [L31-中等] 下一个排列
 
-实现获取下一个排列的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+整数数组的一个 **排列** 就是将其所有成员以序列或线性顺序排列。
 
-如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+- 例如，`arr = [1,2,3]` ，以下这些都可以视作 `arr` 的排列：`[1,2,3]`、`[1,3,2]`、`[3,1,2]`、`[2,3,1]` 。
 
-必须原地修改，只允许使用额外常数空间。
+整数数组的 **下一个排列** 是指其整数的下一个字典序更大的排列。更正式地，如果数组的所有排列根据其字典顺序从小到大排列在一个容器中，那么数组的 **下一个排列** 就是在这个有序容器中排在它后面的那个排列。如果不存在下一个更大的排列，那么这个数组必须重排为字典序最小的排列（即，其元素按升序排列）。
 
-以下是一些例子，输入位于左侧列，其相应输出位于右侧列。
+- 例如，`arr = [1,2,3]` 的下一个排列是 `[1,3,2]` 。
+- 类似地，`arr = [2,3,1]` 的下一个排列是 `[3,1,2]` 。
+- 而 `arr = [3,2,1]` 的下一个排列是 `[1,2,3]` ，因为 `[3,2,1]` 不存在一个字典序更大的排列。
+
+给你一个整数数组 `nums` ，找出 `nums` 的下一个排列。
+
+必须**[ 原地 ](https://baike.baidu.com/item/原地算法)**修改，只允许使用额外常数空间。
+
+**示例**
 
 ```
-1,2,3 → 1,3,2
-3,2,1 → 1,2,3
-1,1,5 → 1,5,1
+输入：nums = [1,2,3]
+输出：[1,3,2]
+
+输入：nums = [3,2,1]
+输出：[1,2,3]
+
+输入：nums = [1,1,5]
+输出：[1,5,1]
 ```
 
 **题解**
 
 解题思路：
 
-字典序：从右往左，找到第一个左值小于右值的数，然后从右往左，找到第一个大于该左值的数，交换这两个值，并将该左值(不包含)右边的进行从小到大进行排序(原来为降序，只需要改为升序)。结合下图理解
+1. 第一次从右侧开始遍历，找到第一个较小值 `nums[i]`
+2. 第二次从右侧开始遍历，找出第一个大于较小值的数值 `nums[j]`
+3. 交换 `nums[i]` 和  `nums[j]`
+4. 翻转  `nums[i]` 之后的序列
+
+
 
 ![Next Permutation](../../Image/oldimg/1df4ae7eb275ba4ab944521f99c84d782d17df804d5c15e249881bafcf106173-file_1555696082944.gif)
 
-代码实现：
+GO：
+
+```go
+func nextPermutation(nums []int) {
+	n := len(nums)
+	i := n - 2
+	// 第一次从右侧开始遍历，找出最靠近右侧的较小值
+	for i >= 0 && nums[i] >= nums[i+1] {
+		i--
+	}
+	if i >= 0 {
+		j := n - 1
+		// 第二次遍历，找出最靠右的大于较小值的第一个数
+		for j >= 0 && nums[i] >= nums[j] {
+			j--
+		}
+		// 交换两个数的位置
+		nums[i], nums[j] = nums[j], nums[i]
+	}
+	// 将右侧翻转
+	reverse(nums[i+1:])
+	//fmt.Println(nums)
+}
+
+// 翻转数组
+func reverse(a []int) {
+	for i, n := 0, len(a); i < n/2; i++ {
+		a[i], a[n-1-i] = a[n-1-i], a[i]
+	}
+}
+```
+
+PHP：
 
 ```php
 class Solution {
