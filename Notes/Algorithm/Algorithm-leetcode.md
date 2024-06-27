@@ -1262,6 +1262,8 @@ func isValidBST(root *TreeNode) bool {
 
 **题解**
 
+二叉搜索树中序遍历结果为递增序列，利用这一特性，遍历过程 `k--`，当k为0时则就是结果
+
 ```
 func kthSmallest(root *TreeNode, k int) int {
     var inorder func(node *TreeNode)
