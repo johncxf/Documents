@@ -502,6 +502,52 @@ func hasCycle(head *ListNode) bool {
 }
 ```
 
+#### [L142-中等] 环形链表 II
+
+给定一个链表的头节点  `head` ，返回链表开始入环的第一个节点。 *如果链表无环，则返回 `null`。*
+
+如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（**索引从 0 开始**）。如果 `pos` 是 `-1`，则在该链表中没有环。**注意：`pos` 不作为参数进行传递**，仅仅是为了标识链表的实际情况。
+
+**不允许修改** 链表。
+
+**示例**
+
+```
+输入：head = [3,2,0,-4], pos = 1
+输出：返回索引为 1 的链表节点
+解释：链表中有一个环，其尾部连接到第二个节点。
+
+输入：head = [1,2], pos = 0
+输出：返回索引为 0 的链表节点
+解释：链表中有一个环，其尾部连接到第一个节点。
+
+输入：head = [1], pos = -1
+输出：返回 null
+解释：链表中没有环。
+```
+
+- 链表中节点的数目范围在范围 `[0, 104]` 内
+- `-105 <= Node.val <= 105`
+- `pos` 的值为 `-1` 或者链表中的一个有效索引
+
+**题解**
+
+```go
+func detectCycle(head *ListNode) *ListNode {
+    hash := map[*ListNode]struct{}{}
+    i := 0
+    for head != nil {
+        if _, ok := hash[head]; ok {
+            return head
+        }
+        i++
+        hash[head] = struct{}{}
+        head = head.Next
+    }
+    return nil
+}
+```
+
 #### [L160-简单] 相交链表
 
 给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 
@@ -871,6 +917,45 @@ func max(a, b int) int {
 }
 ```
 
+#### [L108-简单] 将有序数组转化为二叉搜索树
+
+给你一个整数数组 `nums` ，其中元素已经按 **升序** 排列，请你将其转换为一棵 平衡 二叉搜索树。
+
+**示例**
+
+```
+输入：nums = [-10,-3,0,5,9]
+输出：[0,-3,9,-10,null,5]
+解释：[0,-10,5,null,-3,null,9] 也将被视为正确答案
+
+输入：nums = [1,3]
+输出：[3,1]
+解释：[1,null,3] 和 [3,1] 都是高度平衡二叉搜索树。
+```
+
+- `1 <= nums.length <= 104`
+- `-104 <= nums[i] <= 104`
+- `nums` 按 **严格递增** 顺序排列
+
+**题解**
+
+```go
+func sortedArrayToBST(nums []int) *TreeNode {
+	return helper(nums, 0, len(nums)-1)
+}
+
+func helper(nums []int, left, right int) *TreeNode {
+	if left > right {
+		return nil
+	}
+	mid := (left + right) / 2
+	root := &TreeNode{Val: nums[mid]}
+	root.Left = helper(nums, left, mid-1)
+	root.Right = helper(nums, mid+1, right)
+	return root
+}
+```
+
 #### [L144-简单] 二叉树的前序遍历
 
 给你一棵二叉树的根节点 `root` ，返回其节点值的 **后前遍历** 。
@@ -1100,6 +1185,110 @@ func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
     return root1
 }
 ```
+
+#### [L98-中等] 验证二叉搜索树
+
+给你一个二叉树的根节点 `root` ，判断其是否是一个有效的二叉搜索树。
+
+**有效** 二叉搜索树定义如下：
+
+- 节点的左子树只包含小于当前节点的数。
+- 节点的右子树只包含 **大于**当前节点的数。
+- 所有左子树和右子树自身必须也是二叉搜索树。
+
+**示例**
+
+```
+输入：root = [2,1,3]
+输出：true
+
+输入：root = [5,1,4,null,null,3,6]
+输出：false
+解释：根节点的值是 5 ，但是右子节点的值是 4 。
+```
+
+- 树中节点数目范围在`[1, 104]` 内
+- `-231 <= Node.val <= 231 - 1`
+
+**题解**
+
+二叉搜索树中序遍历结果为递增序列，利用这一特性进行验证
+
+```go
+func isValidBST(root *TreeNode) bool {
+    var inorder func(node *TreeNode)
+    // 根据题意，节点最小值为-2的32次方
+    tmp := -int64(math.Pow(-2, 32))
+    res := true
+    inorder = func(node *TreeNode) {
+        // 已知结果，直接返回
+        if res == false {
+            return
+        }
+        if node == nil {
+            return
+        }
+        inorder(node.Left)
+        // 当前节点值必需大于前一个节点值，否则为非二叉搜索树
+        if int64(node.Val) <= tmp {
+            res = false
+            return 
+        }
+        tmp = int64(node.Val)
+        inorder(node.Right)
+    }
+    inorder(root)
+    return res
+}
+```
+
+#### [230-中等] 二叉搜索树中第K小的元素
+
+给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 小的元素（从 1 开始计数）。
+
+**示例**
+
+```
+输入：root = [3,1,4,null,2], k = 1
+输出：1
+
+输入：root = [5,3,6,2,4,null,null,1], k = 3
+输出：3
+```
+
+- 树中的节点数为 `n` 。
+- `1 <= k <= n <= 104`
+- `0 <= Node.val <= 104`
+
+**题解**
+
+```
+func kthSmallest(root *TreeNode, k int) int {
+    var inorder func(node *TreeNode)
+    ans := 0
+    inorder = func(node *TreeNode) {
+        if ans != 0 {
+            return
+        }
+        if node == nil {
+            return
+        }
+        inorder(node.Left)
+        k--
+        if k == 0 {
+            ans = node.Val
+            return
+        }
+        inorder(node.Right)
+    }
+    inorder(root)
+    return ans
+}
+```
+
+### 图
+
+
 
 ### 栈
 
@@ -3442,6 +3631,51 @@ func hammingDistance(x int, y int) int {
 
 ### 矩阵
 
+#### [L48-中等] 旋转图像
+
+给定一个 *n* × *n* 的二维矩阵 `matrix` 表示一个图像。请你将图像顺时针旋转 90 度。
+
+你必须在**[ 原地](https://baike.baidu.com/item/原地算法)** 旋转图像，这意味着你需要直接修改输入的二维矩阵。**请不要** 使用另一个矩阵来旋转图像。
+
+**示例**
+
+```
+
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[[7,4,1],[8,5,2],[9,6,3]]
+
+输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+输出：[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+```
+
+- `n == matrix.length == matrix[i].length`
+- `1 <= n <= 20`
+- `-1000 <= matrix[i][j] <= 1000`
+
+**题解**
+
+由题意可以得到规律：
+
+对于矩阵中第 *i* 行的第 *j* 个元素，在旋转后，它出现在倒数第 *i* 列的第 *j* 个位置。
+
+即：对于`matrix[row][col]`，在旋转后，它的新位置为 `matrix[col][n−row−1]`
+
+```go
+func rotate(matrix [][]int)  {
+    n := len(matrix)
+    newMatrix := make([][]int, n)
+    for i := range newMatrix {
+        newMatrix[i] = make([]int, n)
+    }
+    for i, row := range matrix {
+        for j, col := range row {
+            newMatrix[j][n-1-i] = col
+        }
+    }
+    copy(matrix, newMatrix)
+}
+```
+
 #### [L54-中等] 螺旋矩阵
 
 给你一个 `m` 行 `n` 列的矩阵 `matrix` ，请按照 **顺时针螺旋顺序** ，返回矩阵中的所有元素。
@@ -3550,6 +3784,50 @@ func setZeroes(matrix [][]int)  {
             }
         }
     }
+}
+```
+
+#### [L240-中等] 搜索二维矩阵II
+
+编写一个高效的算法来搜索 `m x n` 矩阵 `matrix` 中的一个目标值 `target` 。该矩阵具有以下特性：
+
+- 每行的元素从左到右升序排列。
+- 每列的元素从上到下升序排列。
+
+**示例**
+
+```
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
+输出：true
+
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20
+输出：false
+```
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= n, m <= 300`
+- `-109 <= matrix[i][j] <= 109`
+- 每行的所有元素从左到右升序排列
+- 每列的所有元素从上到下升序排列
+- `-109 <= target <= 109`
+
+**题解**
+
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+    m, n := len(matrix), len(matrix[0])
+    x, y := 0, n - 1
+    for x < m && y >= 0 {
+        if matrix[x][y] == target {
+            return true
+        } else if matrix[x][y] > target {
+            y--
+        } else {
+            x++
+        }
+    }
+    return false
 }
 ```
 
