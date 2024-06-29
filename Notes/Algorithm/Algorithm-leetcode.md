@@ -1242,6 +1242,166 @@ func isValidBST(root *TreeNode) bool {
 }
 ```
 
+#### [L105-中等] 从前序与中序遍历序列构造二叉树
+
+给定两个整数数组 `preorder` 和 `inorder` ，其中 `preorder` 是二叉树的**先序遍历**， `inorder` 是同一棵树的**中序遍历**，请构造二叉树并返回其根节点。
+
+**示例**
+
+```
+输入: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+输出: [3,9,20,null,null,15,7]
+
+输入: preorder = [-1], inorder = [-1]
+输出: [-1]
+```
+
+- `1 <= preorder.length <= 3000`
+- `inorder.length == preorder.length`
+- `-3000 <= preorder[i], inorder[i] <= 3000`
+- `preorder` 和 `inorder` 均 **无重复** 元素
+- `inorder` 均出现在 `preorder`
+- `preorder` **保证** 为二叉树的前序遍历序列
+- `inorder` **保证** 为二叉树的中序遍历序列
+
+**题解**
+
+前序：`[ 根节点, [左子树的前序遍历结果], [右子树的前序遍历结果] ]`
+
+中序：`[ [左子树的中序遍历结果], 根节点, [右子树的中序遍历结果] ]`
+
+前序遍历第一个元素为二叉树的根节点
+
+在中序遍历中找到根节点，则可以知道左子树和右子树的长度
+
+因为前序和中序的左右子树结果长度一致，只是顺序不同，因此可以根据中序的左右子树长度来映射前序中左右子树的长度
+
+安装前序遍历进行递归，还原二叉树
+
+```go
+// 递归
+func buildTree(preorder []int, inorder []int) *TreeNode {
+	if len(preorder) == 0 {
+		return nil
+	}
+	// 已知前序遍历第一个元素为根节点
+	root := &TreeNode{Val: preorder[0]}
+	// 在中序遍历列表中找到根节点位置
+	i := 0
+	for ; i < len(inorder); i++ {
+		if inorder[i] == preorder[0] {
+			break
+		}
+	}
+	// 左子树的长度
+	l := len(inorder[:i])
+	root.Left = buildTree(preorder[1:l+1], inorder[:i])
+	root.Right = buildTree(preorder[l+1:], inorder[i+1:])
+	return root
+}
+```
+
+#### [L114-中等] 二叉树展开为链表
+
+给你二叉树的根结点 `root` ，请你将它展开为一个单链表：
+
+- 展开后的单链表应该同样使用 `TreeNode` ，其中 `right` 子指针指向链表中下一个结点，而左子指针始终为 `null` 。
+- 展开后的单链表应该与二叉树 [**先序遍历**](https://baike.baidu.com/item/先序遍历/6442839?fr=aladdin) 顺序相同。
+
+**示例**
+
+```
+输入：root = [1,2,5,3,4,null,6]
+输出：[1,null,2,null,3,null,4,null,5,null,6]
+
+输入：root = []
+输出：[]
+
+输入：root = [0]
+输出：[0]
+```
+
+- 树中结点数在范围 `[0, 2000]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+```go
+func flatten(root *TreeNode) {
+	// 前序遍历二叉树，存储节点
+	list := make([]*TreeNode, 0)
+	var preorder func(node *TreeNode)
+	preorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		list = append(list, node)
+		preorder(node.Left)
+		preorder(node.Right)
+	}
+	preorder(root)
+	// 遍历节点列表，修改二叉树左右节点信息
+	for i := 1; i < len(list); i++ {
+		prev, curr := list[i-1], list[i]
+		prev.Left, prev.Right = nil, curr
+	}
+}
+```
+
+#### [L199-中等] 二叉树的右视图
+
+给定一个二叉树的 **根节点** `root`，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+**示例**
+
+```
+输入: [1,2,3,null,5,null,4]
+输出: [1,3,4]
+
+输入: [1,null,3]
+输出: [1,3]
+
+输入: []
+输出: []
+```
+
+- 二叉树的节点个数的范围是 `[0,100]`
+- `-100 <= Node.val <= 100` 
+
+**题解**
+
+二叉树的层次遍历，取每一层最后一个元素
+
+```
+func rightSideView(root *TreeNode) []int {
+	ans := make([]int, 0)
+	if root == nil {
+		return ans
+	}
+	// 层次遍历
+	q := []*TreeNode{root}
+	for len(q) > 0 {
+		// 收集当前层的所有值
+		level := make([]int, 0)
+		p := make([]*TreeNode, 0)
+		for _, node := range q {
+			level = append(level, node.Val)
+			if node.Left != nil {
+				p = append(p, node.Left)
+			}
+			if node.Right != nil {
+				p = append(p, node.Right)
+			}
+		}
+		// 将收集到的值添加到结果集中
+		ans = append(ans, level[len(level)-1])
+		// 更新队列为下一层的节点
+		q = p
+	}
+	return ans
+}
+```
+
 #### [230-中等] 二叉搜索树中第K小的元素
 
 给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 小的元素（从 1 开始计数）。
@@ -1290,7 +1450,504 @@ func kthSmallest(root *TreeNode, k int) int {
 
 ### 图
 
+#### [L200-中等] 岛屿数量
 
+给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+**示例**
+
+```
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
+
+输入：grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+输出：3
+```
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 300`
+- `grid[i][j]` 的值为 `'0'` 或 `'1'`
+
+**题解**
+
+岛屿问题的深度优先遍历，本题传入的是char类型，需要注意
+
+```go
+func dfsIslands(grid [][]byte, r, c int) {
+	// 超出边界，返回
+	if r < 0 || len(grid) <= r || c < 0 || len(grid[0]) <= c {
+		return
+	}
+	// 如果这个格子不是岛屿，直接返回
+	if grid[r][c] != '1' {
+		return
+	}
+	// 将遍历过的格子标记为2
+	grid[r][c] = '2'
+	// 访问上、下、左、右相邻节点
+	dfsIslands(grid, r-1, c)
+	dfsIslands(grid, r+1, c)
+	dfsIslands(grid, r, c-1)
+	dfsIslands(grid, r, c+1)
+}
+
+func numIslands(grid [][]byte) int {
+	ans := 0
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			if grid[i][j] == '1' {
+				ans++
+				dfsIslands(grid, i, j)
+			}
+		}
+	}
+	return ans
+}
+```
+
+#### [L463-中等] 岛屿的周长
+
+给定一个 `row x col` 的二维网格地图 `grid` ，其中：`grid[i][j] = 1` 表示陆地， `grid[i][j] = 0` 表示水域。
+
+网格中的格子 **水平和垂直** 方向相连（对角线方向不相连）。整个网格被水完全包围，但其中恰好有一个岛屿（或者说，一个或多个表示陆地的格子相连组成的岛屿）。
+
+岛屿中没有“湖”（“湖” 指水域在岛屿内部且不和岛屿周围的水相连）。格子是边长为 1 的正方形。网格为长方形，且宽度和高度均不超过 100 。计算这个岛屿的周长。
+
+**示例**
+
+```
+输入：grid = [[0,1,0,0],[1,1,1,0],[0,1,0,0],[1,1,0,0]]
+输出：16
+解释：它的周长是上面图片中的 16 个黄色的边
+
+输入：grid = [[1]]
+输出：4
+
+输入：grid = [[1,0]]
+输出：4
+```
+
+- `row == grid.length`
+- `col == grid[i].length`
+- `1 <= row, col <= 100`
+- `grid[i][j]` 为 `0` 或 `1`
+
+**题解**
+
+```go
+func dfsPerimeter(grid [][]int, r, c int) int {
+    // 超出边界，刚好是边长，返回1
+    if r < 0 || len(grid) <= r || c < 0 || len(grid[0]) <= c {
+        return 1
+    }
+    // 如果这个格子是海洋格子，也是边长，返回1
+    if grid[r][c] == 0 {
+        return 1
+    }
+    // 如果这个格子是已经遍历过的岛屿，返回0
+    if grid[r][c] == 2 {
+        return 0
+    }
+    // 将遍历过的格子标记为2
+    grid[r][c] = 2
+    // 访问上、下、左、右相邻节点
+    return dfsPerimeter(grid, r - 1, c) + dfsPerimeter(grid, r + 1, c) + dfsPerimeter(grid, r, c - 1) + dfsPerimeter(grid, r, c + 1)
+}
+
+func islandPerimeter(grid [][]int) int {
+    for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			if grid[i][j] == 1 {
+				return dfsPerimeter(grid, i, j)
+			}
+		}
+	}
+    return 0
+}
+```
+
+#### [L695-中等] 岛屿的最大面积
+
+给你一个大小为 `m x n` 的二进制矩阵 `grid` 。
+
+**岛屿** 是由一些相邻的 `1` (代表土地) 构成的组合，这里的「相邻」要求两个 `1` 必须在 **水平或者竖直的四个方向上** 相邻。你可以假设 `grid` 的四个边缘都被 `0`（代表水）包围着。
+
+岛屿的面积是岛上值为 `1` 的单元格的数目。
+
+计算并返回 `grid` 中最大的岛屿面积。如果没有岛屿，则返回面积为 `0` 。
+
+**示例**
+
+```
+输入：grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]
+输出：6
+解释：答案不应该是 11 ，因为岛屿只能包含水平或垂直这四个方向上的 1 。
+
+输入：grid = [[0,0,0,0,0,0,0,0]]
+输出：0
+```
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 50`
+- `grid[i][j]` 为 `0` 或 `1`
+
+**题解**
+
+求出每一个岛屿的面积（使用DFS），再取最大值
+
+```go
+// 判断格子是否在边界内
+func inArea(grid [][]int, r, c int) bool {
+    return 0 <= r && r < len(grid) && 0 <= c && c < len(grid[0])
+}
+
+// 深度优先搜索求面积
+func dfs(grid [][]int, r, c int) int {
+    // 超出边界，返回
+    if !inArea(grid, r, c) {
+        return 0
+    }
+    // 如果这个格子不是岛屿，直接返回
+    if grid[r][c] != 1 {
+        return 0
+    }
+    // 将遍历过的格子标记为2
+    grid[r][c] = 2
+    // 访问上、下、左、右相邻节点
+    return 1 + dfs(grid, r - 1, c) + dfs(grid, r + 1, c) + dfs(grid, r, c - 1) + dfs(grid, r, c + 1)
+}
+
+func maxAreaOfIsland(grid [][]int) int {
+    max := 0
+    for i := 0; i < len(grid); i++ {
+        for j := 0; j < len(grid[0]); j++ {
+            if grid[i][j] == 1 {
+                area := dfs(grid, i, j)
+                if area > max {
+                    max = area
+                }
+            }
+        }
+    }
+    return max
+}
+```
+
+#### [L994-中等] 腐烂的橘子
+
+在给定的 `m x n` 网格 `grid` 中，每个单元格可以有以下三个值之一：
+
+- 值 `0` 代表空单元格；
+- 值 `1` 代表新鲜橘子；
+- 值 `2` 代表腐烂的橘子。
+
+每分钟，腐烂的橘子 **周围 4 个方向上相邻** 的新鲜橘子都会腐烂。
+
+返回 *直到单元格中没有新鲜橘子为止所必须经过的最小分钟数。如果不可能，返回 `-1`* 。
+
+**示例**
+
+```
+输入：grid = [[2,1,1],[1,1,0],[0,1,1]]
+输出：4
+
+输入：grid = [[2,1,1],[0,1,1],[1,0,1]]
+输出：-1
+解释：左下角的橘子（第 2 行， 第 0 列）永远不会腐烂，因为腐烂只会发生在 4 个方向上。
+
+输入：grid = [[0,2]]
+输出：0
+解释：因为 0 分钟时已经没有新鲜橘子了，所以答案就是 0 。
+```
+
+**题解**
+
+```go
+func orangesRotting(grid [][]int) int {
+    m, n := len(grid), len(grid[0])
+    // 腐烂橘子坐标
+    queue := make([][]int, 0)
+    // 新鲜橘子的数量
+    count := 0
+    // 遍历网格，获取新鲜橘子数量和腐烂橘子坐标集合
+    for i := 0; i < m; i++ {
+        for j := 0; j < n; j++ {
+            if grid[i][j] == 1 {
+                count++
+            } else if grid[i][j] == 2 {
+                queue = append(queue, []int{i, j})
+            }
+        }
+    }
+    // 腐烂遍历次数 == 分钟
+    round := 0
+    for count > 0 && len(queue) > 0 {
+        round++
+        // 获取当前队列长度
+        size := len(queue)
+        // 遍历当前层，将新鲜橘子更新为腐烂橘子，并更新新一轮腐烂橘子的队列
+        for i := 0; i < size; i++ {// 使用size来避免在迭代中改变queue的长度
+            orange := queue[0]
+            queue = queue[1:]
+            r, c := orange[0], orange[1]
+            // 分别在腐烂橘子的上、下、左、右进行感染
+            for r-1 >= 0 && grid[r-1][c] == 1 {// 上
+                grid[r-1][c] = 2
+                count--
+                queue = append(queue, []int{r-1, c})
+            }
+            if r+1 < m && grid[r+1][c] == 1 {// 下
+                grid[r+1][c] = 2
+                count--
+                queue = append(queue, []int{r+1, c})
+            }
+            if c-1 >= 0 && grid[r][c-1] == 1 {// 左
+                grid[r][c-1] = 2
+                count--
+                queue = append(queue, []int{r, c-1})
+            }
+            if c+1 < n && grid[r][c+1] == 1 {// 右
+                grid[r][c+1] = 2
+                count--
+                queue = append(queue, []int{r, c+1})
+            }
+        }
+    }
+    if count > 0 {
+        return -1
+    }
+    return round
+}
+```
+
+#### [L207-中等] 课程表
+
+你这个学期必须选修 `numCourses` 门课程，记为 `0` 到 `numCourses - 1` 。
+
+在选修某些课程之前需要一些先修课程。 先修课程按数组 `prerequisites` 给出，其中 `prerequisites[i] = [ai, bi]` ，表示如果要学习课程 `ai` 则 **必须** 先学习课程 `bi` 。
+
+- 例如，先修课程对 `[0, 1]` 表示：想要学习课程 `0` ，你需要先完成课程 `1` 。
+
+请你判断是否可能完成所有课程的学习？如果可以，返回 `true` ；否则，返回 `false` 。
+
+**示例**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0]]
+输出：true
+解释：总共有 2 门课程。学习课程 1 之前，你需要完成课程 0 。这是可能的。
+
+输入：numCourses = 2, prerequisites = [[1,0],[0,1]]
+输出：false
+解释：总共有 2 门课程。学习课程 1 之前，你需要先完成课程 0 ；并且学习课程 0 之前，你还应先完成课程 1 。这是不可能的。
+```
+
+- `1 <= numCourses <= 2000`
+- `0 <= prerequisites.length <= 5000`
+- `prerequisites[i].length == 2`
+- `0 <= ai, bi < numCourses`
+- `prerequisites[i]` 中的所有课程对 **互不相同**
+
+**题解**
+
+深度优先搜索
+
+```go
+func canFinish(numCourses int, prerequisites [][]int) bool {
+    // 结果集
+	res := make([]int, 0)
+	// 遍历过的节点，存入栈
+	visited := make([]int, numCourses)
+	// 邻接表
+	edges := make([][]int, numCourses)
+	// 是否存在拓扑排序（如果一个有向图包含环，则不存在）
+	valid := true
+	// 深度优先遍历
+	var dfs func(u int)
+	dfs = func(u int) {
+		// 标记为搜索中：1
+		visited[u] = 1
+		for _, v := range edges[u] {
+			if visited[v] == 0 { // 未搜索，则开始搜索
+				dfs(v)
+				if !valid {
+					return
+				}
+			} else if visited[v] == 1 { // 搜索中，说明找到了环
+				valid = false
+				return
+			}
+		}
+		// 搜索完成，修改为已完成状态
+		visited[u] = 2
+		// 记录结果
+		res = append(res, u)
+	}
+	// 构建邻接表
+	// i 对应于一个节点（即课程），edges[i] 则是一个包含所有以课程 i 为先修课程的课程列表。
+	for _, info := range prerequisites {
+		edges[info[1]] = append(edges[info[1]], info[0])
+	}
+	// 遍历，对未搜索的节点进行深度优先搜索
+	for i := 0; i < numCourses && valid; i++ {
+		if visited[i] == 0 {
+			dfs(i)
+		}
+	}
+	return valid
+}
+```
+
+#### [L210-中等] 课程表II
+
+现在你总共有 `numCourses` 门课需要选，记为 `0` 到 `numCourses - 1`。给你一个数组 `prerequisites` ，其中 `prerequisites[i] = [ai, bi]` ，表示在选修课程 `ai` 前 **必须** 先选修 `bi` 。
+
+- 例如，想要学习课程 `0` ，你需要先完成课程 `1` ，我们用一个匹配来表示：`[0,1]` 。
+
+返回你为了学完所有课程所安排的学习顺序。可能会有多个正确的顺序，你只要返回 **任意一种** 就可以了。如果不可能完成所有课程，返回 **一个空数组** 。
+
+**示例**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0]]
+输出：[0,1]
+解释：总共有 2 门课程。要学习课程 1，你需要先完成课程 0。因此，正确的课程顺序为 [0,1] 。
+
+输入：numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
+输出：[0,2,1,3]
+解释：总共有 4 门课程。要学习课程 3，你应该先完成课程 1 和课程 2。并且课程 1 和课程 2 都应该排在课程 0 之后。
+因此，一个正确的课程顺序是 [0,1,2,3] 。另一个正确的排序是 [0,2,1,3] 。
+
+输入：numCourses = 1, prerequisites = []
+输出：[0]
+```
+
+- `1 <= numCourses <= 2000`
+- `0 <= prerequisites.length <= numCourses * (numCourses - 1)`
+- `prerequisites[i].length == 2`
+- `0 <= ai, bi < numCourses`
+- `ai != bi`
+- 所有`[ai, bi]` **互不相同**
+
+**题解**
+
+深度优先搜索（dfs）
+
+```go
+func findOrder(numCourses int, prerequisites [][]int) []int {
+	// 结果集
+	res := make([]int, 0)
+	// 遍历过的节点，存入栈
+	visited := make([]int, numCourses)
+	// 邻接表
+	edges := make([][]int, numCourses)
+	// 是否存在拓扑排序（如果一个有向图包含环，则不存在）
+	valid := true
+	// 深度优先遍历
+	var dfs func(u int)
+	dfs = func(u int) {
+		// 标记为搜索中：1
+		visited[u] = 1
+		for _, v := range edges[u] {
+			if visited[v] == 0 { // 未搜索，则开始搜索
+				dfs(v)
+				if !valid {
+					return
+				}
+			} else if visited[v] == 1 { // 搜索中，说明找到了环
+				valid = false
+				return
+			}
+		}
+		// 搜索完成，修改为已完成状态
+		visited[u] = 2
+		// 记录结果
+		res = append(res, u)
+	}
+	// 构建邻接表
+	// i 对应于一个节点（即课程），edges[i] 则是一个包含所有以课程 i 为先修课程的课程列表。
+	for _, info := range prerequisites {
+		edges[info[1]] = append(edges[info[1]], info[0])
+	}
+	// 遍历，对未搜索的节点进行深度优先搜索
+	for i := 0; i < numCourses && valid; i++ {
+		if visited[i] == 0 {
+			dfs(i)
+		}
+	}
+	// 非拓扑排序，则不存在，返回空数组
+	if !valid {
+		return []int{}
+	}
+	// 反转结果
+	for i := 0; i < len(res)/2; i++ {
+		res[i], res[numCourses-i-1] = res[numCourses-i-1], res[i]
+	}
+	return res
+}
+```
+
+广度优先搜索（bfs）
+
+```go
+// 广度优先搜索（bfs）
+func findOrder(numCourses int, prerequisites [][]int) []int {
+	// 邻接表
+	edges := make([][]int, numCourses)
+	// 每门课程的入度
+	indeg := make([]int, numCourses)
+	// 结果集
+	res := make([]int, 0)
+	// 构建邻接表
+	for _, info := range prerequisites {
+		// edges[i] 表示课程 i 的所有后继课程（即依赖于课程 i 的课程）。
+		edges[info[1]] = append(edges[info[1]], info[0])
+		// 获取每门课程的入度（有多少课程依赖它）
+		indeg[info[0]]++
+	}
+	// 找出所有入度为0的节点
+	q := []int{}
+	for i := 0; i < numCourses; i++ {
+		if indeg[i] == 0 {
+			q = append(q, i)
+		}
+	}
+	// 遍历入度为0的节点
+	for len(q) > 0 {
+		u := q[0]
+		q = q[1:]
+		// 入度为0，则说明已不依赖其他节点，加入结果
+		res = append(res, u)
+		// 删除节点（删除节点所有度）
+		for _, v := range edges[u] {
+			indeg[v]--
+			if indeg[v] == 0 {
+				q = append(q, v)
+			}
+		}
+	}
+	if len(res) != numCourses {
+		return []int{}
+	}
+	return res
+}
+```
 
 ### 栈
 
@@ -2225,7 +2882,7 @@ class Solution {
 > 回溯算法
 >
 
-<img src="../../Image/image-202403202038.png" style="zoom:75%;" />
+<img src="../../Image/algorithm/image-202403202038.png" style="zoom:75%;" />
 
 代码实现：
 
