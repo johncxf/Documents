@@ -447,6 +447,76 @@ class Solution {
 }
 ```
 
+#### [L138-中等] 随机链表的复制
+
+给你一个长度为 `n` 的链表，每个节点包含一个额外增加的随机指针 `random` ，该指针可以指向链表中的任何节点或空节点。
+
+构造这个链表的 **[深拷贝](https://baike.baidu.com/item/深拷贝/22785317?fr=aladdin)**。 深拷贝应该正好由 `n` 个 **全新** 节点组成，其中每个新节点的值都设为其对应的原节点的值。新节点的 `next` 指针和 `random` 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。**复制链表中的指针都不应指向原链表中的节点** 。
+
+例如，如果原链表中有 `X` 和 `Y` 两个节点，其中 `X.random --> Y` 。那么在复制链表中对应的两个节点 `x` 和 `y` ，同样有 `x.random --> y` 。
+
+返回复制链表的头节点。
+
+用一个由 `n` 个节点组成的链表来表示输入/输出中的链表。每个节点用一个 `[val, random_index]` 表示：
+
+- `val`：一个表示 `Node.val` 的整数。
+- `random_index`：随机指针指向的节点索引（范围从 `0` 到 `n-1`）；如果不指向任何节点，则为 `null` 。
+
+你的代码 **只** 接受原链表的头节点 `head` 作为传入参数。
+
+**示例**
+
+```
+输入：head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+输出：[[7,null],[13,0],[11,4],[10,2],[1,0]]
+
+输入：head = [[1,1],[2,1]]
+输出：[[1,1],[2,1]]
+
+输入：head = [[3,null],[3,0],[3,null]]
+输出：[[3,null],[3,0],[3,null]]
+```
+
+- `0 <= n <= 1000`
+- `-104 <= Node.val <= 104`
+- `Node.random` 为 `null` 或指向链表中的节点。
+
+**题解**
+
+```go
+func copyRandomList(head *Node) *Node {
+    if head == nil {
+        return nil
+    }
+    // 创建一个哈希表，key是原节点，value是新节点
+    hash := make(map[*Node]*Node, 0)
+    p := head
+    // 将原节点和新节点放入哈希表中
+    for p != nil {
+        newNode := &Node{Val: p.Val}
+        hash[p] = newNode
+        p = p.Next
+    }
+    p = head
+    // 遍历原链表，设置新节点的next和random
+    for p != nil {
+        // 获取新节点
+        newNode := hash[p]
+        // 原节点的下一个节点存在，则更新新节点的下一个节点
+        if p.Next != nil {
+            newNode.Next = hash[p.Next]
+        }
+        // 原节点的随机节点存在，则更新新节点的随机节点
+        if p.Random != nil {
+            newNode.Random = hash[p.Random]
+        }
+        p = p.Next
+    }
+    // 返回头节点，即原节点对应的 value 值
+    return hash[head]
+}
+```
+
 #### [L141-简单] 环形链表
 
 给你一个链表的头节点 `head` ，判断链表中是否有环。
@@ -545,6 +615,236 @@ func detectCycle(head *ListNode) *ListNode {
         head = head.Next
     }
     return nil
+}
+```
+
+#### [L146-中等] LRU 缓存
+
+请你设计并实现一个满足 [LRU (最近最少使用) 缓存](https://baike.baidu.com/item/LRU) 约束的数据结构。
+
+实现 `LRUCache` 类：
+
+- `LRUCache(int capacity)` 以 **正整数** 作为容量 `capacity` 初始化 LRU 缓存
+- `int get(int key)` 如果关键字 `key` 存在于缓存中，则返回关键字的值，否则返回 `-1` 。
+- `void put(int key, int value)` 如果关键字 `key` 已经存在，则变更其数据值 `value` ；如果不存在，则向缓存中插入该组 `key-value` 。如果插入操作导致关键字数量超过 `capacity` ，则应该 **逐出** 最久未使用的关键字。
+
+函数 `get` 和 `put` 必须以 `O(1)` 的平均时间复杂度运行。
+
+**示例**
+
+```
+输入
+["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+输出
+[null, null, null, 1, null, -1, null, -1, 3, 4]
+
+解释
+LRUCache lRUCache = new LRUCache(2);
+lRUCache.put(1, 1); // 缓存是 {1=1}
+lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
+lRUCache.get(1);    // 返回 1
+lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
+lRUCache.get(2);    // 返回 -1 (未找到)
+lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+lRUCache.get(1);    // 返回 -1 (未找到)
+lRUCache.get(3);    // 返回 3
+lRUCache.get(4);    // 返回 4
+```
+
+- `1 <= capacity <= 3000`
+- `0 <= key <= 10000`
+- `0 <= value <= 105`
+- 最多调用 `2 * 105` 次 `get` 和 `put`
+
+**题解**
+
+双向链表+hash
+
+```go
+// DLinkedNode 定义双向链表结构体
+type DLinkedNode struct {
+	key, value int          // 键值对
+	prev, next *DLinkedNode // 指向前驱、后继节点的指针
+}
+
+// newDLinkedNode 初始化链表
+func newDLinkedNode(key, value int) *DLinkedNode {
+	return &DLinkedNode{
+		key:   key,
+		value: value,
+	}
+}
+
+// LRUCache 缓存结构
+type LRUCache struct {
+	size       int                  // 当前已用容量大小
+	capacity   int                  // 容量
+	cache      map[int]*DLinkedNode // 哈希表，存储缓存数据的键映射到双向链表的位置
+	head, tail *DLinkedNode         // 头部和尾部节点
+}
+
+// Constructor 构造函数
+func Constructor(capacity int) LRUCache {
+	l := LRUCache{
+		cache:    map[int]*DLinkedNode{},
+		head:     newDLinkedNode(0, 0),
+		tail:     newDLinkedNode(0, 0),
+		capacity: capacity,
+	}
+	l.head.next = l.tail
+	l.tail.prev = l.head
+	return l
+}
+
+// Get 获取缓存值
+func (t *LRUCache) Get(key int) int {
+	// 不存在，则返回-1
+	if _, ok := t.cache[key]; !ok {
+		return -1
+	}
+	// 获取该值在双向链表中的位置
+	node := t.cache[key]
+	// 先删除该节点，再添加至链表头部（使访问过的节点处于最新状态）
+	t.moveToHead(node)
+	// 返回节点的值
+	return node.value
+}
+
+// Put 插入或更新缓存值
+func (t *LRUCache) Put(key int, value int) {
+	if node, ok := t.cache[key]; ok { // 已存在，则更新
+		node.value = value
+		// 先删除该节点，再添加至链表头部（使访问过的节点处于最新状态）
+		t.moveToHead(node)
+	} else { // 不存在
+		// 以该 key value 初始化一个节点
+		node = newDLinkedNode(key, value)
+		// 加入hash表映射
+		t.cache[key] = node
+		// 添加该节点至头部
+		t.addToHead(node)
+		t.size++
+		// 若加入该缓存后容量超过最大限制，则删除最后一个缓存
+		if t.size > t.capacity {
+			rmNode := t.removeTail()    // 删除链表最后一个节点
+			delete(t.cache, rmNode.key) // 删除该节点在hash表中的映射关系
+			t.size--
+		}
+	}
+}
+
+// 添加节点至头部
+func (t *LRUCache) addToHead(node *DLinkedNode) {
+	node.prev = t.head
+	node.next = t.head.next
+	t.head.next.prev = node
+	t.head.next = node
+}
+
+// 删除节点
+func (t *LRUCache) removeNode(node *DLinkedNode) {
+	node.prev.next = node.next
+	node.next.prev = node.prev
+}
+
+// 删除节点，并将该节点添加至头部
+func (t *LRUCache) moveToHead(node *DLinkedNode) {
+	t.removeNode(node)
+	t.addToHead(node)
+}
+
+// 删除链表最后一个节点
+func (t *LRUCache) removeTail() *DLinkedNode {
+	node := t.tail.prev
+	t.removeNode(node)
+	return node
+}
+```
+
+#### [L148-中等] 排序链表
+
+给你链表的头结点 `head` ，请将其按 **升序** 排列并返回 **排序后的链表** 。
+
+**示例**
+
+```
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+
+输入：head = [-1,5,3,4,0]
+输出：[-1,0,3,4,5]
+
+输入：head = []
+输出：[]
+```
+
+- 链表中节点的数目在范围 `[0, 5 * 104]` 内
+- `-105 <= Node.val <= 105`
+
+**题解**
+
+使用归并排序思路，只是这里是链表，链表的切分和合并需要注意
+
+链表切分：
+
+1. 通过快慢指针找出链表中点
+2. 在中点处切断链表，一分为二（通过将中等位置链表的 next 指针置为 nil 来切断）
+
+链表合并：
+
+1. 需要创建一个哑节点作为新链表的头
+2. 依次对比左右链表第一个元素的大小，将小的先加入结果链表，这里思路和数组合并一致
+
+```go
+func sortList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	// 定义快慢指针
+	slow, fast := head, head.Next
+	// 慢指针每次走1步，快指针每次走2步，当快指针fast走到最后的时候，慢指针的位置就是中点
+	// 当链表为偶数是，slow指向中间前一个元素
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	// 暂存
+	tmp := slow.Next
+	// 切断链表
+	slow.Next = nil
+	// 递归左右链表，直到切分每个链表剩一个节点终止
+	left := sortList(head)
+	right := sortList(tmp)
+
+	// 返回合并的结果
+	return merge(left, right)
+}
+
+// 合并左右链表
+func merge(left, right *ListNode) *ListNode {
+    // 创建一个哑节点作为新链表的头
+	dummy := &ListNode{}
+	curr := dummy
+	for left != nil && right != nil {
+		if left.Val < right.Val {
+			curr.Next = left
+			left = left.Next
+		} else {
+			curr.Next = right
+			right = right.Next
+		}
+		curr = curr.Next
+	}
+	// 链接剩余的部分
+	if left != nil {
+		curr.Next = left
+	}
+	if right != nil {
+		curr.Next = right
+	}
+	// 返回新链表的头（跳过哑节点）
+	return dummy.Next
 }
 ```
 
@@ -1947,6 +2247,110 @@ func findOrder(numCourses int, prerequisites [][]int) []int {
 	}
 	return res
 }
+```
+
+#### [L208-中等] 实现 Trie (前缀树)
+
+**[Trie](https://baike.baidu.com/item/字典树/9825209?fr=aladdin)**（发音类似 "try"）或者说 **前缀树** 是一种树形数据结构，用于高效地存储和检索字符串数据集中的键。这一数据结构有相当多的应用情景，例如自动补完和拼写检查。
+
+请你实现 Trie 类：
+
+- `Trie()` 初始化前缀树对象。
+- `void insert(String word)` 向前缀树中插入字符串 `word` 。
+- `boolean search(String word)` 如果字符串 `word` 在前缀树中，返回 `true`（即，在检索之前已经插入）；否则，返回 `false` 。
+- `boolean startsWith(String prefix)` 如果之前已经插入的字符串 `word` 的前缀之一为 `prefix` ，返回 `true` ；否则，返回 `false` 
+
+**示例**
+
+```
+输入
+["Trie", "insert", "search", "search", "startsWith", "insert", "search"]
+[[], ["apple"], ["apple"], ["app"], ["app"], ["app"], ["app"]]
+输出
+[null, null, true, false, true, null, true]
+
+解释
+Trie trie = new Trie();
+trie.insert("apple");
+trie.search("apple");   // 返回 True
+trie.search("app");     // 返回 False
+trie.startsWith("app"); // 返回 True
+trie.insert("app");
+trie.search("app");     // 返回 True
+```
+
+- `1 <= word.length, prefix.length <= 2000`
+- `word` 和 `prefix` 仅由小写英文字母组成
+- `insert`、`search` 和 `startsWith` 调用次数 **总计** 不超过 `3 * 104` 次
+
+**题解**
+
+```go
+// Trie 前缀树结构体
+type Trie struct {
+    // 指向子节点的指针数组
+    // children[0]对应小写字母a，children[1]对应小写字母b，…，children[25]对应小写字母z
+    children [26]*Trie
+    // 该节点是否为字符串结尾
+    isEnd bool
+}
+
+// Constructor 构造函数
+func Constructor() Trie {
+    return Trie{}
+}
+
+// Insert 插入单词
+func (this *Trie) Insert(word string)  {
+    node := this
+    for _, ch := range word {
+        // 减去小写字母a的ASCII值（97）：a->0，b->1，...，z->25
+        ch -= 'a'
+        // 子节点不存在，则创建一个新的节点
+        if node.children[ch] == nil {
+            node.children[ch] = &Trie{}
+        }
+        // 沿着指针移动到子节点，继续处理下一个字符
+        node = node.children[ch]
+    }
+    // 处理到最后一个字符，标记为结束位置
+    node.isEnd = true
+}
+
+// Search 查找单词
+func (this *Trie) Search(word string) bool {
+    node := this.SearchPrefix(word)
+    return node != nil && node.isEnd
+}
+
+// StartsWith 单词是否是这个前缀
+func (this *Trie) StartsWith(prefix string) bool {
+    return this.SearchPrefix(prefix) != nil
+}
+
+// SearchPrefix 查找前缀
+func (this *Trie) SearchPrefix(prefix string) *Trie {
+    node := this
+    // 遍历前缀所有单词，依次查找
+    for _, ch := range prefix {
+        ch -= 'a'
+        // 有一个单词不存在，则直接返回 nil
+        if node.children[ch] == nil {
+            return nil
+        }
+        node = node.children[ch]
+    }
+    return node
+}
+
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * obj := Constructor();
+ * obj.Insert(word);
+ * param_2 := obj.Search(word);
+ * param_3 := obj.StartsWith(prefix);
+ */
 ```
 
 ### 栈

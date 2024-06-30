@@ -175,118 +175,37 @@ void print(int n) {
 
 ###  链表
 
+链表（linked list）是一种线性数据结构，其中的每个元素都是一个节点对象，各个节点通过“引用”相连接。引用记录了下一个节点的内存地址，通过它可以从当前节点访问到下一个节点。
+
+<img src="/../../Image/algorithm/image-20240630183041107.png" alt="image-20240630183041107" style="zoom:50%;" />
+
+常见的链表类型包括三种：
+
+<img src="/../../Image/algorithm/image-20240630223917845.png" alt="image-20240630223917845" style="zoom:50%;" />
+
 #### 单链表
 
 通过指针将一组零散的内存块串联在一起 ， 把内存块称为链表的“**结点**”。  记录下个结点地址的指针叫作**后继指针 next** ，第一个结点叫作**头结点**，把最后一个结点叫作**尾结点** 。
 
 ```go
-// 单链表
-package main
-
-import (
-	"fmt"
-)
-
-// 定义节点
-type Node struct {
-	Value int
-	Next  *Node
+// ListNode 单链表
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 
-// 初始化头结点
-var head = new(Node)
-
-// 添加节点
-func addNode(t *Node, v int) int {
-	if head == nil {
-		t = &Node{v, nil}
-		head = t
-		return 0
+// NewListNode 创建一个新的链表
+func NewListNode(val int) *ListNode {
+	return &ListNode{
+		Val:  val,
+		Next: nil,
 	}
-
-	if v == t.Value {
-		fmt.Println("节点已存在:", v)
-		return -1
-	}
-
-	// 如果当前节点下一个节点为空
-	if t.Next == nil {
-		t.Next = &Node{v, nil}
-		return -2
-	}
-
-	// 如果当前节点下一个节点不为空
-	return addNode(t.Next, v)
 }
-
-// 遍历链表
-func traverse(t *Node) {
-	if t == nil {
-		fmt.Println("-> 空链表!")
-		return
-	}
-	for t != nil {
-		fmt.Printf("%d -> ", t.Value)
-		t = t.Next
-	}
-	fmt.Println()
-}
-
-// 查找节点
-func searchNode(t *Node, v int) bool {
-	if head == nil {
-		t = &Node{v, nil}
-		head = t
-		return false
-	}
-	if v == t.Value {
-		return true
-	}
-	if t.Next == nil {
-		return false
-	}
-	return searchNode(t.Next, v)
-}
-
-// 获取链表长度
-func size(t *Node) int {
-	if t == nil {
-		fmt.Println("-> 空链表!")
-		return 0
-	}
-	i := 0
-	for t != nil {
-		i++
-		t = t.Next
-	}
-	return i
-}
-
-func main() {
-	fmt.Println(head)
-	head = nil
-	// 遍历链表
-	traverse(head)
-	// 添加节点
-	addNode(head, 1)
-	addNode(head, -1)
-	// 再次遍历
-	traverse(head)
-	// 添加更多节点
-	addNode(head, 10)
-	addNode(head, 5)
-	addNode(head, 45)
-	// 添加已存在节点
-	addNode(head, 5)
-	// 再次遍历
-	traverse(head)
-}
-
 ```
 
 #### 循环链表
 
->  **循环链表是一种特殊的单链表**。实际上，循环链表也很简单。它跟单链表唯一的区别就在尾结点。我们知道，单链表的尾结点指针指向空地址，表示这就是最后的结点了。而循环链表的尾结点指针是指向链表的头结点 
+**循环链表是一种特殊的单链表**。实际上，循环链表也很简单。它跟单链表唯一的区别就在尾结点。我们知道，单链表的尾结点指针指向空地址，表示这就是最后的结点了。而循环链表的尾结点指针是指向链表的头结点 
 
  和单链表相比，**循环链表**的优点是从链尾到链头比较方便。 
 
@@ -1278,19 +1197,18 @@ function shellSort(&$arr) {
 
 **原理**
 
-> 归并排序：又称合并排序
->
-> 归并（Merge）排序法是将两个（或两个以上）有序表合并成一个新的有序表，
->
-> 即把待排序序列分为若干个有序的子序列，再把有序的子序列合并为整体有序序列。
->
-> 归并排序的一个缺点是它需要存储器有另一个大小等于数据项数目的数组。如果初始数组几乎占满整个存储器，那么归并排序将不能工作，但是如果有足够的空间，归并排序会是一个很好的选择。
+归并排序：又称合并排序
+
+归并（Merge）排序法是将两个（或两个以上）有序表合并成一个新的有序表，
+
+即把待排序序列分为若干个有序的子序列，再把有序的子序列合并为整体有序序列。
+
+归并排序的一个缺点是它需要存储器有另一个大小等于数据项数目的数组。如果初始数组几乎占满整个存储器，那么归并排序将不能工作，但是如果有足够的空间，归并排序会是一个很好的选择。
 
 **复杂度**
 
-> 时间复杂度：O(nlog2n)
->
-> 空间复杂度：O(n)
+- 时间复杂度：O(nlog2n)
+- 空间复杂度：O(n)
 
 **代码实现**
 
