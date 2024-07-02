@@ -1724,7 +1724,7 @@ func rightSideView(root *TreeNode) []int {
 
 二叉搜索树中序遍历结果为递增序列，利用这一特性，遍历过程 `k--`，当k为0时则就是结果
 
-```
+```go
 func kthSmallest(root *TreeNode, k int) int {
     var inorder func(node *TreeNode)
     ans := 0
@@ -1745,6 +1745,103 @@ func kthSmallest(root *TreeNode, k int) int {
     }
     inorder(root)
     return ans
+}
+```
+
+#### [L236-中等] 二叉树的最近公共祖先
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+[百度百科](https://baike.baidu.com/item/最近公共祖先/8918834?fr=aladdin)中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（**一个节点也可以是它自己的祖先**）。”
+
+**示例**
+
+```
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出：5
+解释：节点 5 和节点 4 的最近公共祖先是节点 5 。因为根据定义最近公共祖先节点可以为节点本身。
+
+输入：root = [1,2], p = 1, q = 2
+输出：1
+```
+
+**题解**
+
+```go
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+    // 当越过叶节点，则直接返回 null
+    if root == nil {
+        return nil
+    }
+    // 当 root 等于 p,q ，则直接返回 root
+    if root == p || root == q {
+        return root
+    }
+    // 分别递归左右子树
+    left := lowestCommonAncestor(root.Left, p, q)
+    right := lowestCommonAncestor(root.Right, p, q)
+    if left == nil && right == nil {
+        return nil
+    }
+    if left == nil {
+        return right
+    }
+    if right == nil {
+        return left
+    }
+    return root
+}
+```
+
+#### [L437-中等] 路径总和 III
+
+给定一个二叉树的根节点 `root` ，和一个整数 `targetSum` ，求该二叉树里节点值之和等于 `targetSum` 的 **路径** 的数目。
+
+**路径** 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+**示例**
+
+```
+输入：root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8
+输出：3
+解释：和等于 8 的路径有 3 条
+
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+输出：3
+```
+
+- 二叉树的节点个数的范围是 `[0,1000]`
+- `-109 <= Node.val <= 109` 
+- `-1000 <= targetSum <= 1000` 
+
+**题解**
+
+```go
+func rootSum(root *TreeNode, targetSum int) (res int) {
+    if root == nil {
+        return
+    }
+    val := root.Val
+    if val == targetSum {
+        res++
+    }
+    res += rootSum(root.Left, targetSum-val)
+    res += rootSum(root.Right, targetSum-val)
+    return
+}
+
+func pathSum(root *TreeNode, targetSum int) int {
+    if root == nil {
+        return 0
+    }
+    res := rootSum(root, targetSum)
+    res += pathSum(root.Left, targetSum)
+    res += pathSum(root.Right, targetSum)
+    return res
 }
 ```
 
@@ -2451,6 +2548,168 @@ class Solution {
 }
 ```
 
+#### [L155-中等] 最小栈
+
+设计一个支持 `push` ，`pop` ，`top` 操作，并能在常数时间内检索到最小元素的栈。
+
+实现 `MinStack` 类:
+
+- `MinStack()` 初始化堆栈对象。
+- `void push(int val)` 将元素val推入堆栈。
+- `void pop()` 删除堆栈顶部的元素。
+- `int top()` 获取堆栈顶部的元素。
+- `int getMin()` 获取堆栈中的最小元素。
+
+**示例**
+
+```
+输入：
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[],[-2],[0],[-3],[],[],[],[]]
+
+输出：
+[null,null,null,null,-3,null,0,-2]
+
+解释：
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin();   --> 返回 -3.
+minStack.pop();
+minStack.top();      --> 返回 0.
+minStack.getMin();   --> 返回 -2.
+```
+
+- `-231 <= val <= 231 - 1`
+- `pop`、`top` 和 `getMin` 操作总是在 **非空栈** 上调用
+- `push`, `pop`, `top`, and `getMin`最多被调用 `3 * 104` 次
+
+**题解**
+
+```go
+type MinStack struct {
+	stack    []int
+	minStack []int
+}
+
+func Constructor() MinStack {
+	return MinStack{
+		stack:    []int{},
+		minStack: []int{math.MaxInt64},
+	}
+}
+
+func (t *MinStack) Push(val int) {
+	t.stack = append(t.stack, val)
+	top := t.minStack[len(t.minStack)-1]
+	if top < val {
+		t.minStack = append(t.minStack, top)
+	} else {
+		t.minStack = append(t.minStack, val)
+	}
+}
+
+func (t *MinStack) Pop() {
+	t.stack = t.stack[:len(t.stack)-1]
+	t.minStack = t.minStack[:len(t.minStack)-1]
+}
+
+func (t *MinStack) Top() int {
+	return t.stack[len(t.stack)-1]
+}
+
+func (t *MinStack) GetMin() int {
+	return t.minStack[len(t.minStack)-1]
+}
+```
+
+#### [L349-中等] 字符串解码
+
+给定一个经过编码的字符串，返回它解码后的字符串。
+
+编码规则为: `k[encoded_string]`，表示其中方括号内部的 `encoded_string` 正好重复 `k` 次。注意 `k` 保证为正整数。
+
+你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+
+此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 `k` ，例如不会出现像 `3a` 或 `2[4]` 的输入。
+
+**示例**
+
+```
+输入：s = "3[a]2[bc]"
+输出："aaabcbc"
+
+输入：s = "3[a2[c]]"
+输出："accaccacc"
+
+输入：s = "2[abc]3[cd]ef"
+输出："abcabccdcdcdef"
+
+输入：s = "abc3[cd]xyz"
+输出："abccdcdcdxyz"
+```
+
+- `1 <= s.length <= 30`
+- `s` 由小写英文字母、数字和方括号 `'[]'` 组成
+- `s` 保证是一个 **有效** 的输入。
+- `s` 中所有整数的取值范围为 `[1, 300]` 
+
+**题解**
+
+```go
+func decodeString(s string) string {
+	// 栈，存储数字、左括号、字母
+	stack := make([]string, 0)
+	// 遍历字符串
+	for i := 0; i < len(s); {
+		cur := s[i]
+		if cur >= '0' && cur <= '9' { // 数字
+			// 获取连续数字（可能是2位数或者3位数）
+			digits := getDigits(s, &i)
+			// 将数字入栈
+			stack = append(stack, digits)
+		} else if (cur >= 'a' && cur <= 'z' || cur >= 'A' && cur <= 'Z') || cur == '[' { // 字母或者左括号
+			// 入栈
+			stack = append(stack, string(cur))
+			i++
+		} else { // 右括号
+			sub := make([]string, 0)
+			// 字母出栈，直到遇到左括号停止
+			for stack[len(stack)-1] != "[" {
+				sub = append(sub, stack[len(stack)-1])
+				stack = stack[:len(stack)-1]
+			}
+			// 反转字母序列
+			for j := 0; j < len(sub)/2; j++ {
+				sub[j], sub[len(sub)-j-1] = sub[len(sub)-j-1], sub[j]
+			}
+			// 左括号出栈
+			stack = stack[:len(stack)-1]
+			// 取出栈顶元素（数字），并转化成 int 类型，这个就是前面取出字符串的倍数
+			repeat, _ := strconv.Atoi(stack[len(stack)-1])
+			// 数字出栈
+			stack = stack[:len(stack)-1]
+			// 将字符串数组转化成字符串，并生成重复的字符串
+			t := strings.Repeat(strings.Join(sub, ""), repeat)
+			// 字符串入栈
+			stack = append(stack, t)
+			i++
+		}
+	}
+	return strings.Join(stack, "")
+}
+
+// 获取连续的数字
+func getDigits(s string, i *int) string {
+	ret := ""
+	for ; s[*i] >= '0' && s[*i] <= '9'; *i++ {
+		ret += string(s[*i])
+	}
+	return ret
+}
+```
+
 ### 哈希
 
 #### [L1-简单] 两数之和
@@ -2847,16 +3106,17 @@ func searchOrderArray(nums []int, target int) int {
 		if target == nums[mid] {
 			return mid
 		}
+        // 左侧序列递增
 		if nums[mid] >= nums[left] {
-			if nums[left] <= target && target <= nums[mid] {
+			if nums[left] <= target && target <= nums[mid] {// 在左序列中
 				right = mid - 1
-			} else {
+			} else {// 不在左序列
 				left = mid + 1
 			}
-		} else {
-			if nums[mid] <= target && target <= nums[right] {
+		} else {// 左序列非递增，则右序列递增
+			if nums[mid] <= target && target <= nums[right] {// 在右序列中
 				left = mid + 1
-			} else {
+			} else {// 不在右序列中
 				right = mid - 1
 			}
 		}
@@ -3020,6 +3280,135 @@ class Solution {
         }
         return [$a,$b];
     }
+}
+```
+
+#### [L74-中等] 搜索二维矩阵
+
+给你一个满足下述两条属性的 `m x n` 整数矩阵：
+
+- 每行中的整数从左到右按非严格递增顺序排列。
+- 每行的第一个整数大于前一行的最后一个整数。
+
+给你一个整数 `target` ，如果 `target` 在矩阵中，返回 `true` ；否则，返回 `false` 。
+
+**示例**
+
+```
+输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3
+输出：true
+
+输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13
+输出：false
+```
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= m, n <= 100`
+- `-104 <= matrix[i][j], target <= 104`
+
+**题解**
+
+先对第一列进行二分查找，找出最后一个小于目标值的元素 row
+
+因为，矩阵从上到下递增，从左到右递增，所以目标值只可能存在于 row 行中
+
+再在 row 行中进行二分查找即可
+
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+	m, n := len(matrix), len(matrix[0])
+	// 对第一列进行二分查找，找出最后一个小于目标值的元素
+	left, right := 0, m-1
+	for left < right {
+		mid := (left + right) / 2
+		if matrix[mid][0] == target {
+			return true
+		} else if matrix[mid][0] > target {
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	row := left
+	// 保障 row 不会大于 target
+	if matrix[row][0] > target {
+		row--
+	}
+	if row < 0 {
+		return false
+	}
+	// 在对应行中进行二分查找
+	l, r := 0, n-1
+	for l <= r {
+		mid := (l + r) / 2
+		if matrix[row][mid] == target {
+			return true
+		} else if matrix[row][mid] < target {
+			l = mid + 1
+		} else {
+			r = mid - 1
+		}
+	}
+	return false
+}
+```
+
+#### [L153-中等] 搜索旋转排序数组中的最小值
+
+已知一个长度为 `n` 的数组，预先按照升序排列，经由 `1` 到 `n` 次 **旋转** 后，得到输入数组。例如，原数组 `nums = [0,1,2,4,5,6,7]` 在变化后可能得到：
+
+- 若旋转 `4` 次，则可以得到 `[4,5,6,7,0,1,2]`
+- 若旋转 `7` 次，则可以得到 `[0,1,2,4,5,6,7]`
+
+注意，数组 `[a[0], a[1], a[2], ..., a[n-1]]` **旋转一次** 的结果为数组 `[a[n-1], a[0], a[1], a[2], ..., a[n-2]]` 。
+
+给你一个元素值 **互不相同** 的数组 `nums` ，它原来是一个升序排列的数组，并按上述情形进行了多次旋转。请你找出并返回数组中的 **最小元素** 。
+
+你必须设计一个时间复杂度为 `O(log n)` 的算法解决此问题。
+
+**示例**
+
+```
+输入：nums = [3,4,5,1,2]
+输出：1
+解释：原数组为 [1,2,3,4,5] ，旋转 3 次得到输入数组。
+
+输入：nums = [4,5,6,7,0,1,2]
+输出：0
+解释：原数组为 [0,1,2,4,5,6,7] ，旋转 3 次得到输入数组。
+
+输入：nums = [11,13,15,17]
+输出：11
+解释：原数组为 [11,13,15,17] ，旋转 4 次得到输入数组。
+```
+
+- `n == nums.length`
+- `1 <= n <= 5000`
+- `-5000 <= nums[i] <= 5000`
+- `nums` 中的所有整数 **互不相同**
+- `nums` 原来是一个升序排序的数组，并进行了 `1` 至 `n` 次旋转
+
+**题解**
+
+```go
+func findMin(nums []int) int {
+    l, r := 0, len(nums)-1
+    min := nums[0]
+    for l <= r {
+        mid := (l + r) / 2
+        // 中间值小于等于最右侧值，这部分序列左侧mid即是这部分的最小值，记录下
+        if nums[mid] <= nums[r] {
+            if nums[mid] < min {
+                min = nums[mid]
+            }
+            r = mid - 1
+        } else {
+            // 中间值大于最右侧值，说明这部分序列中存在翻转点，即最小值
+            l = mid + 1
+        }
+    }
+    return min
 }
 ```
 
@@ -3463,6 +3852,134 @@ func subsets(nums []int) [][]int {
 	path := make([]int, 0)
 	backtrackSubsets(nums, path, 0, &res)
 	return res
+}
+```
+
+#### [L79-中等] 单词搜索
+
+给定一个 `m x n` 二维字符网格 `board` 和一个字符串单词 `word` 。如果 `word` 存在于网格中，返回 `true` ；否则，返回 `false` 。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+**示例**
+
+```
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+输出：true
+
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"
+输出：true
+
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
+输出：false
+```
+
+- `m == board.length`
+- `n = board[i].length`
+- `1 <= m, n <= 6`
+- `1 <= word.length <= 15`
+- `board` 和 `word` 仅由大小写英文字母组成
+
+**题解**
+
+```go
+func searchWord(board [][]byte, word string) bool {
+	m, n := len(board), len(board[0])
+	words := []byte(word)
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if backtrackSW(board, words, i, j, 0) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func backtrackSW(board [][]byte, words []byte, i, j, k int) bool {
+	// 越界
+	if i < 0 || i >= len(board) || j < 0 || j >= len(board[0]) {
+		return false
+	}
+	// 已访问过
+	if board[i][j] == '0' {
+		return false
+	}
+	// 当前字符串不匹配
+	if board[i][j] != words[k] {
+		return false
+	}
+	// 全部匹配通过
+	if k == len(words)-1 {
+		return true
+	}
+	// 标记访问过的路径
+	board[i][j] = '0'
+	// DFS遍历所有路径
+	res := backtrackSW(board, words, i-1, j, k+1) ||
+		backtrackSW(board, words, i+1, j, k+1) ||
+		backtrackSW(board, words, i, j-1, k+1) ||
+		backtrackSW(board, words, i, j+1, k+1)
+	// 回退
+	board[i][j] = words[k]
+	return res
+}
+```
+
+#### [L131-中等] 分割回文串
+
+给你一个字符串 `s`，请你将 `s` 分割成一些子串，使每个子串都是 回文串。返回 `s` 所有可能的分割方案。
+
+**示例**
+
+```
+输入：s = "aab"
+输出：[["a","a","b"],["aa","b"]]
+
+输入：s = "a"
+输出：[["a"]]
+```
+
+- `1 <= s.length <= 16`
+- `s` 仅由小写英文字母组成
+
+**题解**
+
+```
+func partition(s string) [][]string {
+    path := make([]string, 0)
+    ans := make([][]string, 0)
+    backtrackPa(s, path, 0, &ans)
+    return ans
+}
+
+func backtrackPa(s string, path []string, start int, ans *[][]string) {
+    // 所有元素都遍历完成，将path添加到结果中
+    if start == len(s) {
+        *ans = append(*ans, append([]string{}, path...))
+        return
+    }
+    // 遍历所有选择
+    for i := start; i < len(s); i++ {
+        if isPalindrome(s, start, i) {
+            path = append(path, s[start:i+1])
+            backtrackPa(s, path, i+1, ans)
+            path = path[:len(path)-1]
+        }
+    }
+    return
+}
+
+// 判断是否是回文串
+func isPalindrome(s string, left, right int) bool {
+    for left < right {
+        if s[left] != s[right] {
+            return false
+        }
+        left++
+        right--
+    }
+    return true
 }
 ```
 
