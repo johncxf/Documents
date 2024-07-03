@@ -2710,6 +2710,249 @@ func getDigits(s string, i *int) string {
 }
 ```
 
+#### [L739-中等] 每日温度
+
+给定一个整数数组 `temperatures` ，表示每天的温度，返回一个数组 `answer` ，其中 `answer[i]` 是指对于第 `i` 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 `0` 来代替。
+
+**示例**
+
+```
+输入: temperatures = [73,74,75,71,69,72,76,73]
+输出: [1,1,4,2,1,1,0,0]
+
+输入: temperatures = [30,40,50,60]
+输出: [1,1,1,0]
+
+输入: temperatures = [30,60,90]
+输出: [1,1,0]
+```
+
+- `1 <= temperatures.length <= 105`
+- `30 <= temperatures[i] <= 100`
+
+**题解**
+
+对于温度列表 [73,74,75,71,69,72,76,73]，单调栈 stack 的初始状态为空，答案 ans 的初始状态是 [0,0,0,0,0,0,0,0]，按照以下步骤更新单调栈和答案，其中单调栈内的元素都是下标，括号内的数字表示下标在温度列表中对应的温度。
+
+当 i=0 时，单调栈为空，因此将 0 进栈。
+
+- stack=[0(73)]
+
+- ans=[0,0,0,0,0,0,0,0]
+
+
+当 i=1 时，由于 74 大于 73，因此移除栈顶元素 0，赋值 ans[0]:=1−0，将 1 进栈。
+
+- stack=[1(74)]
+
+- ans=[1,0,0,0,0,0,0,0]
+
+
+当 i=2 时，由于 75 大于 74，因此移除栈顶元素 1，赋值 ans[1]:=2−1，将 2 进栈。
+
+- stack=[2(75)]
+
+- ans=[1,1,0,0,0,0,0,0]
+
+
+当 i=3 时，由于 71 小于 75，因此将 3 进栈。
+
+- stack=[2(75),3(71)]
+
+- ans=[1,1,0,0,0,0,0,0]
+
+
+当 i=4 时，由于 69 小于 71，因此将 4 进栈。
+
+- stack=[2(75),3(71),4(69)]
+
+- ans=[1,1,0,0,0,0,0,0]
+
+
+当 i=5 时，由于 72 大于 69 和 71，因此依次移除栈顶元素 4 和 3，赋值 ans[4]:=5−4 和 ans[3]:=5−3，将 5 进栈。
+
+- stack=[2(75),5(72)]
+
+- ans=[1,1,0,2,1,0,0,0]
+
+
+当 i=6 时，由于 76 大于 72 和 75，因此依次移除栈顶元素 5 和 2，赋值 ans[5]:=6−5 和 ans[2]:=6−2，将 6 进栈。
+
+- stack=[6(76)]
+
+- ans=[1,1,4,2,1,1,0,0]
+
+
+当 i=7 时，由于 73 小于 76，因此将 7 进栈。
+
+- stack=[6(76),7(73)]
+
+- ans=[1,1,4,2,1,1,0,0]
+
+
+```go
+func dailyTemperatures(temperatures []int) []int {
+    n := len(temperatures)
+    ans := make([]int, n)
+    stack := make([]int, 0)
+    for i := 0; i < n; i++ {
+        // 当前温度
+        temperature := temperatures[i]
+        // 栈不为空，并且栈顶元素下标对应温度大于当前温度
+        for len(stack) > 0 && temperature > temperatures[stack[len(stack)-1]] {
+            // 栈顶元素出栈
+            index := stack[len(stack)-1]
+            stack = stack[:len(stack)-1]
+            // 更新答案
+            ans[index] = i - index
+        }
+        // 当前温度下标入栈
+        stack = append(stack, i)
+    }
+    return ans
+}
+```
+
+### 堆
+
+#### [L215-中等] 数组中的第K个最大元素
+
+给定整数数组 `nums` 和整数 `k`，请返回数组中第 `**k**` 个最大的元素。
+
+请注意，你需要找的是数组排序后的第 `k` 个最大的元素，而不是第 `k` 个不同的元素。
+
+你必须设计并实现时间复杂度为 `O(n)` 的算法解决此问题。
+
+**示例**
+
+```
+输入: [3,2,1,5,6,4], k = 2
+输出: 5
+
+输入: [3,2,3,1,2,4,5,5,6], k = 4
+输出: 4
+```
+
+- `1 <= k <= nums.length <= 105`
+- `-104 <= nums[i] <= 104`
+
+**题解**
+
+构建大顶堆，然后不断删除堆顶，删除k-1个堆顶
+
+```go
+func findKthLargest(nums []int, k int) int {
+	n := len(nums)
+	// 构建大顶堆
+	for i := n / 2; i >= 0; i-- {
+		maxHeapify(nums, i, n)
+	}
+	// 不断删除堆顶元素
+	for i := len(nums) - 1; i >= len(nums)-k+1; i-- {
+		// 通过把堆顶和堆底元素进行交换，再删除堆底元素实现删除
+		// 这样可以保证堆结构最小调整
+		nums[0], nums[i] = nums[i], nums[0]
+		n--
+		// 删除后重新进行堆化
+		maxHeapify(nums, 0, n)
+	}
+	return nums[0]
+}
+
+func maxHeapify(a []int, i, size int) {
+	// 左子节点、右子节点
+	l, r := 2*i+1, 2*i+2
+	// 最大节点
+	largest := i
+	// 左子节点存在，且大于最大节点
+	if l < size && a[l] > a[largest] {
+		largest = l
+	}
+	// 右子节点存在，且大于最大节点
+	if r < size && a[r] > a[largest] {
+		largest = r
+	}
+	// 最大节点不等于当前节点，则交换位置
+	//fmt.Println(largest)
+	if largest != i {
+		a[i], a[largest] = a[largest], a[i]
+		// 递归
+		maxHeapify(a, largest, size)
+	}
+}
+```
+
+#### [L347-中等] 前 K 个高频元素
+
+给你一个整数数组 `nums` 和一个整数 `k` ，请你返回其中出现频率前 `k` 高的元素。你可以按 **任意顺序** 返回答案。
+
+**示例**
+
+```
+输入: nums = [1,1,1,2,2,3], k = 2
+输出: [1,2]
+
+输入: nums = [1], k = 1
+输出: [1]
+```
+
+- `1 <= nums.length <= 105`
+- `k` 的取值范围是 `[1, 数组中不相同的元素的个数]`
+- 题目数据保证答案唯一，换句话说，数组中前 `k` 个高频元素的集合是唯一的
+
+**题解**
+
+```go
+type intHeap [][2]int
+
+// Len sort.Interface 的方法，获取堆长度
+func (h intHeap) Len() int { return len(h) }
+
+// Less sort.Interface 的方法，定义是小顶堆还是大顶堆
+func (h intHeap) Less(i, j int) bool { return h[i][1] < h[j][1] }
+
+// Swap sort.Interface 的方法，交换元素位置
+func (h intHeap) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
+
+// Push heap.Interface 的方法，实现推入元素到堆
+func (h *intHeap) Push(x interface{}) { *h = append(*h, x.([2]int)) }
+
+// Pop heap.Interface 的方法，实现弹出堆顶元素
+func (h *intHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[:n-1]
+	return x
+}
+
+func topKFrequent(nums []int, k int) []int {
+	// hashMap 存储 数字和出现次数对应关系
+	hash := make(map[int]int, 0)
+	for _, num := range nums {
+		hash[num]++
+	}
+	// 构建小顶堆
+	h := &intHeap{}
+	heap.Init(h)
+	// 遍历 hashMap
+	for key, val := range hash {
+		// 将当前元素和元素出现次数入堆
+		heap.Push(h, [2]int{key, val})
+		// 如果堆长度超过k，则移除堆顶
+		if h.Len() > k {
+			heap.Pop(h)
+		}
+	}
+	// 依次取出堆中元素
+	ret := make([]int, k)
+	for i := 0; i < k; i++ {
+		ret[k-i-1] = heap.Pop(h).([2]int)[0]
+	}
+	return ret
+}
+```
+
 ### 哈希
 
 #### [L1-简单] 两数之和
