@@ -4228,6 +4228,102 @@ func isPalindrome(s string, left, right int) bool {
 
 ### 动态规划
 
+#### [L70-简单] 爬楼梯
+
+假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。
+
+每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+**示例**
+
+```
+输入：n = 2
+输出：2
+解释：有两种方法可以爬到楼顶。
+1. 1 阶 + 1 阶
+2. 2 阶
+
+输入：n = 3
+输出：3
+解释：有三种方法可以爬到楼顶。
+1. 1 阶 + 1 阶 + 1 阶
+2. 1 阶 + 2 阶
+3. 2 阶 + 1 阶
+```
+
+- `1 <= n <= 45`
+
+**题解**
+
+> 本题推导出公式为：*f*(*x*)=*f*(*x*−1)+*f*(*x*−2)，是斐波那契数，因此可以使用递归和动态规划求解，但是递归在本题中时间复杂度较高
+
+动态规划：
+
+```go
+func climbStairs(n int) int {
+	if n <= 2 {
+		return n
+	}
+    dp := make([]int, n)
+	dp[0] = 1
+	dp[1] = 2
+	for i := 2; i < n; i++ {
+		dp[i] = dp[i-1] + dp[i-2]
+	}
+	return dp[n-1]
+}
+
+// 优化空间
+func climbStairs2(n int) int {
+    if n == 1 || n == 2 {
+        return n
+    }
+    a, b := 1, 2
+    // 状态转移：从较小子问题逐步求解较大子问题
+    for i := 3; i <= n; i++ {
+        a, b = b, a+b
+    }
+    return b
+}
+```
+
+#### [L118-简单] 杨辉三角
+
+给定一个非负整数 *`numRows`，*生成「杨辉三角」的前 *`numRows`* 行。
+
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+
+![img](../../Image/algorithm/lt118-generate.gif)
+
+**示例**
+
+```
+输入: numRows = 5
+输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+
+输入: numRows = 1
+输出: [[1]]
+```
+
+- `1 <= numRows <= 30`
+
+**题解**
+
+```go
+func generate(numRows int) [][]int {
+    ans := make([][]int, numRows)
+    for i := 0; i < numRows; i++ {
+        ans[i] = make([]int, i+1)
+        ans[i][0] = 1
+        ans[i][i] = 1
+        for j := 1; j < i; j++ {
+            ans[i][j] = ans[i-1][j-1] + ans[i-1][j]
+        }
+    }
+    return ans
+}
+```
+
 #### [L5-中等] 最长回文子串
 
 给定一个字符串 `s`，找到 `s` 中最长的回文子串。你可以假设 `s` 的最大长度为 1000。
@@ -4401,9 +4497,8 @@ class Solution {
 
 **动态规划**
 
-> 时间复杂度-O(n^2)
->
-> 空间复杂度-O(n^2)
+- 时间复杂度-O(n^2)
+- 空间复杂度-O(n^2)
 
 GO：
 
@@ -4469,65 +4564,6 @@ class Solution {
         }
         return $res;
     }
-}
-```
-
-#### [L70-简单] 爬楼梯
-
-假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。
-
-每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
-
-**示例**
-
-```
-输入：n = 2
-输出：2
-解释：有两种方法可以爬到楼顶。
-1. 1 阶 + 1 阶
-2. 2 阶
-
-输入：n = 3
-输出：3
-解释：有三种方法可以爬到楼顶。
-1. 1 阶 + 1 阶 + 1 阶
-2. 1 阶 + 2 阶
-3. 2 阶 + 1 阶
-```
-
-- `1 <= n <= 45`
-
-**题解**
-
-> 本题推导出公式为：*f*(*x*)=*f*(*x*−1)+*f*(*x*−2)，是斐波那契数，因此可以使用递归和动态规划求解，但是递归在本题中时间复杂度较高
-
-动态规划：
-
-```go
-func climbStairs(n int) int {
-	if n <= 2 {
-		return n
-	}
-    dp := make([]int, n)
-	dp[0] = 1
-	dp[1] = 2
-	for i := 2; i < n; i++ {
-		dp[i] = dp[i-1] + dp[i-2]
-	}
-	return dp[n-1]
-}
-
-// 优化空间
-func climbStairs2(n int) int {
-    if n == 1 || n == 2 {
-        return n
-    }
-    a, b := 1, 2
-    // 状态转移：从较小子问题逐步求解较大子问题
-    for i := 3; i <= n; i++ {
-        a, b = b, a+b
-    }
-    return b
 }
 ```
 
@@ -4738,40 +4774,212 @@ func minPathSum(grid [][]int) int {
 }
 ```
 
-#### [L118-简单] 杨辉三角
+#### [L72-中等] 编辑距离
 
-给定一个非负整数 *`numRows`，*生成「杨辉三角」的前 *`numRows`* 行。
+给你两个单词 `word1` 和 `word2`， *请返回将 `word1` 转换成 `word2` 所使用的最少操作数* 。
 
-在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+你可以对一个单词进行如下三种操作：
 
-![img](../../Image/algorithm/lt118-generate.gif)
+- 插入一个字符
+- 删除一个字符
+- 替换一个字符
 
 **示例**
 
 ```
-输入: numRows = 5
-输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+输入：word1 = "horse", word2 = "ros"
+输出：3
+解释：
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
 
-输入: numRows = 1
-输出: [[1]]
+输入：word1 = "intention", word2 = "execution"
+输出：5
+解释：
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
 ```
 
-- `1 <= numRows <= 30`
+- `0 <= word1.length, word2.length <= 500`
+- `word1` 和 `word2` 由小写英文字母组成
 
 **题解**
 
+参考：https://leetcode.cn/problems/edit-distance/solutions/188223/bian-ji-ju-chi-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked
+
 ```go
-func generate(numRows int) [][]int {
-    ans := make([][]int, numRows)
-    for i := 0; i < numRows; i++ {
-        ans[i] = make([]int, i+1)
-        ans[i][0] = 1
-        ans[i][i] = 1
-        for j := 1; j < i; j++ {
-            ans[i][j] = ans[i-1][j-1] + ans[i-1][j]
+func minDistance(word1 string, word2 string) int {
+    m, n := len(word1), len(word2)
+    // 有一个字符串为空
+    if m == 0 || n == 0 {
+        return m + n
+    }
+    // 构建 dp 表
+    dp := make([][]int, m+1)
+    for i := range dp {
+        dp[i] = make([]int, n+1)
+        dp[i][0] = i
+    }
+    for j := 0; j <= n; j++ {
+        dp[0][j] = j
+    }
+    // 状态转移
+    for i := 1; i <= m; i++ {
+        for j := 1; j <=n; j++ {
+            left := dp[i-1][j] + 1
+            down := dp[i][j-1] + 1
+            left_down := dp[i-1][j-1]
+            if word1[i-1] != word2[j-1] {
+                left_down++
+            }
+            // 取最小
+            dp[i][j] = left
+            if down < dp[i][j] {
+                dp[i][j] = down
+            }
+            if left_down < dp[i][j] {
+                dp[i][j] = left_down
+            }
         }
     }
-    return ans
+    return dp[m][n]
+}
+```
+
+#### [L139-中等] 单词拆分
+
+给你一个字符串 `s` 和一个字符串列表 `wordDict` 作为字典。如果可以利用字典中出现的一个或多个单词拼接出 `s` 则返回 `true`。
+
+**注意：**不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+
+**示例**
+
+```
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以由 "leet" 和 "code" 拼接成。
+
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。
+     注意，你可以重复使用字典中的单词。
+     
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+```
+
+- `1 <= s.length <= 300`
+- `1 <= wordDict.length <= 1000`
+- `1 <= wordDict[i].length <= 20`
+- `s` 和 `wordDict[i]` 仅由小写英文字母组成
+- `wordDict` 中的所有字符串 **互不相同**
+
+**题解**
+
+`dp[i]` 表示字符串` s[0, i-1]` 是否为能被拆分
+
+`s[0, i-1]` 可以拆分为 `s[0, j-1]` 和 `s[j, i-1]`，所以可以得到状态转移公式：`dp[i]=dp[j] && s[j, i-1]是否可被拆分`
+
+```go
+func wordBreak(s string, wordDict []string) bool {
+    // 将字典转化为 hashMap
+    hash := make(map[string]bool)
+    for _, v := range wordDict {
+        hash[v] = true
+    }
+    // 构建 dp 表
+    n := len(s)
+    dp := make([]bool, n+1)
+    dp[0] = true
+    // 状态转移
+    for i := 1; i <= n; i++ {
+        for j := 0; j < i; j++ {
+            if dp[j] && hash[s[j:i]] {
+                dp[i] = true
+                break
+            }
+        }
+    }
+    return dp[n]
+}
+```
+
+#### [L152-中等] 乘积最大子数组
+
+给你一个整数数组 `nums` ，请你找出数组中乘积最大的非空连续
+
+子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+测试用例的答案是一个 **32-位** 整数。
+
+**示例**
+
+```
+输入: nums = [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+
+输入: nums = [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+```
+
+- `1 <= nums.length <= 2 * 104`
+- `-10 <= nums[i] <= 10`
+- `nums` 的任何前缀或后缀的乘积都 **保证** 是一个 **32-位** 整数
+
+**题解**
+
+`dp[i]` 表示前i个元素中的子数组的最大乘积，由于本题需要考虑负数的情况，所以需要建立两个dp表，一个存储最小值，一个存储最大值，状态转移方程：
+$$
+maxDP[i] = max(maxDP[i-1]*nums[i], minDP[i-1]*nums[i], nums[i])
+$$
+
+$$
+minDP[i] = min(maxDP[i-1]*nums[i], minDP[i-1]*nums[i], nums[i])
+$$
+
+
+
+```go
+func maxProduct(nums []int) int {
+	n := len(nums)
+	max, min := make([]int, n), make([]int, n)
+	max[0], min[0] = nums[0], nums[0]
+	for i := 1; i < n; i++ {
+		min[i], max[i] = maxAndMin(max[i-1]*nums[i], min[i-1]*nums[i], nums[i])
+	}
+	ans := max[0]
+	for _, v := range max {
+		if v > ans {
+			ans = v
+		}
+	}
+    if ans > math.MaxInt32 {
+		return 1000000000
+	}
+	return ans
+}
+
+func maxAndMin(a, b, c int) (min, max int) {
+	min, max = a, a
+	if b < min {
+		min = b
+	}
+	if c < min {
+		min = c
+	}
+	if b > max {
+		max = b
+	}
+	if c > max {
+		max = c
+	}
+	return
 }
 ```
 
@@ -4878,6 +5086,66 @@ func numSquares(n int) int {
 }
 ```
 
+#### [L300-中等] 最长递增子序列
+
+给你一个整数数组 `nums` ，找到其中最长严格递增子序列的长度。
+
+**子序列** 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，`[3,6,2,7]` 是数组 `[0,3,1,6,2,2,7]` 的子序列
+
+**示例**
+
+```
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+
+输入：nums = [0,1,0,3,2,3]
+输出：4
+
+输入：nums = [7,7,7,7,7,7,7]
+输出：1
+```
+
+- `1 <= nums.length <= 2500`
+- `-104 <= nums[i] <= 104`
+
+**题解**
+
+`dp[i]`表示前i个元素中的最长子序列，增加一个元素，需要判断该元素是否大于上一个最大序列的最后一个元素
+
+因此，可以得到状态转移方程：
+$$
+dp[i]=max(dp[j])+1,其中0≤j<i且num[j]<num[i]
+$$
+
+```go
+func lengthOfLIS(nums []int) int {
+    n := len(nums)
+    if n == 0 {
+        return 0
+    }
+    dp := make([]int, n+1)
+    dp[0] = 1
+    max := 1
+    for i := 1; i < n; i++ {
+        dp[i] = 1
+        for j := 0; j < i; j++ {
+            if nums[i] > nums[j] {
+                if dp[i] > dp[j] + 1 {
+                    dp[i] = dp[i]
+                } else {
+                    dp[i] = dp[j] + 1
+                }
+            }
+        }
+        if dp[i] > max {
+            max  = dp[i]
+        }
+    }
+    return max
+}
+```
+
 #### [L322-中等] 零钱兑换
 
 给你一个整数数组 `coins` ，表示不同面额的硬币；以及一个整数 `amount` ，表示总金额。
@@ -4956,6 +5224,166 @@ func coinChange(coins []int, amount int) int {
 		return dp[n][amount]
 	}
 	return -1
+}
+```
+
+#### [L416-中等] 分割等和子集
+
+给你一个 **只包含正整数** 的 **非空** 数组 `nums` 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+**示例**
+
+```
+输入：nums = [1,5,11,5]
+输出：true
+解释：数组可以分割成 [1, 5, 5] 和 [11] 。
+
+输入：nums = [1,2,3,5]
+输出：false
+解释：数组不能分割成两个元素和相等的子集。
+```
+
+- `1 <= nums.length <= 200`
+- `1 <= nums[i] <= 100`
+
+**题解**
+
+这道题可以换一种表述：给定一个只包含正整数的非空数组 *nums*，判断是否可以从数组中选出一些数字，使得这些数字的和等于整个数组的元素和的一半。这样，这题就和 0-1 背包问题类似了。这道题则要求选取的数字的和**恰好等于**整个数组的元素和的一半。
+
+动态规划前，边界情况判断：
+
+1. 元素总数小于 2 时不可能分为两个相等的子集
+2. 若元素和为奇数，则不可能分为两个相等的子集
+3. 若nums中最大元素大于总和的一半，也不可能分为两个相等的子集
+
+建立dp表：`dp[i][j]`，表示从数组的 [0,i] 下标范围内选取若干个正整数（可以是 0 个），是否存在一种选取方案使得被选取的正整数的和等于 j。初始时，dp 中的全部元素都是 false。
+
+边界情况：
+
+- 如果不选取任何正整数，则被选取的正整数之和等于 0。因此对于所有 `0≤i<n`，都有 `dp[i][0]=true`。
+
+- 当 i==0 时，只有一个正整数 nums[0] 可以被选取，因此 `dp[0][nums[0]]=true`。
+
+如果 `j≥nums[i]`，则对于当前的数字 nums[i]，可以选取也可以不选取，两种情况只要有一个为 true，就有 `dp[i][j]=true`。
+如果 `j<nums[i]`，则在选取的数字的和等于 j 的情况下无法选取当前的数字 nums[i]，因此有 `dp[i][j]=dp[i−1`][j]。
+
+状态转移方程：
+$$
+dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i]]
+$$
+
+
+```go
+func canPartition(nums []int) bool {
+    n := len(nums)
+    if n < 2 {
+        return false
+    }
+    // 获取元素和，和最大元素
+    sum, max := 0, 0
+    for _, v := range nums {
+        sum += v
+        if v > max {
+            max = v
+        }
+    }
+    // 若元素和为奇数，则不可能分为两个相等的子集
+    if sum % 2 != 0 {
+        return false
+    }
+    // 若最大元素大于总和的一半，也不可能分为两个相等的子集
+    target := sum / 2
+    if max > target {
+        return false
+    }
+    
+    // 构建 dp 表
+    dp := make([][]bool, n)
+    for i := range nums {
+        dp[i] = make([]bool, target + 1)
+        dp[i][0] = true
+    }
+    dp[0][nums[0]] = true
+    for i := 1; i < n; i++ {
+        for j := 1; j <= target; j++ {
+            if j < nums[i] {
+                dp[i][j] = dp[i-1][j]
+            } else {
+                dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i]]
+            }
+        }
+    }
+    return dp[n-1][target]
+}
+```
+
+#### [L1143-中等] 最长公共子序列
+
+给定两个字符串 `text1` 和 `text2`，返回这两个字符串的最长 **公共子序列** 的长度。如果不存在 **公共子序列** ，返回 `0` 。
+
+一个字符串的 **子序列** 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+
+- 例如，`"ace"` 是 `"abcde"` 的子序列，但 `"aec"` 不是 `"abcde"` 的子序列。
+
+两个字符串的 **公共子序列** 是这两个字符串所共同拥有的子序列。
+
+**示例**
+
+```
+输入：text1 = "abcde", text2 = "ace" 
+输出：3  
+解释：最长公共子序列是 "ace" ，它的长度为 3 。
+
+输入：text1 = "abc", text2 = "abc"
+输出：3
+解释：最长公共子序列是 "abc" ，它的长度为 3 。
+
+输入：text1 = "abc", text2 = "def"
+输出：0
+解释：两个字符串没有公共子序列，返回 0 。
+```
+
+- `1 <= text1.length, text2.length <= 1000`
+- `text1` 和 `text2` 仅由小写英文字符组成。
+
+**题解**
+
+`dp[i][j]`表示 text1的前i个字符和 text2 的前 j 个字符的最长公共子序列的长度
+
+text1和text2的长度分别为m，n，创建 m+1、n+1的dp表
+
+当 i=0 或 j=0 时最长公共子序列长度都为0，所以：`dp[i][0]=0`、 `dp[0][j]=0`
+
+当 i>0 且 j>0 时，可以得到状态转移方程：
+$$
+dp[i][j]=dp[i-1][j-1] + 1，此时 text1[i-1]=text2[j-1]
+$$
+
+$$
+dp[i][j]=max(dp[i-1][j],dp[i][j-1])，此时 text1[i-1]!=text2[j-1]
+$$
+
+```go
+func longestCommonSubsequence(text1 string, text2 string) int {
+    m, n := len(text1), len(text2)
+    dp := make([][]int, m+1)
+    for i := range dp {
+        dp[i] = make([]int, n+1)
+    }
+    for i := 1; i <= m; i++ {
+        for j := 1; j <= n; j++ {
+            if text1[i-1] == text2[j-1] {
+                dp[i][j] = dp[i-1][j-1] + 1
+            } else {
+                if dp[i-1][j] > dp[i][j-1] {
+                    dp[i][j] = dp[i-1][j]
+                } else {
+                    dp[i][j] = dp[i][j-1]
+                }
+            }
+        }
+    }
+    return dp[m][n]
 }
 ```
 
@@ -7033,6 +7461,60 @@ func productExceptSelf(nums []int) []int {
 		ans[i] = lArr[i] * rArr[i]
 	}
 	return ans
+}
+```
+
+#### [L287-中等] 寻找重复数
+
+给定一个包含 `n + 1` 个整数的数组 `nums` ，其数字都在 `[1, n]` 范围内（包括 `1` 和 `n`），可知至少存在一个重复的整数。
+
+假设 `nums` 只有 **一个重复的整数** ，返回 **这个重复的数** 。
+
+你设计的解决方案必须 **不修改** 数组 `nums` 且只用常量级 `O(1)` 的额外空间。
+
+**示例**
+
+```
+输入：nums = [1,3,4,2,2]
+输出：2
+
+输入：nums = [3,1,3,4,2]
+输出：3
+
+输入：nums = [3,3,3,3,3]
+输出：3
+```
+
+- `1 <= n <= 105`
+- `nums.length == n + 1`
+- `1 <= nums[i] <= n`
+- `nums` 中 **只有一个整数** 出现 **两次或多次** ，其余整数均只出现 **一次**
+
+**题解**
+
+快慢指针，把数组类比成链表，重复的值即是有换链表的入环点，解法和  [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/huan-xing-lian-biao-ii-by-leetcode/) 一样
+
+- 慢指针走一步 `slow = slow.next` ==> 本题 `slow = nums[slow]`
+
+- 快指针走两步 `fast = fast.next.next` ==> 本题 `fast = nums[nums[fast]]`
+
+```go
+func findDuplicate(nums []int) int {
+    // 定义快慢指针
+    slow, fast := 0, 0
+    // 慢指针每次走1步，快指针每次走2步，找出相遇点
+    slow, fast = nums[slow], nums[nums[fast]]
+    for slow != fast {
+        slow = nums[slow]
+        fast = nums[nums[fast]]
+    }
+    // 重新设定一个指针 cur，从头开始走，当 cur 和 slow 相遇的时候，就是入环点
+    cur := 0
+    for cur != slow {
+        slow = nums[slow]
+        cur = nums[cur]
+    }
+    return cur
 }
 ```
 
