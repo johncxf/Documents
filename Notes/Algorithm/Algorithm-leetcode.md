@@ -4188,7 +4188,7 @@ func backtrackSW(board [][]byte, words []byte, i, j, k int) bool {
 
 **题解**
 
-```
+```go
 func partition(s string) [][]string {
     path := make([]string, 0)
     ans := make([][]string, 0)
@@ -4223,6 +4223,88 @@ func isPalindrome(s string, left, right int) bool {
         right--
     }
     return true
+}
+```
+
+#### [L51-困难] N皇后
+
+按照国际象棋的规则，皇后可以攻击与之处在同一行或同一列或同一斜线上的棋子。
+
+**n 皇后问题** 研究的是如何将 `n` 个皇后放置在 `n×n` 的棋盘上，并且使皇后彼此之间不能相互攻击。
+
+给你一个整数 `n` ，返回所有不同的 **n 皇后问题** 的解决方案。
+
+每一种解法包含一个不同的 **n 皇后问题** 的棋子放置方案，该方案中 `'Q'` 和 `'.'` 分别代表了皇后和空位。
+
+**示例**
+
+```
+输入：n = 4
+输出：[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+解释：如上图所示，4 皇后问题存在两个不同的解法。
+
+输入：n = 1
+输出：[["Q"]]
+```
+
+- `1 <= n <= 9`
+
+**题解**
+
+参考：https://www.hello-algo.com/chapter_backtracking/n_queens_problem/#3
+
+```go
+func solveNQueens(n int) [][]string {
+	// 初始化 n*n 大小的棋盘，其中 'Q' 代表皇后，'#' 代表空位
+	state := make([][]string, n)
+	for i := 0; i < n; i++ {
+		row := make([]string, n)
+		for j := 0; j < n; j++ {
+			row[j] = "."
+		}
+		state[i] = row
+	}
+	// 记录列是否有皇后
+	cols := make([]bool, n)
+	// 记录主对角线是否有皇后
+	diags1 := make([]bool, 2*n-1)
+	// 记录副对角线是否有皇后
+	diags2 := make([]bool, 2*n-1)
+	// 结果
+	res := make([][]string, 0)
+	// 进行回溯
+	backtrackNQ(0, n, &state, &res, &cols, &diags1, &diags2)
+	return res
+}
+
+// 回溯
+func backtrackNQ(row, n int, state *[][]string, res *[][]string, cols, diags1, diags2 *[]bool) {
+	// 当放置完所有行时，记录解
+	if row == n {
+		newState := make([]string, len(*state))
+		for i := range newState {
+			newState[i] = strings.Join((*state)[i], "")
+		}
+		*res = append(*res, newState)
+		return
+	}
+	// 遍历所有列
+	for col := 0; col < n; col++ {
+		// 计算该格子对应的主对角线和次对角线
+		diag1 := row - col + n - 1
+		diag2 := row + col
+		// 剪枝：不允许该格子所在列、主对角线、次对角线上存在皇后
+		if !(*cols)[col] && !(*diags1)[diag1] && !(*diags2)[diag2] {
+			// 尝试：将皇后放置在该格子
+			(*state)[row][col] = "Q"
+			(*cols)[col], (*diags1)[diag1], (*diags2)[diag2] = true, true, true
+			// 放置下一行
+			backtrackNQ(row+1, n, state, res, cols, diags1, diags2)
+			// 回退：将该格子恢复为空位
+			(*state)[row][col] = "."
+			(*cols)[col], (*diags1)[diag1], (*diags2)[diag2] = false, false, false
+		}
+	}
 }
 ```
 
@@ -7375,6 +7457,75 @@ class Solution {
 }
 ```
 
+#### [L41-困难] 缺失的第一个正数
+
+给你一个未排序的整数数组 `nums` ，请你找出其中没有出现的最小的正整数。
+
+请你实现时间复杂度为 `O(n)` 并且只使用常数级别额外空间的解决方案。
+
+**示例**
+
+```
+输入：nums = [1,2,0]
+输出：3
+解释：范围 [1,2] 中的数字都在数组中。
+
+输入：nums = [3,4,-1,1]
+输出：2
+解释：1 在数组中，但 2 没有。
+
+输入：nums = [7,8,9,11,12]
+输出：1
+解释：最小的正数 1 没有出现。
+```
+
+- `1 <= nums.length <= 105`
+- `-231 <= nums[i] <= 231 - 1`
+
+**题解**
+
+我将数组所有的数放入哈希表，随后从 1 开始依次枚举正整数，并判断其是否在哈希表中
+
+此种方法时间复杂度为 O(n)，空间复杂度也是 O(n)，空间复杂度不满足题目要求
+
+因此，可以利用原数组进行改造
+
+题解见：https://leetcode.cn/problems/first-missing-positive/solutions/304743/que-shi-de-di-yi-ge-zheng-shu-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked
+
+```go
+func firstMissingPositive(nums []int) int {
+	n := len(nums)
+	// 将数组中所有小于等于 0 的数修改为 N+1
+	for i := 0; i < n; i++ {
+		if nums[i] <= 0 {
+			nums[i] = n + 1
+		}
+	}
+	// 定义取绝对值函数
+	abs := func(x int) int {
+		if x < 0 {
+			return -x
+		}
+		return x
+	}
+	// 遍历所有元素
+	for i := 0; i < n; i++ {
+		num := abs(nums[i])
+		// 将所有小于 n 的元素打标记
+		if num <= n {
+			nums[num-1] = -abs(nums[num-1])
+		}
+	}
+	// 取第一个正数 + 1，如果都是负数，那答案就是 n + 1
+	for i := 0; i < n; i++ {
+		if nums[i] > 0 {
+			return i + 1
+		}
+	}
+	return n + 1
+}
+```
+
 #### [L189-中等] 轮转数组
 
 给定一个整数数组 `nums`，将数组中的元素向右轮转 `k` 个位置，其中 `k` 是非负数。
@@ -7459,6 +7610,110 @@ func productExceptSelf(nums []int) []int {
 	ans := make([]int, n)
 	for i := 0; i < n; i++ {
 		ans[i] = lArr[i] * rArr[i]
+	}
+	return ans
+}
+```
+
+#### [L239-困难] 滑动窗口最大值
+
+给你一个整数数组 `nums`，有一个大小为 `k` 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 `k` 个数字。滑动窗口每次只向右移动一位。
+
+返回 *滑动窗口中的最大值* 。
+
+**示例**
+
+```
+输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+输出：[3,3,5,5,6,7]
+解释：
+滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+ 
+输入：nums = [1], k = 1
+输出：[1]
+```
+
+- `1 <= nums.length <= 105`
+- `-104 <= nums[i] <= 104`
+- `1 <= k <= nums.length`
+
+**题解**
+
+暴力，时间复杂度 O(nk) 超时
+
+```go
+// 超时 - 不适用
+func maxSlidingWindow99(nums []int, k int) []int {
+	maxIndex, max := 0, nums[0]
+	ans, kArr := make([]int, 0), make([]int, 0)
+	for i := 0; i < k; i++ {
+		kArr = append(kArr, nums[i])
+		if nums[i] > max {
+			max = nums[i]
+			maxIndex = i
+		}
+	}
+	ans = append(ans, max)
+	for i := k; i < len(nums); i++ {
+		kArr = append(kArr, nums[i])
+		kArr = kArr[1:]
+		if nums[i] > max {
+			max = nums[i]
+			maxIndex = len(kArr) - 1
+		} else {
+			if maxIndex > 0 {
+				maxIndex--
+			} else {
+				max = kArr[0]
+				maxIndex = 0
+				for j, v := range kArr {
+					if v > max {
+						maxIndex = j
+						max = v
+					}
+				}
+			}
+		}
+		ans = append(ans, max)
+	}
+	return ans
+}
+```
+
+优化：
+
+```go
+func maxSlidingWindow(nums []int, k int) []int {
+	q := make([]int, 0)
+	push := func(i int) {
+		// 删除队列中所有大于 num[i] 的元素
+		for len(q) > 0 && nums[i] >= nums[q[len(q)-1]] {
+			q = q[:len(q)-1]
+		}
+		q = append(q, i)
+	}
+	// 先将前 k 个元素入队
+	for i := 0; i < k; i++ {
+		push(i)
+	}
+
+	ans := make([]int, 0)
+	ans = append(ans, nums[q[0]])
+	for i := k; i < len(nums); i++ {
+		// 入队
+		push(i)
+		// 保证队首元素不能超过区间范围
+		for q[0] <= i-k {
+			q = q[1:]
+		}
+		ans = append(ans, nums[q[0]])
 	}
 	return ans
 }
