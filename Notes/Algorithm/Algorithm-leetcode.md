@@ -2,6 +2,380 @@
 
 ### 链表
 
+#### [L21-简单] 合并两个有序链表
+
+将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+**示例**
+
+```
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+```
+
+**题解**
+
+**递归：**
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+    if l1 == nil{
+        return l2
+    }  
+    if l2 == nil{
+        return l1
+    }
+    var res *ListNode
+    if l1.Val >= l2.Val{
+        res = l2
+        res.Next = mergeTwoLists(l1,l2.Next)
+    }else{
+        res = l1
+        res.Next = mergeTwoLists(l1.Next,l2)
+    }
+    return res
+}
+```
+
+**迭代：**
+
+Go：
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+    if list1 == nil {
+        return list2
+    }
+    if list2 == nil {
+        return list1
+    }
+
+    dummy := &ListNode{0, nil}
+    current := dummy
+    for list1 != nil || list2 != nil {
+        if list1 == nil {
+            current.Next = list2
+            break
+        }
+        if list2 == nil {
+            current.Next = list1
+            break
+        }
+        if list1.Val < list2.Val {
+            current.Next = list1
+            current = current.Next
+            list1 = list1.Next
+        } else {
+            current.Next = list2
+            current = current.Next
+            list2 = list2.Next
+        }
+    }
+    return dummy.Next
+}
+```
+
+PHP：
+
+```php
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $l1
+     * @param ListNode $l2
+     * @return ListNode
+     */
+    function mergeTwoLists($l1, $l2) {
+        if (!$l1) return $l2;
+        if (!$l2) return $l1;
+        
+        $dummyhead = new ListNode(0);
+        $current = $dummyhead;
+        while ($l1 || $l2) {
+            if (!$l1) {
+                $current->next = $l2;
+                break;
+            }
+            if (!$l2) {
+                $current->next = $l1;
+                break;
+            }
+            if ($l1->val < $l2->val) {
+                $current->next = $l1;
+                $current = $current->next;
+                $l1 = $l1->next;
+            } else {
+                $current->next = $l2;
+                $current = $current->next;
+                $l2 = $l2->next;
+            }
+        }
+        return $dummyhead->next;
+    }
+}
+```
+
+有关php实现链表可以参考以下文章：https://www.cnblogs.com/sunshineliulu/p/7717301.html
+
+#### [L141-简单] 环形链表
+
+给你一个链表的头节点 `head` ，判断链表中是否有环。
+
+如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（索引从 0 开始）。**注意：`pos` 不作为参数进行传递** 。仅仅是为了标识链表的实际情况。
+
+*如果链表中存在环* ，则返回 `true` 。 否则，返回 `false` 。
+
+**示例**
+
+```
+输入：head = [3,2,0,-4], pos = 1
+输出：true
+解释：链表中有一个环，其尾部连接到第二个节点。
+
+输入：head = [1,2], pos = 0
+输出：true
+解释：链表中有一个环，其尾部连接到第一个节点。
+
+输入：head = [1], pos = -1
+输出：false
+解释：链表中没有环。
+```
+
+- 链表中节点的数目范围是 `[0, 104]`
+- `-105 <= Node.val <= 105`
+- `pos` 为 `-1` 或者链表中的一个 **有效索引** 。
+
+**题解**
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func hasCycle(head *ListNode) bool {
+    if head == nil {
+        return false
+    }
+
+    hash := map[*ListNode]struct{}{}
+    for head != nil {
+        if _, ok := hash[head]; ok {
+            return true
+        }
+        hash[head] = struct{}{}
+        head = head.Next
+    }
+    return false
+}
+```
+
+#### [L160-简单] 相交链表
+
+给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 
+
+**题解**
+
+哈希表，先遍历链表A，存入hash，再遍历链表B，如果当前节点在hash表中，且后面的节点都在，则相交
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    hash := map[*ListNode]int{}
+    tmpA, tmpB := headA, headB
+    for tmpA != nil {
+        hash[tmpA] = tmpA.Val
+        tmpA = tmpA.Next
+    }
+    for tmpB != nil {
+        if hash[tmpB] == tmpB.Val {
+            return tmpB
+        }
+        tmpB = tmpB.Next
+    }
+    return nil
+}
+```
+
+双指针
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+    if headA == nil || headB == nil {
+        return nil
+    }
+    pa, pb := headA, headB
+    for pa != pb {
+        if pa == nil {
+            pa = headB
+        } else {
+            pa = pa.Next
+        }
+        if pb == nil {
+            pb = headA
+        } else {
+            pb = pb.Next
+        }
+    }
+    return pa
+}
+```
+
+#### [L206-简单] 反转链表
+
+给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+
+**示例**
+
+```
+输入：head = [1,2,3,4,5]
+输出：[5,4,3,2,1]
+
+输入：head = [1,2]
+输出：[2,1]
+
+输入：head = []
+输出：[]
+```
+
+**题解**
+
+先遍历链表，存在数组中，再遍历数组，构建新的链表
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func reverseList(head *ListNode) *ListNode {
+    if head == nil {
+		return head
+	}
+    arr := make([]int, 0)
+    for head != nil {
+        arr = append([]int{head.Val}, arr...)
+        head = head.Next
+    }
+    newHead := &ListNode{Val: arr[0], Next: nil}
+    tmpHead := newHead
+    for i := 1; i < len(arr); i++ {
+        tmpHead.Next = &ListNode{arr[i], nil}
+        tmpHead = tmpHead.Next
+    }
+    return newHead
+}
+```
+
+迭代：在遍历链表时，将当前节点的 next 指针改为指向前一个节点
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func reverseList(head *ListNode) *ListNode {
+    var prev *ListNode
+    curr := head
+    for curr != nil {
+        next := curr.Next
+        curr.Next = prev
+        prev = curr
+        curr = next
+    }
+    return prev
+}
+```
+
+#### [L234-简单] 回文链表
+
+给你一个单链表的头节点 `head` ，请你判断该链表是否为回文链表。如果是，返回 `true` ；否则，返回 `false` 。
+
+**示例**
+
+```
+输入：head = [1,2,2,1]
+输出：true
+
+输入：head = [1,2]
+输出：false
+```
+
+**题解**
+
+先遍历链表存入数组，再遍历数组进行判断
+
+```go
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func isPalindrome(head *ListNode) bool {
+    if head == nil {
+        return false
+    }
+    tmp := make([]int, 0)
+    for head != nil {
+        tmp = append(tmp, head.Val)
+        head = head.Next
+    }
+    n := len(tmp)
+    for i := 0; i < n/2; i++ {
+        if tmp[i] != tmp[n-1-i] {
+            return false
+        }
+    }
+    return true
+}
+```
+
 #### [L2-中等] 两数相加
 
 给出两个 **非空** 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 **逆序** 的方式存储的，并且它们的每个节点只能存储 **一位** 数字。
@@ -201,144 +575,7 @@ class Solution {
 }
 ```
 
-#### [L21-简单] 合并两个有序链表
 
-将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
-
-**示例**
-
-```
-输入：1->2->4, 1->3->4
-输出：1->1->2->3->4->4
-```
-
-**题解**
-
-**递归：**
-
-Go：
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
-    if l1 == nil{
-        return l2
-    }  
-    if l2 == nil{
-        return l1
-    }
-    var res *ListNode
-    if l1.Val >= l2.Val{
-        res = l2
-        res.Next = mergeTwoLists(l1,l2.Next)
-    }else{
-        res = l1
-        res.Next = mergeTwoLists(l1.Next,l2)
-    }
-    return res
-}
-```
-
-**迭代：**
-
-Go：
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-    if list1 == nil {
-        return list2
-    }
-    if list2 == nil {
-        return list1
-    }
-
-    dummy := &ListNode{0, nil}
-    current := dummy
-    for list1 != nil || list2 != nil {
-        if list1 == nil {
-            current.Next = list2
-            break
-        }
-        if list2 == nil {
-            current.Next = list1
-            break
-        }
-        if list1.Val < list2.Val {
-            current.Next = list1
-            current = current.Next
-            list1 = list1.Next
-        } else {
-            current.Next = list2
-            current = current.Next
-            list2 = list2.Next
-        }
-    }
-    return dummy.Next
-}
-```
-
-PHP：
-
-```php
-/**
- * Definition for a singly-linked list.
- * class ListNode {
- *     public $val = 0;
- *     public $next = null;
- *     function __construct($val) { $this->val = $val; }
- * }
- */
-class Solution {
-
-    /**
-     * @param ListNode $l1
-     * @param ListNode $l2
-     * @return ListNode
-     */
-    function mergeTwoLists($l1, $l2) {
-        if (!$l1) return $l2;
-        if (!$l2) return $l1;
-        
-        $dummyhead = new ListNode(0);
-        $current = $dummyhead;
-        while ($l1 || $l2) {
-            if (!$l1) {
-                $current->next = $l2;
-                break;
-            }
-            if (!$l2) {
-                $current->next = $l1;
-                break;
-            }
-            if ($l1->val < $l2->val) {
-                $current->next = $l1;
-                $current = $current->next;
-                $l1 = $l1->next;
-            } else {
-                $current->next = $l2;
-                $current = $current->next;
-                $l2 = $l2->next;
-            }
-        }
-        return $dummyhead->next;
-    }
-}
-```
-
-有关php实现链表可以参考以下文章：https://www.cnblogs.com/sunshineliulu/p/7717301.html
 
 #### [L24-中等] 两两交换链表中的节点
 
@@ -514,61 +751,6 @@ func copyRandomList(head *Node) *Node {
     }
     // 返回头节点，即原节点对应的 value 值
     return hash[head]
-}
-```
-
-#### [L141-简单] 环形链表
-
-给你一个链表的头节点 `head` ，判断链表中是否有环。
-
-如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（索引从 0 开始）。**注意：`pos` 不作为参数进行传递** 。仅仅是为了标识链表的实际情况。
-
-*如果链表中存在环* ，则返回 `true` 。 否则，返回 `false` 。
-
-**示例**
-
-```
-输入：head = [3,2,0,-4], pos = 1
-输出：true
-解释：链表中有一个环，其尾部连接到第二个节点。
-
-输入：head = [1,2], pos = 0
-输出：true
-解释：链表中有一个环，其尾部连接到第一个节点。
-
-输入：head = [1], pos = -1
-输出：false
-解释：链表中没有环。
-```
-
-- 链表中节点的数目范围是 `[0, 104]`
-- `-105 <= Node.val <= 105`
-- `pos` 为 `-1` 或者链表中的一个 **有效索引** 。
-
-**题解**
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func hasCycle(head *ListNode) bool {
-    if head == nil {
-        return false
-    }
-
-    hash := map[*ListNode]struct{}{}
-    for head != nil {
-        if _, ok := hash[head]; ok {
-            return true
-        }
-        hash[head] = struct{}{}
-        head = head.Next
-    }
-    return false
 }
 ```
 
@@ -848,183 +1030,176 @@ func merge(left, right *ListNode) *ListNode {
 }
 ```
 
-#### [L160-简单] 相交链表
+#### [L23-困难] 合并 K 个升序链表
 
-给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 
+给你一个链表数组，每个链表都已经按升序排列。
 
-**题解**
-
-哈希表，先遍历链表A，存入hash，再遍历链表B，如果当前节点在hash表中，且后面的节点都在，则相交
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func getIntersectionNode(headA, headB *ListNode) *ListNode {
-    hash := map[*ListNode]int{}
-    tmpA, tmpB := headA, headB
-    for tmpA != nil {
-        hash[tmpA] = tmpA.Val
-        tmpA = tmpA.Next
-    }
-    for tmpB != nil {
-        if hash[tmpB] == tmpB.Val {
-            return tmpB
-        }
-        tmpB = tmpB.Next
-    }
-    return nil
-}
-```
-
-双指针
-
-```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func getIntersectionNode(headA, headB *ListNode) *ListNode {
-    if headA == nil || headB == nil {
-        return nil
-    }
-    pa, pb := headA, headB
-    for pa != pb {
-        if pa == nil {
-            pa = headB
-        } else {
-            pa = pa.Next
-        }
-        if pb == nil {
-            pb = headA
-        } else {
-            pb = pb.Next
-        }
-    }
-    return pa
-}
-```
-
-#### [L206-简单] 反转链表
-
-给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
 
 **示例**
 
 ```
-输入：head = [1,2,3,4,5]
-输出：[5,4,3,2,1]
+输入：lists = [[1,4,5],[1,3,4],[2,6]]
+输出：[1,1,2,3,4,4,5,6]
+解释：链表数组如下：
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+将它们合并到一个有序链表中得到。
+1->1->2->3->4->4->5->6
 
-输入：head = [1,2]
-输出：[2,1]
+输入：lists = []
+输出：[]
 
-输入：head = []
+输入：lists = [[]]
 输出：[]
 ```
 
+- `k == lists.length`
+- `0 <= k <= 10^4`
+- `0 <= lists[i].length <= 500`
+- `-10^4 <= lists[i][j] <= 10^4`
+- `lists[i]` 按 **升序** 排列
+- `lists[i].length` 的总和不超过 `10^4`
+
 **题解**
 
-先遍历链表，存在数组中，再遍历数组，构建新的链表
+两两依次合并
 
 ```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func reverseList(head *ListNode) *ListNode {
-    if head == nil {
-		return head
-	}
-    arr := make([]int, 0)
-    for head != nil {
-        arr = append([]int{head.Val}, arr...)
-        head = head.Next
+func mergeKLists(lists []*ListNode) *ListNode {
+    if len(lists) == 0 {
+        return nil
     }
-    newHead := &ListNode{Val: arr[0], Next: nil}
-    tmpHead := newHead
-    for i := 1; i < len(arr); i++ {
-        tmpHead.Next = &ListNode{arr[i], nil}
-        tmpHead = tmpHead.Next
+    ans := lists[0]
+    for i := 1; i < len(lists); i++ {
+        ans = mergeList(ans, lists[i])
     }
-    return newHead
+    return ans
+}
+
+// 合并两个有序链表
+func mergeList(list1, list2 *ListNode) *ListNode {
+    if list1 == nil {
+        return list2
+    }
+    if list2 == nil {
+        return list1
+    }
+    dummy := &ListNode{0, nil}
+    cur := dummy
+    for list1 != nil || list2 != nil {
+        if list1 == nil {
+            cur.Next = list2
+            break
+        }
+        if list2 == nil {
+            cur.Next = list1
+            break
+        }
+        if list1.Val < list2.Val {
+            cur.Next = list1
+            cur = cur.Next
+            list1 = list1.Next
+        } else {
+            cur.Next = list2
+            cur = cur.Next
+            list2 = list2.Next
+        }
+    }
+    return dummy.Next
 }
 ```
 
-迭代：在遍历链表时，将当前节点的 next 指针改为指向前一个节点
+分治合并
 
 ```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func reverseList(head *ListNode) *ListNode {
-    var prev *ListNode
-    curr := head
-    for curr != nil {
-        next := curr.Next
-        curr.Next = prev
-        prev = curr
-        curr = next
+func mergeKLists(lists []*ListNode) *ListNode {
+    return merge(lists, 0, len(lists)-1)
+}
+
+func merge(lists []*ListNode, left, right int) *ListNode {
+    if left == right {
+        return lists[left]
     }
-    return prev
+    if left > right {
+        return nil
+    }
+    mid := (left + right) / 2
+    return mergeList(merge(lists, left, mid), merge(lists, mid+1, right))
+}
+
+// 合并两个有序链表
+func mergeList(list1, list2 *ListNode) *ListNode {
+    ...
 }
 ```
 
-#### [L234-简单] 回文链表
+#### [L25-困难] K 个一组翻转链表
 
-给你一个单链表的头节点 `head` ，请你判断该链表是否为回文链表。如果是，返回 `true` ；否则，返回 `false` 。
+给你链表的头节点 `head` ，每 `k` 个节点一组进行翻转，请你返回修改后的链表。
+
+`k` 是一个正整数，它的值小于或等于链表的长度。如果节点总数不是 `k` 的整数倍，那么请将最后剩余的节点保持原有顺序。
+
+你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
 
 **示例**
 
 ```
-输入：head = [1,2,2,1]
-输出：true
+输入：head = [1,2,3,4,5], k = 2
+输出：[2,1,4,3,5]
 
-输入：head = [1,2]
-输出：false
+输入：head = [1,2,3,4,5], k = 3
+输出：[3,2,1,4,5]
 ```
+
+- 链表中的节点数目为 `n`
+- `1 <= k <= n <= 5000`
+- `0 <= Node.val <= 1000`
 
 **题解**
 
-先遍历链表存入数组，再遍历数组进行判断
-
 ```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-func isPalindrome(head *ListNode) bool {
-    if head == nil {
-        return false
-    }
-    tmp := make([]int, 0)
-    for head != nil {
-        tmp = append(tmp, head.Val)
-        head = head.Next
-    }
-    n := len(tmp)
-    for i := 0; i < n/2; i++ {
-        if tmp[i] != tmp[n-1-i] {
-            return false
-        }
-    }
-    return true
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	res := &ListNode{Next: head}
+	pre := res
+	for head != nil {
+		tail := pre
+		// 移动 k 步
+		for i := 0; i < k; i++ {
+			tail = tail.Next
+			// 这一轮剩余步数小于k，直接返回
+			if tail == nil {
+				return res.Next
+			}
+		}
+		// 暂存节点
+		temp := tail.Next
+		// 反转
+		head, tail = reverse(head, tail)
+		// 重新连接首位节点
+		pre.Next = head
+		tail.Next = temp
+		// 下一轮
+		pre = tail
+		head = tail.Next
+	}
+	return res.Next
+}
+
+// 反转链表
+func reverse(head, tail *ListNode) (*ListNode, *ListNode) {
+	prev := tail.Next
+	p := head
+	for prev != tail {
+		temp := p.Next
+		p.Next = prev
+		prev = p
+		p = temp
+	}
+	return tail, head
 }
 ```
 
@@ -1842,6 +2017,62 @@ func pathSum(root *TreeNode, targetSum int) int {
     res += pathSum(root.Left, targetSum)
     res += pathSum(root.Right, targetSum)
     return res
+}
+```
+
+#### [L124-困难] 二叉树中的最大路径和
+
+二叉树中的 **路径** 被定义为一条节点序列，序列中每对相邻节点之间都存在一条边。同一个节点在一条路径序列中 **至多出现一次** 。该路径 **至少包含一个** 节点，且不一定经过根节点。
+
+**路径和** 是路径中各节点值的总和。
+
+给你一个二叉树的根节点 `root` ，返回其 **最大路径和** 。
+
+**示例**
+
+```
+输入：root = [1,2,3]
+输出：6
+解释：最优路径是 2 -> 1 -> 3 ，路径和为 2 + 1 + 3 = 6
+
+输入：root = [-10,9,20,null,null,15,7]
+输出：42
+解释：最优路径是 15 -> 20 -> 7 ，路径和为 15 + 20 + 7 = 42
+```
+
+- 树中节点数目范围是 `[1, 3 * 104]`
+- `-1000 <= Node.val <= 1000`
+
+**题解**
+
+```go
+func maxPathSum(root *TreeNode) int {
+    maxSum := math.MinInt32
+    var maxGain func(*TreeNode) int
+    maxGain = func(node *TreeNode) int {
+        if node == nil {
+            return 0
+        }
+        // 递归计算左右子节点的最大贡献值
+        // 只有在最大贡献值大于 0 时，才会选取对应子节点
+        left := max(maxGain(node.Left), 0)
+        right := max(maxGain(node.Right), 0)
+        // 节点的最大路径和取决于该节点的值与该节点的左右子节点的最大贡献值
+        path := node.Val + left + right
+        // 更新最大值
+        maxSum = max(maxSum, path)
+        // 返回节点最大贡献值
+        return node.Val + max(left, right)
+    }
+    maxGain(root)
+    return maxSum
+}
+
+func max(x, y int) int {
+    if x > y {
+        return x
+    }
+    return y
 }
 ```
 
@@ -2813,6 +3044,179 @@ func dailyTemperatures(temperatures []int) []int {
 }
 ```
 
+#### [L32-困难] 最长有效括号
+
+给你一个只包含 `'('` 和 `')'` 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
+
+**示例**
+
+```
+输入：s = "(()"
+输出：2
+解释：最长有效括号子串是 "()"
+
+输入：s = ")()())"
+输出：4
+解释：最长有效括号子串是 "()()"
+
+输入：s = ""
+输出：0
+```
+
+- `0 <= s.length <= 3 * 104`
+- `s[i]` 为 `'('` 或 `')'`
+
+**题解**
+
+非动态规划法，依次标记字符串中每个位置是否匹配成功，然后遍历标记数组，连续标记的就是子串，获取最大的子串即可
+
+```go
+func longestValidParentheses(s string) int {
+	n := len(s)
+	if n == 0 {
+		return 0
+	}
+	// 栈，存储左括号下标，用于判断是否匹配成功
+	stack := make([]int, 0)
+	// 标记数组，标记字符串该位置是否匹配成功
+	flags := make([]bool, n)
+	// 遍历字符串，进行标记
+	for i := 0; i < n; i++ {
+		if s[i] == '(' {
+			stack = append(stack, i)
+		} else {
+			if len(stack) == 0 {
+				continue
+			} else {
+				// 左括号下标
+				leftIndex := stack[len(stack)-1]
+				// 出栈
+				stack = stack[:len(stack)-1]
+				// 标记
+				flags[i], flags[leftIndex] = true, true
+			}
+		}
+	}
+	// 遍历标记数组，找出连续匹配成功的最大字符串
+	max := 0
+	cur := 0
+	for _, flag := range flags {
+		if flag {
+			cur++
+		} else {
+			if cur > max {
+				max = cur
+			}
+			cur = 0
+		}
+	}
+	// 最后一个字符也匹配成功的情况
+	if cur > max {
+		max = cur
+	}
+	return max
+}
+```
+
+在上面的基础上进行优化
+
+```go
+func longestValidParentheses(s string) int {
+	n := len(s)
+	if n == 0 {
+		return 0
+	}
+	// 栈，栈低存储没有被匹配的最后一个右括号，其他元素为左括号
+	stack := make([]int, 0)
+	// 初始化一个 -1
+	stack = append(stack, -1)
+	max := 0
+	// 遍历字符串，进行标记
+	for i := 0; i < n; i++ {
+		if s[i] == '(' {
+			stack = append(stack, i)
+		} else {
+			// 出栈
+			stack = stack[:len(stack)-1]
+			if len(stack) == 0 {
+				// 栈为空，下标入栈，此时刚好是栈低元素
+				stack = append(stack, i)
+			} else {
+				// 不为空，更新最大值
+				if i-stack[len(stack)-1] > max {
+					max = i - stack[len(stack)-1]
+				}
+			}
+		}
+	}
+	return max
+}
+```
+
+动态规划法：
+
+不想推导了。。。
+
+#### [L84-困难] 柱状图中最大的矩形
+
+给定 *n* 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+**示例**
+
+```
+输入：heights = [2,1,5,6,2,3]
+输出：10
+解释：最大的矩形为图中红色区域，面积为 10
+
+输入： heights = [2,4]
+输出： 4
+```
+
+- `1 <= heights.length <=105`
+- `0 <= heights[i] <= 104`
+
+**题解**
+
+```go
+func largestRectangleArea(heights []int) int {
+    n := len(heights)
+    left, right := make([]int, n), make([]int, n)
+    for i := 0; i < n; i++ {
+        right[i] = n
+    }
+    stack := []int{}
+    // 遍历数组
+    for i := 0; i < n; i++ {
+        // 栈不为空，且当前高度小于等于前一个高度时
+        for len(stack) > 0 && heights[stack[len(stack)-1]] >= heights[i] {
+            // 将当前坐标加入右侧坐标数组
+            right[stack[len(stack)-1]] = i
+            // 出栈
+            stack = stack[:len(stack)-1]
+        }
+        if len(stack) == 0 {
+            left[i]--
+        } else {
+            // 将当前坐标加入左侧坐标数组
+            left[i] = stack[len(stack)-1]
+        }
+        // 入栈
+        stack = append(stack, i)
+    }
+    ans := 0
+    // 根据左右边界值计算面积，获得最大面积
+    for i := 0; i < n; i++ {
+        area := (right[i] - left[i] - 1) * heights[i]
+        if area > ans {
+            ans = area
+        }
+    }
+    return ans
+}
+```
+
 ### 堆
 
 #### [L215-中等] 数组中的第K个最大元素
@@ -2950,6 +3354,106 @@ func topKFrequent(nums []int, k int) []int {
 		ret[k-i-1] = heap.Pop(h).([2]int)[0]
 	}
 	return ret
+}
+```
+
+#### [L295-困难] 数据流的中位数
+
+**中位数**是有序整数列表中的中间值。如果列表的大小是偶数，则没有中间值，中位数是两个中间值的平均值。
+
+- 例如 `arr = [2,3,4]` 的中位数是 `3` 。
+- 例如 `arr = [2,3]` 的中位数是 `(2 + 3) / 2 = 2.5` 。
+
+实现 MedianFinder 类:
+
+- `MedianFinder() `初始化 `MedianFinder` 对象。
+- `void addNum(int num)` 将数据流中的整数 `num` 添加到数据结构中。
+- `double findMedian()` 返回到目前为止所有元素的中位数。与实际答案相差 `10-5` 以内的答案将被接受。
+
+**示例**
+
+```
+输入
+["MedianFinder", "addNum", "addNum", "findMedian", "addNum", "findMedian"]
+[[], [1], [2], [], [3], []]
+输出
+[null, null, null, 1.5, null, 2.0]
+
+解释
+MedianFinder medianFinder = new MedianFinder();
+medianFinder.addNum(1);    // arr = [1]
+medianFinder.addNum(2);    // arr = [1, 2]
+medianFinder.findMedian(); // 返回 1.5 ((1 + 2) / 2)
+medianFinder.addNum(3);    // arr[1, 2, 3]
+medianFinder.findMedian(); // return 2.0
+```
+
+- `-105 <= num <= 105`
+- 在调用 `findMedian` 之前，数据结构中至少有一个元素
+- 最多 `5 * 104` 次调用 `addNum` 和 `findMedian`
+
+**题解**
+
+左边构建一个大顶堆存储小于中位数的数，右边构建一个小顶堆存储大于中位数的数
+
+当总数为奇数时，左边多存一个，堆顶元素就是中位数
+
+当总数为偶数时，左右顶堆的堆顶元素之和除以2就是中位数
+
+这里有一个小技巧，只需要构造一个大顶堆，小顶堆只需要在数据入堆时以负数入堆即可实现小顶堆的效果
+
+```go
+type IntHeap []int
+
+func (h IntHeap) Len() int           { return len(h) }
+func (h IntHeap) Less(i, j int) bool { return h[i] < h[j] }
+func (h IntHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *IntHeap) Push(v interface{}) { *h = append(*h, v.(int)) }
+func (h *IntHeap) Pop() interface{} {
+	tmp := *h
+	n := len(tmp)
+	x := tmp[n-1]
+	*h = tmp[:n-1]
+	return x
+}
+
+type MedianFinder struct {
+	// queMin：存储小于中位数的值（大顶堆），queMax：存储大于中位数的值（小顶堆）
+	// queMin 比 queMax 多存一个元素，或者一样多
+	queMin, queMax IntHeap
+}
+
+func Constructor() MedianFinder {
+	h := MedianFinder{}
+	heap.Init(&h.queMin)
+	heap.Init(&h.queMax)
+	return h
+}
+
+func (mf *MedianFinder) AddNum(num int) {
+	// num 小于等于中位数时，添加数据到 queMin 中
+	// 这里使用-的原因时，这里只定义了小顶堆结构，所以使用负数入队表示大顶堆
+	if mf.queMin.Len() == 0 || num <= -mf.queMin[0] {
+		heap.Push(&mf.queMin, -num)
+		// 当 mf.queMin 元素比 mf.queMax 多2个，则添加到 mf.queMax 中
+		if mf.queMax.Len()+1 < mf.queMin.Len() {
+			heap.Push(&mf.queMax, -heap.Pop(&mf.queMin).(int))
+		}
+	} else {
+		heap.Push(&mf.queMax, num)
+		// 如果 mf.queMax 元素比 mf.queMin 多
+		if mf.queMax.Len() > mf.queMin.Len() {
+			heap.Push(&mf.queMin, -heap.Pop(&mf.queMax).(int))
+		}
+	}
+}
+
+func (mf *MedianFinder) FindMedian() float64 {
+	if mf.queMin.Len() > mf.queMax.Len() {
+		return float64(-mf.queMin[0])
+	}
+	return float64(mf.queMax[0]-mf.queMin[0]) / 2
 }
 ```
 
@@ -3654,6 +4158,76 @@ func findMin(nums []int) int {
     return min
 }
 ```
+
+#### [L4-困难] 寻找两个正序数组的中位数
+
+给定两个大小分别为 `m` 和 `n` 的正序（从小到大）数组 `nums1` 和 `nums2`。请你找出并返回这两个正序数组的 **中位数** 。
+
+算法的时间复杂度应该为 `O(log (m+n))` 。
+
+**示例**
+
+```
+输入：nums1 = [1,3], nums2 = [2]
+输出：2.00000
+解释：合并数组 = [1,2,3] ，中位数 2
+
+输入：nums1 = [1,2], nums2 = [3,4]
+输出：2.50000
+解释：合并数组 = [1,2,3,4] ，中位数 (2 + 3) / 2 = 2.5
+```
+
+- `nums1.length == m`
+- `nums2.length == n`
+- `0 <= m <= 1000`
+- `0 <= n <= 1000`
+- `1 <= m + n <= 2000`
+- `-106 <= nums1[i], nums2[i] <= 106`
+
+**题解**
+
+先合并两个有序数组，然后根据奇数，还是偶数，返回中位数
+
+这种方法时间复杂度为：O(m+n)，不符合题意
+
+```go
+func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
+	// 先合并两个有序数组
+	nums := mergeSortedArrays(nums1, nums2)
+    // 取数组中位数
+	count := len(nums)
+	if count%2 == 0 {
+		return float64(nums[count/2-1]+nums[count/2]) / 2.0
+	} else {
+		return float64(nums[count/2])
+	}
+}
+
+func mergeSortedArrays(l, r []int) (res []int) {
+	for len(l) != 0 && len(r) != 0 {
+		if l[0] <= r[0] {
+			res = append(res, l[0])
+			l = l[1:]
+		} else {
+			res = append(res, r[0])
+			r = r[1:]
+		}
+	}
+	for len(l) != 0 {
+		res = append(res, l[0])
+		l = l[1:]
+	}
+	for len(r) != 0 {
+		res = append(res, r[0])
+		r = r[1:]
+	}
+	return
+}
+```
+
+优化解法：
+
+`O(log (m+n))` 的复杂度，需要使用二分法
 
 ### 递归
 
@@ -6451,6 +7025,403 @@ func searchMatrix(matrix [][]int, target int) bool {
 
 ### 其他
 
+#### [L9-简单] 回文数
+
+判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
+
+进阶：你能不将整数转为字符串来解决这个问题吗？
+
+**示例**
+
+```
+输入: 121
+输出: true
+
+输入: -121
+输出: false
+解释: 从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。
+
+输入: 10
+输出: false
+解释: 从右向左读, 为 01 。因此它不是一个回文数。
+```
+
+**题解**
+
+**方法一：转化成字符串**
+
+```php
+class Solution {
+
+    /**
+     * @param Integer $x
+     * @return Boolean
+     */
+    function isPalindrome($x) {
+        $len = strlen($x);
+        $x = (string)$x;
+        for ($i=$len-1; $i>=0; $i--) {
+            $y.=$x[$i];
+        }
+        if ($x == $y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+```
+
+**方法二：**
+
+```php
+class Solution {
+
+    /**
+     * @param Integer $x
+     * @return Boolean
+     */
+    function isPalindrome($x) {
+        // 所有负数返回 false
+        // 10的倍数返回false
+        if ($x < 0 || ($x % 10 == 0 && $x != 0)) {
+            return false;
+        }
+        // %10得到最后一位数字
+        // 先/10再%10得到倒数第二位数字，以此类推
+        $y = 0;
+        while ($x > $y) {
+            $y = $y * 10 + $x % 10;
+            $x /= 10;
+            $x = (int)$x;
+        }
+        $new = $y/10;
+        $new = (int)$new;
+        return $x == $y || $x == $new;
+    }
+}
+```
+
+#### [L13-简单] 罗马数字转整数
+
+罗马数字包含以下七种字符: `I`， `V`， `X`， `L`，`C`，`D` 和 `M`。
+
+```
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+```
+
+例如， 罗马数字 2 写做 `II` ，即为两个并列的 1。12 写做 `XII` ，即为 `X` + `II` 。 27 写做  `XXVII`, 即为 `XX` + `V` + `II` 。
+
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 `IIII`，而是 `IV`。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 `IX`。这个特殊的规则只适用于以下六种情况：
+
+- `I` 可以放在 `V` (5) 和 `X` (10) 的左边，来表示 4 和 9。
+- `X` 可以放在 `L` (50) 和 `C` (100) 的左边，来表示 40 和 90。 
+- `C` 可以放在 `D` (500) 和 `M` (1000) 的左边，来表示 400 和 900。
+
+给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。
+
+**示例**
+
+```
+输入: "III"
+输出: 3
+
+输入: "IV"
+输出: 4
+
+输入: "IX"
+输出: 9
+
+输入: "LVIII"
+输出: 58
+解释: L = 50, V= 5, III = 3.
+
+输入: "MCMXCIV"
+输出: 1994
+解释: M = 1000, CM = 900, XC = 90, IV = 4
+```
+
+**题解**
+
+如果当前字符代表的值不小于其右边，就加上该值；否则就减去该值。以此类推到最左边的数，最终得到的结果即是答案
+
+```php
+class Solution {
+
+    /**
+     * @param String $s
+     * @return Integer
+     */
+    function romanToInt($s) {
+        $tmp = [
+            'I' => 1,
+            'V' => 5,
+            'X' => 10,
+            'L' => 50,
+            'C' => 100,
+            'D' => 500,
+            'M' => 1000,
+        ];
+        $s = (string)$s;
+        $len = strlen($s);
+        for ($i=0; $i<$len; $i++) {
+            if ($tmp[$s[$i]] >= $tmp[$s[$i+1]]) {
+                $ans+=$tmp[$s[$i]];
+            } else {
+                $ans-=$tmp[$s[$i]];
+            }
+        }
+        return $ans;
+    }
+}
+```
+
+#### [L14-简单] 最长公共前缀
+
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 `""`。
+
+说明：所有输入只包含小写字母 `a-z` 。
+
+**示例**
+
+```
+输入: ["flower","flow","flight"]
+输出: "fl"
+
+输入: ["dog","racecar","car"]
+输出: ""
+解释: 输入不存在公共前缀。
+```
+
+**题解**
+
+获取第一个元素，以第一个元素为基准点，遍历数组，依次和第一个元素对比，获取相同元素个数
+
+Golang：
+
+```go
+func longestCommonPrefix(strs []string) string {
+    if len(strs) == 0 {
+        return ""
+    }
+    for i := 0; i < len(strs[0]); i++ {
+        for j := 1; j < len(strs); j++ {
+            if i == len(strs[j]) || strs[j][i] != strs[0][i] {
+                return strs[0][:i]
+            }
+        }
+    }
+    return strs[0]
+}
+```
+
+PHP：
+
+```php
+class Solution {
+
+    /**
+     * @param String[] $strs
+     * @return String
+     */
+    function longestCommonPrefix($strs) {
+        $len = count($strs);
+        $first = $strs[0];
+        $firstLen = strlen($first);
+        for ($i = 1;$i < $len; $i++) {
+            $tempArr = str_split($strs[$i]);
+            $min = min($firstLen, count($tempArr));
+            $tempLen = 0;
+            for ($j = 0; $j < $min; $j++) {
+                if ($first[$j] == $tempArr[$j]) {
+                    $tempLen++;
+                } else {
+                    break;
+                }
+            }
+            $firstLen > $tempLen && $firstLen = $tempLen;
+        }
+        return substr($first, 0, $firstLen);
+    }
+}
+```
+
+#### [L27-简单] 移除元素
+
+给定一个数组 *nums* 和一个值 *val*，你需要**原地**移除所有数值等于 *val* 的元素，返回移除后数组的新长度。
+
+不要使用额外的数组空间，你必须在**原地修改输入数组**并在使用 O(1) 额外空间的条件下完成。
+
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+**示例**
+
+```
+给定 nums = [3,2,2,3], val = 3,
+函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
+你不需要考虑数组中超出新长度后面的元素。
+
+给定 nums = [0,1,2,2,3,0,4,2], val = 2,
+函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。
+注意这五个元素可为任意顺序。
+你不需要考虑数组中超出新长度后面的元素。
+```
+
+**题解**
+
+```php
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $val
+     * @return Integer
+     */
+    function removeElement(&$nums, $val) {
+        $n = 0;
+        for ($i = 0; $i < count($nums); $i++) {
+            if (!$nums) return 0;
+            if ($nums[$i] != $val) {
+                $nums[$n] = $nums[$i];
+                $n++;
+            }
+        }
+        return $n;
+    }
+}
+```
+
+#### [L28-简单] 实现strStr()
+
+给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  **-1**。
+
+**示例**
+
+```
+输入: haystack = "hello", needle = "ll"
+输出: 2
+
+输入: haystack = "aaaaa", needle = "bba"
+输出: -1
+```
+
+**题解**
+
+```php
+class Solution {
+
+    /**
+     * @param String $haystack
+     * @param String $needle
+     * @return Integer
+     */
+    function strStr($haystack, $needle) {
+       for ($i = 0; $i <= strlen($haystack) - strlen($needle); $i++) {
+           $str = substr($haystack, $i, strlen($needle));
+           if ($str == $needle) {
+               return $i;
+           }
+       }
+        return -1;
+    }
+}
+```
+
+#### [L338-简单] 比特位计数
+
+给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 **`1` 的个数** ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
+
+**示例**
+
+```
+输入：n = 2
+输出：[0,1,1]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+
+输入：n = 5
+输出：[0,1,1,2,1,2]
+解释：
+0 --> 0
+1 --> 1
+2 --> 10
+3 --> 11
+4 --> 100
+5 --> 101
+```
+
+- `0 <= n <= 105`
+
+**题解**
+
+```go
+func onesCount(x int) (ones int) {
+    for ; x > 0; x &= x - 1 {
+        ones++
+    }
+    return
+}
+
+func countBits(n int) []int {
+    bits := make([]int, n+1)
+    for i := range bits {
+        bits[i] = onesCount(i)
+    }
+    return bits
+}
+```
+
+#### [L448-简单] 找到数组中所有消失的数字
+
+给你一个含 `n` 个整数的数组 `nums` ，其中 `nums[i]` 在区间 `[1, n]` 内。请你找出所有在 `[1, n]` 范围内但没有出现在 `nums` 中的数字，并以数组的形式返回结果。
+
+**示例**
+
+```
+输入：nums = [4,3,2,7,8,2,3,1]
+输出：[5,6]
+
+输入：nums = [1,1]
+输出：[2]
+```
+
+- `n == nums.length`
+- `1 <= n <= 105`
+- `1 <= nums[i] <= n`
+
+**题解**
+
+```go
+func findDisappearedNumbers(nums []int) []int {
+    res := []int{}
+    n := len(nums)
+    for i := 1; i <= n; i++ {
+        flag := false
+        for j := 0; j < n; j++ {
+            if i == nums[j] {
+                flag = true
+                break
+            }
+        }
+        if flag == false {
+            res = append(res, i)
+        }
+    }
+    return res
+}
+```
+
 #### [L6-中等] Z 字变换
 
 将一个给定字符串根据给定的行数，以从上往下、从左到右进行 Z 字形排列。
@@ -6737,83 +7708,6 @@ class Solution {
 }
 ```
 
-#### [L9-简单] 回文数
-
-判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
-
-进阶：你能不将整数转为字符串来解决这个问题吗？
-
-**示例**
-
-```
-输入: 121
-输出: true
-
-输入: -121
-输出: false
-解释: 从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。
-
-输入: 10
-输出: false
-解释: 从右向左读, 为 01 。因此它不是一个回文数。
-```
-
-**题解**
-
-**方法一：转化成字符串**
-
-```php
-class Solution {
-
-    /**
-     * @param Integer $x
-     * @return Boolean
-     */
-    function isPalindrome($x) {
-        $len = strlen($x);
-        $x = (string)$x;
-        for ($i=$len-1; $i>=0; $i--) {
-            $y.=$x[$i];
-        }
-        if ($x == $y) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-}
-```
-
-**方法二：**
-
-```php
-class Solution {
-
-    /**
-     * @param Integer $x
-     * @return Boolean
-     */
-    function isPalindrome($x) {
-        // 所有负数返回 false
-        // 10的倍数返回false
-        if ($x < 0 || ($x % 10 == 0 && $x != 0)) {
-            return false;
-        }
-        // %10得到最后一位数字
-        // 先/10再%10得到倒数第二位数字，以此类推
-        $y = 0;
-        while ($x > $y) {
-            $y = $y * 10 + $x % 10;
-            $x /= 10;
-            $x = (int)$x;
-        }
-        $new = $y/10;
-        $new = (int)$new;
-        return $x == $y || $x == $new;
-    }
-}
-```
-
 #### [L12-中等] 整数转罗马数字
 
 罗马数字包含以下七种字符： `I`， `V`， `X`， `L`，`C`，`D` 和 `M`。
@@ -6880,159 +7774,6 @@ class Solution {
             }
         }
         return $res;
-    }
-}
-```
-
-#### [L13-简单] 罗马数字转整数
-
-罗马数字包含以下七种字符: `I`， `V`， `X`， `L`，`C`，`D` 和 `M`。
-
-```
-字符          数值
-I             1
-V             5
-X             10
-L             50
-C             100
-D             500
-M             1000
-```
-
-例如， 罗马数字 2 写做 `II` ，即为两个并列的 1。12 写做 `XII` ，即为 `X` + `II` 。 27 写做  `XXVII`, 即为 `XX` + `V` + `II` 。
-
-通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 `IIII`，而是 `IV`。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 `IX`。这个特殊的规则只适用于以下六种情况：
-
-- `I` 可以放在 `V` (5) 和 `X` (10) 的左边，来表示 4 和 9。
-- `X` 可以放在 `L` (50) 和 `C` (100) 的左边，来表示 40 和 90。 
-- `C` 可以放在 `D` (500) 和 `M` (1000) 的左边，来表示 400 和 900。
-
-给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。
-
-**示例**
-
-```
-输入: "III"
-输出: 3
-
-输入: "IV"
-输出: 4
-
-输入: "IX"
-输出: 9
-
-输入: "LVIII"
-输出: 58
-解释: L = 50, V= 5, III = 3.
-
-输入: "MCMXCIV"
-输出: 1994
-解释: M = 1000, CM = 900, XC = 90, IV = 4
-```
-
-**题解**
-
-如果当前字符代表的值不小于其右边，就加上该值；否则就减去该值。以此类推到最左边的数，最终得到的结果即是答案
-
-```php
-class Solution {
-
-    /**
-     * @param String $s
-     * @return Integer
-     */
-    function romanToInt($s) {
-        $tmp = [
-            'I' => 1,
-            'V' => 5,
-            'X' => 10,
-            'L' => 50,
-            'C' => 100,
-            'D' => 500,
-            'M' => 1000,
-        ];
-        $s = (string)$s;
-        $len = strlen($s);
-        for ($i=0; $i<$len; $i++) {
-            if ($tmp[$s[$i]] >= $tmp[$s[$i+1]]) {
-                $ans+=$tmp[$s[$i]];
-            } else {
-                $ans-=$tmp[$s[$i]];
-            }
-        }
-        return $ans;
-    }
-}
-```
-
-#### [L14-简单] 最长公共前缀
-
-编写一个函数来查找字符串数组中的最长公共前缀。
-
-如果不存在公共前缀，返回空字符串 `""`。
-
-说明：所有输入只包含小写字母 `a-z` 。
-
-**示例**
-
-```
-输入: ["flower","flow","flight"]
-输出: "fl"
-
-输入: ["dog","racecar","car"]
-输出: ""
-解释: 输入不存在公共前缀。
-```
-
-**题解**
-
-获取第一个元素，以第一个元素为基准点，遍历数组，依次和第一个元素对比，获取相同元素个数
-
-Golang：
-
-```go
-func longestCommonPrefix(strs []string) string {
-    if len(strs) == 0 {
-        return ""
-    }
-    for i := 0; i < len(strs[0]); i++ {
-        for j := 1; j < len(strs); j++ {
-            if i == len(strs[j]) || strs[j][i] != strs[0][i] {
-                return strs[0][:i]
-            }
-        }
-    }
-    return strs[0]
-}
-```
-
-PHP：
-
-```php
-class Solution {
-
-    /**
-     * @param String[] $strs
-     * @return String
-     */
-    function longestCommonPrefix($strs) {
-        $len = count($strs);
-        $first = $strs[0];
-        $firstLen = strlen($first);
-        for ($i = 1;$i < $len; $i++) {
-            $tempArr = str_split($strs[$i]);
-            $min = min($firstLen, count($tempArr));
-            $tempLen = 0;
-            for ($j = 0; $j < $min; $j++) {
-                if ($first[$j] == $tempArr[$j]) {
-                    $tempLen++;
-                } else {
-                    break;
-                }
-            }
-            $firstLen > $tempLen && $firstLen = $tempLen;
-        }
-        return substr($first, 0, $firstLen);
     }
 }
 ```
@@ -7198,87 +7939,6 @@ class Solution {
             }
         }
         return $i + 1;
-    }
-}
-```
-
-#### [L27-简单] 移除元素
-
-给定一个数组 *nums* 和一个值 *val*，你需要**原地**移除所有数值等于 *val* 的元素，返回移除后数组的新长度。
-
-不要使用额外的数组空间，你必须在**原地修改输入数组**并在使用 O(1) 额外空间的条件下完成。
-
-元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
-
-**示例**
-
-```
-给定 nums = [3,2,2,3], val = 3,
-函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
-你不需要考虑数组中超出新长度后面的元素。
-
-给定 nums = [0,1,2,2,3,0,4,2], val = 2,
-函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。
-注意这五个元素可为任意顺序。
-你不需要考虑数组中超出新长度后面的元素。
-```
-
-**题解**
-
-```php
-class Solution {
-
-    /**
-     * @param Integer[] $nums
-     * @param Integer $val
-     * @return Integer
-     */
-    function removeElement(&$nums, $val) {
-        $n = 0;
-        for ($i = 0; $i < count($nums); $i++) {
-            if (!$nums) return 0;
-            if ($nums[$i] != $val) {
-                $nums[$n] = $nums[$i];
-                $n++;
-            }
-        }
-        return $n;
-    }
-}
-```
-
-#### [L28-简单] 实现strStr()
-
-给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  **-1**。
-
-**示例**
-
-```
-输入: haystack = "hello", needle = "ll"
-输出: 2
-
-输入: haystack = "aaaaa", needle = "bba"
-输出: -1
-```
-
-**题解**
-
-```php
-class Solution {
-
-    /**
-     * @param String $haystack
-     * @param String $needle
-     * @return Integer
-     */
-    function strStr($haystack, $needle) {
-       for ($i = 0; $i <= strlen($haystack) - strlen($needle); $i++) {
-           $str = substr($haystack, $i, strlen($needle));
-           if ($str == $needle) {
-               return $i;
-           }
-       }
-        return -1;
     }
 }
 ```
@@ -7457,75 +8117,6 @@ class Solution {
 }
 ```
 
-#### [L41-困难] 缺失的第一个正数
-
-给你一个未排序的整数数组 `nums` ，请你找出其中没有出现的最小的正整数。
-
-请你实现时间复杂度为 `O(n)` 并且只使用常数级别额外空间的解决方案。
-
-**示例**
-
-```
-输入：nums = [1,2,0]
-输出：3
-解释：范围 [1,2] 中的数字都在数组中。
-
-输入：nums = [3,4,-1,1]
-输出：2
-解释：1 在数组中，但 2 没有。
-
-输入：nums = [7,8,9,11,12]
-输出：1
-解释：最小的正数 1 没有出现。
-```
-
-- `1 <= nums.length <= 105`
-- `-231 <= nums[i] <= 231 - 1`
-
-**题解**
-
-我将数组所有的数放入哈希表，随后从 1 开始依次枚举正整数，并判断其是否在哈希表中
-
-此种方法时间复杂度为 O(n)，空间复杂度也是 O(n)，空间复杂度不满足题目要求
-
-因此，可以利用原数组进行改造
-
-题解见：https://leetcode.cn/problems/first-missing-positive/solutions/304743/que-shi-de-di-yi-ge-zheng-shu-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked
-
-```go
-func firstMissingPositive(nums []int) int {
-	n := len(nums)
-	// 将数组中所有小于等于 0 的数修改为 N+1
-	for i := 0; i < n; i++ {
-		if nums[i] <= 0 {
-			nums[i] = n + 1
-		}
-	}
-	// 定义取绝对值函数
-	abs := func(x int) int {
-		if x < 0 {
-			return -x
-		}
-		return x
-	}
-	// 遍历所有元素
-	for i := 0; i < n; i++ {
-		num := abs(nums[i])
-		// 将所有小于 n 的元素打标记
-		if num <= n {
-			nums[num-1] = -abs(nums[num-1])
-		}
-	}
-	// 取第一个正数 + 1，如果都是负数，那答案就是 n + 1
-	for i := 0; i < n; i++ {
-		if nums[i] > 0 {
-			return i + 1
-		}
-	}
-	return n + 1
-}
-```
-
 #### [L189-中等] 轮转数组
 
 给定一个整数数组 `nums`，将数组中的元素向右轮转 `k` 个位置，其中 `k` 是非负数。
@@ -7612,6 +8203,251 @@ func productExceptSelf(nums []int) []int {
 		ans[i] = lArr[i] * rArr[i]
 	}
 	return ans
+}
+```
+
+#### [L287-中等] 寻找重复数
+
+给定一个包含 `n + 1` 个整数的数组 `nums` ，其数字都在 `[1, n]` 范围内（包括 `1` 和 `n`），可知至少存在一个重复的整数。
+
+假设 `nums` 只有 **一个重复的整数** ，返回 **这个重复的数** 。
+
+你设计的解决方案必须 **不修改** 数组 `nums` 且只用常量级 `O(1)` 的额外空间。
+
+**示例**
+
+```
+输入：nums = [1,3,4,2,2]
+输出：2
+
+输入：nums = [3,1,3,4,2]
+输出：3
+
+输入：nums = [3,3,3,3,3]
+输出：3
+```
+
+- `1 <= n <= 105`
+- `nums.length == n + 1`
+- `1 <= nums[i] <= n`
+- `nums` 中 **只有一个整数** 出现 **两次或多次** ，其余整数均只出现 **一次**
+
+**题解**
+
+快慢指针，把数组类比成链表，重复的值即是有换链表的入环点，解法和  [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/huan-xing-lian-biao-ii-by-leetcode/) 一样
+
+- 慢指针走一步 `slow = slow.next` ==> 本题 `slow = nums[slow]`
+
+- 快指针走两步 `fast = fast.next.next` ==> 本题 `fast = nums[nums[fast]]`
+
+```go
+func findDuplicate(nums []int) int {
+    // 定义快慢指针
+    slow, fast := 0, 0
+    // 慢指针每次走1步，快指针每次走2步，找出相遇点
+    slow, fast = nums[slow], nums[nums[fast]]
+    for slow != fast {
+        slow = nums[slow]
+        fast = nums[nums[fast]]
+    }
+    // 重新设定一个指针 cur，从头开始走，当 cur 和 slow 相遇的时候，就是入环点
+    cur := 0
+    for cur != slow {
+        slow = nums[slow]
+        cur = nums[cur]
+    }
+    return cur
+}
+```
+
+#### [L560-中等] 和为 K 的子数组
+
+给你一个整数数组 `nums` 和一个整数 `k` ，请你统计并返回 *该数组中和为 `k` 的子数组的个数* 。
+
+子数组是数组中元素的连续非空序列。
+
+**示例**
+
+```go
+输入：nums = [1,1,1], k = 2
+输出：2
+
+输入：nums = [1,2,3], k = 3
+输出：2
+```
+
+- `1 <= nums.length <= 2 * 104`
+- `-1000 <= nums[i] <= 1000`
+- `-107 <= k <= 107`
+
+**代码实现**
+
+```go
+func subarraySum(nums []int, k int) int {
+    count, sum := 0, 0
+	prefixSums := make(map[int]int)
+	prefixSums[0] = 1
+
+	for _, num := range nums {
+		sum += num
+		if val, ok := prefixSums[sum-k]; ok {
+			count += val
+		}
+		prefixSums[sum]++
+	}
+	return count
+}
+```
+
+#### [L41-困难] 缺失的第一个正数
+
+给你一个未排序的整数数组 `nums` ，请你找出其中没有出现的最小的正整数。
+
+请你实现时间复杂度为 `O(n)` 并且只使用常数级别额外空间的解决方案。
+
+**示例**
+
+```
+输入：nums = [1,2,0]
+输出：3
+解释：范围 [1,2] 中的数字都在数组中。
+
+输入：nums = [3,4,-1,1]
+输出：2
+解释：1 在数组中，但 2 没有。
+
+输入：nums = [7,8,9,11,12]
+输出：1
+解释：最小的正数 1 没有出现。
+```
+
+- `1 <= nums.length <= 105`
+- `-231 <= nums[i] <= 231 - 1`
+
+**题解**
+
+我将数组所有的数放入哈希表，随后从 1 开始依次枚举正整数，并判断其是否在哈希表中
+
+此种方法时间复杂度为 O(n)，空间复杂度也是 O(n)，空间复杂度不满足题目要求
+
+因此，可以利用原数组进行改造
+
+题解见：https://leetcode.cn/problems/first-missing-positive/solutions/304743/que-shi-de-di-yi-ge-zheng-shu-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked
+
+```go
+func firstMissingPositive(nums []int) int {
+	n := len(nums)
+	// 将数组中所有小于等于 0 的数修改为 N+1
+	for i := 0; i < n; i++ {
+		if nums[i] <= 0 {
+			nums[i] = n + 1
+		}
+	}
+	// 定义取绝对值函数
+	abs := func(x int) int {
+		if x < 0 {
+			return -x
+		}
+		return x
+	}
+	// 遍历所有元素
+	for i := 0; i < n; i++ {
+		num := abs(nums[i])
+		// 将所有小于 n 的元素打标记
+		if num <= n {
+			nums[num-1] = -abs(nums[num-1])
+		}
+	}
+	// 取第一个正数 + 1，如果都是负数，那答案就是 n + 1
+	for i := 0; i < n; i++ {
+		if nums[i] > 0 {
+			return i + 1
+		}
+	}
+	return n + 1
+}
+```
+
+#### [L76-困难] 最小覆盖子串
+
+给你一个字符串 `s` 、一个字符串 `t` 。返回 `s` 中涵盖 `t` 所有字符的最小子串。如果 `s` 中不存在涵盖 `t` 所有字符的子串，则返回空字符串 `""` 。
+
+**注意：**
+
+- 对于 `t` 中重复字符，我们寻找的子字符串中该字符数量必须不少于 `t` 中该字符数量。
+- 如果 `s` 中存在这样的子串，我们保证它是唯一的答案。
+
+**示例**
+
+```
+输入：s = "ADOBECODEBANC", t = "ABC"
+输出："BANC"
+解释：最小覆盖子串 "BANC" 包含来自字符串 t 的 'A'、'B' 和 'C'。
+
+输入：s = "a", t = "a"
+输出："a"
+解释：整个字符串 s 是最小覆盖子串。
+
+输入: s = "a", t = "aa"
+输出: ""
+解释: t 中两个字符 'a' 均应包含在 s 的子串中，
+因此没有符合条件的子字符串，返回空字符串。
+```
+
+- `m == s.length`
+- `n == t.length`
+- `1 <= m, n <= 105`
+- `s` 和 `t` 由英文字母组成
+
+**题解**
+
+```go
+func minWindow(s string, t string) string {
+	n := len(s)
+	// hashMap 维护 t 字符以及字符个数
+	hashT := make(map[byte]int, 0)
+	for i := range t {
+		hashT[t[i]]++
+	}
+
+	// hashMap 维护窗口中所有字符以及个数
+	cnt := make(map[byte]int, 0)
+
+	// 检查窗口是否覆盖 t
+	check := func() bool {
+		for k, v := range hashT {
+			if cnt[k] < v {
+				return false
+			}
+		}
+		return true
+	}
+
+	// 子串左右边界坐标
+	ansL, ansR := -1, -1
+	// 子串最小值
+	minLength := math.MaxInt32
+	for l, r := 0, 0; r < n; r++ {
+		if r < n && hashT[s[r]] > 0 {
+			cnt[s[r]]++
+		}
+		for check() && l <= r {
+			// 更新窗口大小
+			if r-l+1 < minLength {
+				minLength = r - l + 1
+				ansL, ansR = l, l+minLength
+			}
+			// 左指针移动，收缩窗口
+			if _, ok := hashT[s[l]]; ok {
+				cnt[s[l]]--
+			}
+			l++
+		}
+	}
+	if ansL == -1 {
+		return ""
+	}
+	return s[ansL:ansR]
 }
 ```
 
@@ -7718,183 +8554,3 @@ func maxSlidingWindow(nums []int, k int) []int {
 	return ans
 }
 ```
-
-#### [L287-中等] 寻找重复数
-
-给定一个包含 `n + 1` 个整数的数组 `nums` ，其数字都在 `[1, n]` 范围内（包括 `1` 和 `n`），可知至少存在一个重复的整数。
-
-假设 `nums` 只有 **一个重复的整数** ，返回 **这个重复的数** 。
-
-你设计的解决方案必须 **不修改** 数组 `nums` 且只用常量级 `O(1)` 的额外空间。
-
-**示例**
-
-```
-输入：nums = [1,3,4,2,2]
-输出：2
-
-输入：nums = [3,1,3,4,2]
-输出：3
-
-输入：nums = [3,3,3,3,3]
-输出：3
-```
-
-- `1 <= n <= 105`
-- `nums.length == n + 1`
-- `1 <= nums[i] <= n`
-- `nums` 中 **只有一个整数** 出现 **两次或多次** ，其余整数均只出现 **一次**
-
-**题解**
-
-快慢指针，把数组类比成链表，重复的值即是有换链表的入环点，解法和  [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/huan-xing-lian-biao-ii-by-leetcode/) 一样
-
-- 慢指针走一步 `slow = slow.next` ==> 本题 `slow = nums[slow]`
-
-- 快指针走两步 `fast = fast.next.next` ==> 本题 `fast = nums[nums[fast]]`
-
-```go
-func findDuplicate(nums []int) int {
-    // 定义快慢指针
-    slow, fast := 0, 0
-    // 慢指针每次走1步，快指针每次走2步，找出相遇点
-    slow, fast = nums[slow], nums[nums[fast]]
-    for slow != fast {
-        slow = nums[slow]
-        fast = nums[nums[fast]]
-    }
-    // 重新设定一个指针 cur，从头开始走，当 cur 和 slow 相遇的时候，就是入环点
-    cur := 0
-    for cur != slow {
-        slow = nums[slow]
-        cur = nums[cur]
-    }
-    return cur
-}
-```
-
-#### [L338-简单] 比特位计数
-
-给你一个整数 `n` ，对于 `0 <= i <= n` 中的每个 `i` ，计算其二进制表示中 **`1` 的个数** ，返回一个长度为 `n + 1` 的数组 `ans` 作为答案。
-
-**示例**
-
-```
-输入：n = 2
-输出：[0,1,1]
-解释：
-0 --> 0
-1 --> 1
-2 --> 10
-
-输入：n = 5
-输出：[0,1,1,2,1,2]
-解释：
-0 --> 0
-1 --> 1
-2 --> 10
-3 --> 11
-4 --> 100
-5 --> 101
-```
-
-- `0 <= n <= 105`
-
-**题解**
-
-```go
-func onesCount(x int) (ones int) {
-    for ; x > 0; x &= x - 1 {
-        ones++
-    }
-    return
-}
-
-func countBits(n int) []int {
-    bits := make([]int, n+1)
-    for i := range bits {
-        bits[i] = onesCount(i)
-    }
-    return bits
-}
-```
-
-#### [L448-简单] 找到数组中所有消失的数字
-
-给你一个含 `n` 个整数的数组 `nums` ，其中 `nums[i]` 在区间 `[1, n]` 内。请你找出所有在 `[1, n]` 范围内但没有出现在 `nums` 中的数字，并以数组的形式返回结果。
-
-**示例**
-
-```
-输入：nums = [4,3,2,7,8,2,3,1]
-输出：[5,6]
-
-输入：nums = [1,1]
-输出：[2]
-```
-
-- `n == nums.length`
-- `1 <= n <= 105`
-- `1 <= nums[i] <= n`
-
-**题解**
-
-```go
-func findDisappearedNumbers(nums []int) []int {
-    res := []int{}
-    n := len(nums)
-    for i := 1; i <= n; i++ {
-        flag := false
-        for j := 0; j < n; j++ {
-            if i == nums[j] {
-                flag = true
-                break
-            }
-        }
-        if flag == false {
-            res = append(res, i)
-        }
-    }
-    return res
-}
-```
-
-#### [L560-中等] 和为 K 的子数组
-
-给你一个整数数组 `nums` 和一个整数 `k` ，请你统计并返回 *该数组中和为 `k` 的子数组的个数* 。
-
-子数组是数组中元素的连续非空序列。
-
-**示例**
-
-```go
-输入：nums = [1,1,1], k = 2
-输出：2
-
-输入：nums = [1,2,3], k = 3
-输出：2
-```
-
-- `1 <= nums.length <= 2 * 104`
-- `-1000 <= nums[i] <= 1000`
-- `-107 <= k <= 107`
-
-**代码实现**
-
-```go
-func subarraySum(nums []int, k int) int {
-    count, sum := 0, 0
-	prefixSums := make(map[int]int)
-	prefixSums[0] = 1
-
-	for _, num := range nums {
-		sum += num
-		if val, ok := prefixSums[sum-k]; ok {
-			count += val
-		}
-		prefixSums[sum]++
-	}
-	return count
-}
-```
-
