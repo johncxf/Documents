@@ -279,3 +279,48 @@ android.permission.WRITE_SMS // 允许编写短信
 android.permission.WRITE_SYNC_SETTINGS // 写入Google在线同步设置
 ```
 
+## UI Automator
+
+[UI Automator](https://developer.android.com/training/testing/other-components/ui-automator?hl=zh-cn#java) 是 Google 提供的Android端UI自动化测试库（Java），基于Accessibility服务。可以对第三方App进行测试，获取屏幕上任意一个APP的任意一个控件属性，并对其进行任意操作。
+
+但有两个缺点：1. 测试脚本只能使用Java语言 2. 测试脚本要打包成jar或者apk包上传到设备上才能运行。
+
+因此，有人实现了一个Python库 [xiaocong/uiautomator](https://github.com/xiaocong/uiautomator)，能够直接调用UI Automator的接口，原理是在手机上运行了一个http rpc服务，将uiautomator中的功能开放出来，然后再将这些http接口封装成Python库。
+
+由于 [xiaocong/uiautomator](https://github.com/xiaocong/uiautomator) 长时间没有维护，有人fork了一个版本，解决了一些bug，并新增了一个功能，这个库就是：[uiautomator2](https://github.com/openatx/uiautomator2)
+
+相关文档参考：https://github.com/openatx/uiautomator2
+
+需要在android设备上安装2两个apk包：
+
+```javascript
+uiautomator: {
+    packageName: 'com.github.uiautomator',
+    apkName: 'app-uiautomator.apk'
+},
+uiautomatorTest: {
+    packageName: 'com.github.uiautomator.test',
+    apkName: 'app-uiautomator-test.apk'
+}
+```
+
+- apk包下载地址：https://github.com/openatx/android-uiautomator-server/releases
+
+## atx-agent
+
+屏蔽不同安卓机器的差异，然后开放出统一的HTTP接口供 [openatx/uiautomator2](https://github.com/openatx/uiautomator2)使用。项目最终会发布成一个二进制程序，运行在Android系统的后台。
+
+**atx-agent工作原理？**
+
+PC 端向 Android 机器上安装的 atx-agent 发起 HTTP 请求，atx-agent 向 Android 机器上安装的 app-uiautomator-test.apk中的 AutomatorHttpServer 发起请求，AutomatorHttpServer 根据传递的 method 参数调用 Android 自带的 Uiautomator，并将结果进行返回。
+
+atx-agent pkg 包下载地址：https://github.com/openatx/atx-agent/releases
+
+
+
+
+
+
+
+
+
