@@ -1033,18 +1033,18 @@ func maxSlidingWindow(nums []int, k int) []int {
 
 将问题分解成n个字问题：
 
-- 子问题 1：以 −2-2−2 结尾的连续子数组的最大和是多少；
+- 子问题 1：以 −2 结尾的连续子数组的最大和是多少；
     - 以 −2 **结尾的**连续子数组是 `[-2]`，因此最大和就是 −2。
-- 子问题 2：以 111 结尾的连续子数组的最大和是多少；
+- 子问题 2：以 1 结尾的连续子数组的最大和是多少；
     - 以 1 结尾的连续子数组有 [-2,1] 和 [1] ，其中 [-2,1] 就是在「子问题 1」的后面加上 1 得到。−2+1=−1<1，因此「子问题 2」 的答案是 1。
 
-- 子问题 3：以 −3-3−3 结尾的连续子数组的最大和是多少；
-- 子问题 4：以 444 结尾的连续子数组的最大和是多少；
-- 子问题 5：以 −1-1−1 结尾的连续子数组的最大和是多少；
-- 子问题 6：以 222 结尾的连续子数组的最大和是多少；
-- 子问题 7：以 111 结尾的连续子数组的最大和是多少；
-- 子问题 8：以 −5-5−5 结尾的连续子数组的最大和是多少；
-- 子问题 9：以 444 结尾的连续子数组的最大和是多少。
+- 子问题 3：以 −3 结尾的连续子数组的最大和是多少；
+- 子问题 4：以 4 结尾的连续子数组的最大和是多少；
+- 子问题 5：以 −1 结尾的连续子数组的最大和是多少；
+- 子问题 6：以 2 结尾的连续子数组的最大和是多少；
+- 子问题 7：以 1 结尾的连续子数组的最大和是多少；
+- 子问题 8：以 −5 结尾的连续子数组的最大和是多少；
+- 子问题 9：以 4 结尾的连续子数组的最大和是多少。
 
 假设`dp[i]`表示以 `nums[i]` **结尾** 的 **连续** 子数组的最大和，则可以得出：
 
@@ -1100,27 +1100,29 @@ func maxSubArray(nums []int) int {
 ```go
 func merge(intervals [][]int) [][]int {
     // 先安装数组左端元素从小到大进行排序
+	// 先根据数组左侧大小对二维数组进行从小到大排序
 	n := len(intervals)
-	for i := 0; i < n; i++ {
-		for j := i + 1; j < n; j++ {
-			if intervals[i][0] > intervals[j][0] {
-				intervals[i], intervals[j] = intervals[j], intervals[i]
-			}
-		}
-	}
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i][0] < intervals[j][0]
+	})
+	// 遍历数组
 	res := make([][]int, 0)
-	tmp := intervals[0]
+	pre := intervals[0]
 	for i := 1; i < n; i++ {
-		if tmp[1] < intervals[i][0] { // 没有重合
-			res = append(res, tmp)
-			tmp = intervals[i]
-		} else { // 重合
-			if tmp[1] < intervals[i][1] {
-				tmp[1] = intervals[i][1]
+		// 重合：2个条件
+		// 1、前一个数组的右区间大于下一个数组的左区间
+		if pre[1] >= intervals[i][0] {
+			// 2、前一个数组的右区间大于下一个数组的右区间
+			if pre[1] < intervals[i][1] {
+				pre[1] = intervals[i][1]
 			}
+
+		} else {
+			res = append(res, pre)
+			pre = intervals[i]
 		}
 	}
-	res = append(res, tmp)
+	res = append(res, pre)
 	return res
 }
 ```
@@ -1192,6 +1194,10 @@ func rotateArray(nums []int, k int) {
 
 `ans[i]`的乘机等于`ans[i-1]` * `ans[i+1]`，因此，需要计算两侧每个位置的乘机值
 
+初始化两个数组，分别存储 i 左右两侧的乘机，这里有不同的表示方式
+
+第一种：
+
 ```go
 func productExceptSelf(nums []int) []int {
 	n := len(nums)
@@ -1211,6 +1217,30 @@ func productExceptSelf(nums []int) []int {
 		ans[i] = lArr[i] * rArr[i]
 	}
 	return ans
+}
+```
+
+第二种：
+
+```go
+func productExceptSelf(nums []int) []int {
+    n := len(nums)
+    // 初始化两个数组，分别存储 i 左右两侧的乘机
+    left, right := make([]int, n), make([]int, n)
+    // ans[i] 左侧乘积用 left[i]
+    left[0] = 1
+    // ans[i] 右侧乘积用 right[n-i-1]
+    right[0] = 1
+    for i := 1; i < n; i++ {
+        left[i] = left[i-1] * nums[i-1]
+        right[i] = right[i-1] * nums[n-i]
+    }
+    // 遍历数组，构建乘积数组
+    var ans []int
+    for i := range nums {
+        ans = append(ans, left[i] * right[n-i-1])
+    }
+    return ans
 }
 ```
 
@@ -1285,47 +1315,52 @@ func firstMissingPositive(nums []int) int {
 
 ## 矩阵
 
-#### [L48-中等] 旋转图像
+#### [L73-中等] 矩阵置零
 
-给定一个 *n* × *n* 的二维矩阵 `matrix` 表示一个图像。请你将图像顺时针旋转 90 度。
-
-你必须在**[ 原地](https://baike.baidu.com/item/原地算法)** 旋转图像，这意味着你需要直接修改输入的二维矩阵。**请不要** 使用另一个矩阵来旋转图像。
+给定一个 `m x n` 的矩阵，如果一个元素为 **0** ，则将其所在行和列的所有元素都设为 **0** 。请使用 **[原地](http://baike.baidu.com/item/原地算法)** 算法**。**
 
 **示例**
 
 ```
-输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
-输出：[[7,4,1],[8,5,2],[9,6,3]]
+输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]
+输出：[[1,0,1],[0,0,0],[1,0,1]]
 
-输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
-输出：[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
+输出：[[0,0,0,0],[0,4,5,0],[0,3,1,0]]
 ```
 
-- `n == matrix.length == matrix[i].length`
-- `1 <= n <= 20`
-- `-1000 <= matrix[i][j] <= 1000`
+- `m == matrix.length`
+- `n == matrix[0].length`
+- `1 <= m, n <= 200`
+- `-231 <= matrix[i][j] <= 231 - 1`
 
 **题解**
 
-由题意可以得到规律：
+两个数组 row 和 col 分别记录横纵位置是否为0
 
-对于矩阵中第 *i* 行的第 *j* 个元素，在旋转后，它出现在倒数第 *i* 列的第 *j* 个位置。
-
-即：对于`matrix[row][col]`，在旋转后，它的新位置为 `matrix[col][n−row−1]`
+再次遍历矩阵，该位置对应的横纵坐标有一个为0则为0
 
 ```go
-func rotate(matrix [][]int)  {
-    n := len(matrix)
-    newMatrix := make([][]int, n)
-    for i := range newMatrix {
-        newMatrix[i] = make([]int, n)
-    }
-    for i, row := range matrix {
-        for j, col := range row {
-            newMatrix[j][n-1-i] = col
+func setZeroes(matrix [][]int)  {
+    // 初始化两个数组，存放横纵每个位置是否为0
+    row, col := make([]bool, len(matrix)), make([]bool, len(matrix[0]))
+    // 遍历矩阵，进行标记
+    for i := 0; i < len(matrix); i++ {
+        for j := 0; j < len(matrix[i]); j++ {
+            if matrix[i][j] == 0 {
+                row[i] = true
+                col[j] = true
+            }
         }
     }
-    copy(matrix, newMatrix)
+    // 遍历矩阵，对标记位置进行更新
+    for i, v := range matrix {
+        for j := range v {
+            if row[i] || col[j] {
+                v[j] = 0
+            }
+        }
+    }
 }
 ```
 
@@ -1347,6 +1382,10 @@ func rotate(matrix [][]int)  {
 - `-100 <= matrix[i][j] <= 100`
 
 **题解**
+
+定义4个边界
+
+对矩阵进行不断移动，同时更新边界值，直到超出退出
 
 ```go
 func spiralOrder(matrix [][]int) []int {
@@ -1395,48 +1434,47 @@ func spiralOrder(matrix [][]int) []int {
 }
 ```
 
-#### [L73-中等] 矩阵置零
+#### [L48-中等] 旋转图像
 
-给定一个 `m x n` 的矩阵，如果一个元素为 **0** ，则将其所在行和列的所有元素都设为 **0** 。请使用 **[原地](http://baike.baidu.com/item/原地算法)** 算法**。**
+给定一个 *n* × *n* 的二维矩阵 `matrix` 表示一个图像。请你将图像顺时针旋转 90 度。
+
+你必须在**[ 原地](https://baike.baidu.com/item/原地算法)** 旋转图像，这意味着你需要直接修改输入的二维矩阵。**请不要** 使用另一个矩阵来旋转图像。
 
 **示例**
 
 ```
-输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]
-输出：[[1,0,1],[0,0,0],[1,0,1]]
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[[7,4,1],[8,5,2],[9,6,3]]
 
-输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
-输出：[[0,0,0,0],[0,4,5,0],[0,3,1,0]]
+输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+输出：[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
 ```
 
-- `m == matrix.length`
-- `n == matrix[0].length`
-- `1 <= m, n <= 200`
-- `-231 <= matrix[i][j] <= 231 - 1`
+- `n == matrix.length == matrix[i].length`
+- `1 <= n <= 20`
+- `-1000 <= matrix[i][j] <= 1000`
 
 **题解**
 
+由题意可以得到规律：
+
+对于矩阵中第 *i* 行的第 *j* 个元素，在旋转后，它出现在倒数第 *i* 列的第 *j* 个位置。
+
+即：对于`matrix[row][col]`，在旋转后，它的新位置为 `matrix[col][n−row−1]`
+
 ```go
-func setZeroes(matrix [][]int)  {
-    // 初始化两个数组，存放横纵每个位置是否为0
-    row, col := make([]bool, len(matrix)), make([]bool, len(matrix[0]))
-    // 遍历矩阵，进行标记
-    for i := 0; i < len(matrix); i++ {
-        for j := 0; j < len(matrix[i]); j++ {
-            if matrix[i][j] == 0 {
-                row[i] = true
-                col[j] = true
-            }
+func rotate(matrix [][]int)  {
+    n := len(matrix)
+    newMatrix := make([][]int, n)
+    for i := range newMatrix {
+        newMatrix[i] = make([]int, n)
+    }
+    for i, row := range matrix {
+        for j, col := range row {
+            newMatrix[j][n-1-i] = col
         }
     }
-    // 遍历矩阵，对标记位置进行更新
-    for i, v := range matrix {
-        for j := range v {
-            if row[i] || col[j] {
-                v[j] = 0
-            }
-        }
-    }
+    copy(matrix, newMatrix)
 }
 ```
 
@@ -1466,6 +1504,8 @@ func setZeroes(matrix [][]int)  {
 - `-109 <= target <= 109`
 
 **题解**
+
+Z 字查找
 
 ```go
 func searchMatrix(matrix [][]int, target int) bool {
@@ -1532,35 +1572,15 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 
 **迭代：**
 
+思路和归并排序中两个排序数组合并一致
+
 Go：
 
 ```go
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
 func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-    if list1 == nil {
-        return list2
-    }
-    if list2 == nil {
-        return list1
-    }
-
-    dummy := &ListNode{0, nil}
+    dummy := &ListNode{Val: 0}
     current := dummy
-    for list1 != nil || list2 != nil {
-        if list1 == nil {
-            current.Next = list2
-            break
-        }
-        if list2 == nil {
-            current.Next = list1
-            break
-        }
+    for list1 != nil && list2 != nil {
         if list1.Val < list2.Val {
             current.Next = list1
             current = current.Next
@@ -1570,6 +1590,12 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
             current = current.Next
             list2 = list2.Next
         }
+    }
+    if list1 != nil {
+        current.Next = list1
+    }
+    if list2 != nil {
+        current.Next = list2
     }
     return dummy.Next
 }
@@ -1655,6 +1681,8 @@ class Solution {
 
 **题解**
 
+hashMap，遍历链表，将节点存入 hashMap，如果已存在相同节点，则说明存在环
+
 ```go
 /**
  * Definition for singly-linked list.
@@ -1668,12 +1696,12 @@ func hasCycle(head *ListNode) bool {
         return false
     }
 
-    hash := map[*ListNode]struct{}{}
+    hash := map[*ListNode]bool{}
     for head != nil {
         if _, ok := hash[head]; ok {
             return true
         }
-        hash[head] = struct{}{}
+        hash[head] = true
         head = head.Next
     }
     return false
@@ -1792,7 +1820,11 @@ func reverseList(head *ListNode) *ListNode {
 }
 ```
 
-迭代：在遍历链表时，将当前节点的 next 指针改为指向前一个节点
+迭代：
+
+在遍历链表时，将当前节点的 next 指针改为指向前一个节点
+
+<img src="../../Image/algorithm/image-20240716194004216.png" alt="image-20240716194004216" style="zoom:50%;" />
 
 ```go
 /**
@@ -1803,15 +1835,18 @@ func reverseList(head *ListNode) *ListNode {
  * }
  */
 func reverseList(head *ListNode) *ListNode {
-    var prev *ListNode
-    curr := head
-    for curr != nil {
-        next := curr.Next
-        curr.Next = prev
-        prev = curr
-        curr = next
+    var pre *ListNode
+    // 遍历链表
+    for head != nil {
+        // 暂存 next 指针
+        temp := head.Next
+        // 将 Next 指向前一个节点（断开head）
+        head.Next = pre
+        pre = head
+        // 移动
+        head = temp
     }
-    return prev
+    return pre
 }
 ```
 
@@ -1889,6 +1924,10 @@ func isPalindrome(head *ListNode) bool {
 - 题目数据保证列表表示的数字不含前导零
 
 **题解**
+
+同时移动两个链表，将链表值相加添加到新的链表中
+
+需要考虑双数相加大于10进位的问题
 
 Go：
 
@@ -1998,6 +2037,48 @@ class Solution {
 
 **题解**
 
+先遍历链表，获取链表长度，计算出删除第 k 个节点
+
+再次遍历链表，删除第 k 个节点即可
+
+```go
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+    // 先遍历链表，获取链表长度
+    length := 0
+    tmp := head
+    for tmp != nil {
+        length++
+        tmp = tmp.Next
+    }
+    // 计算删除第 k 个节点
+    k := length - n
+    // 如果是头节点，则直接返回后面的节点
+    if k == 0 {
+        return head.Next
+    }
+    // 对第 k 个节点进行删除操作
+    i := 1
+    cur := head
+    for cur != nil {
+        if i == k {
+            cur.Next = cur.Next.Next
+            break
+        }
+        cur = cur.Next
+        i++
+    }
+    return head
+}
+```
+
+快慢指针：
+
+定义 fast、slow 两个指针，slow需要增加一个哑节点
+
+fast 先走 n 步，fast和slow相隔 n 个节点
+
+然后fast 和 slow 同时前进，当快指针走到尾部的时候，此时slow慢指针的位置刚好是要删除节点的前一个节点
+
 Go:
 
 ```go
@@ -2010,16 +2091,19 @@ Go:
  */
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
     dummy := &ListNode{0, head}
-    fast, slow := dummy, dummy
-	for i := 0; i <= n; i++ {
+    fast, slow := head, dummy
+    // fast 指针先走 n 步，完成后 fast 和 slow 相差 n 个节点
+    for i := 0; i < n; i++ {
         fast = fast.Next
-	}
+    }
+    // fast 和 slow 同时移动
     for fast != nil {
         fast = fast.Next
         slow = slow.Next
     }
+    // 此时，删除下一个节点
     slow.Next = slow.Next.Next
-	return dummy.Next
+    return dummy.Next
 }
 ```
 
@@ -2113,19 +2197,23 @@ Go：
 
 ```go
 func swapPairs(head *ListNode) *ListNode {
-    dummyHead := &ListNode{0, head}
-    temp := dummyHead
-    for temp.Next != nil && temp.Next.Next != nil {
-        node1 := temp.Next
-        node2 := temp.Next.Next
+    if head == nil || head.Next == nil {
+        return head
+    }
+    // 哑节点：0-1-2-3-4
+    dummy := &ListNode{0, head}
+    cur := dummy
+    for cur.Next != nil && cur.Next.Next != nil {
+        node1 := cur.Next
+        node2 := cur.Next.Next
 
-        temp.Next = node2
+        cur.Next = node2
         node1.Next = node2.Next
         node2.Next = node1
-        
-        temp = node1
+
+        cur = node1
     }
-    return dummyHead.Next
+    return dummy.Next
 }
 ```
 
@@ -2266,16 +2354,16 @@ func copyRandomList(head *Node) *Node {
 
 **题解**
 
+借助 hashMap，遍历链表，每个节点存入 hashMap，如果当前节点已存在，则就是环，直接返回 key 值
+
 ```go
 func detectCycle(head *ListNode) *ListNode {
-    hash := map[*ListNode]struct{}{}
-    i := 0
+    hash := map[*ListNode]bool{}
     for head != nil {
         if _, ok := hash[head]; ok {
             return head
         }
-        i++
-        hash[head] = struct{}{}
+        hash[head] = true
         head = head.Next
     }
     return nil
@@ -2356,6 +2444,7 @@ func Constructor(capacity int) LRUCache {
 		tail:     newDLinkedNode(0, 0),
 		capacity: capacity,
 	}
+    // 相当于添加首位2个哑节点
 	l.head.next = l.tail
 	l.tail.prev = l.head
 	return l
@@ -2643,92 +2732,66 @@ func mergeList(list1, list2 *ListNode) *ListNode {
 
 **题解**
 
+需要一个哑节点链表 dummy，指针 pre 为待反转链表的前驱节点，遍历链表
+
+- end 初始化为当前节点，end 指针每次先走 k 步（变为尾部节点），达到待反转链表尾部，start 为待反转链表头部
+- 将 end 与后面 nex 部分进行断开
+- 将以start为头部的链表进行反转，反转后 start 变成了尾部，end 变成了头部
+- 将断开的部分重新进行连接
+- pre 指针移动到当前的尾部，即 start 的位置
+
+重复以上步骤
+
+
+
+<img src="../../Image/algorithm/image-20240716203125421.png" alt="image-20240716203125421" style="zoom:50%;" />
+
 ```go
 func reverseKGroup(head *ListNode, k int) *ListNode {
-	res := &ListNode{Next: head}
-	pre := res
-	for head != nil {
-		tail := pre
-		// 移动 k 步
-		for i := 0; i < k; i++ {
-			tail = tail.Next
-			// 这一轮剩余步数小于k，直接返回
-			if tail == nil {
-				return res.Next
-			}
-		}
-		// 暂存节点
-		temp := tail.Next
-		// 反转
-		head, tail = reverse(head, tail)
-		// 重新连接首位节点
-		pre.Next = head
-		tail.Next = temp
-		// 下一轮
-		pre = tail
-		head = tail.Next
-	}
-	return res.Next
+    // 哑节点
+    dummy := &ListNode{0, head}
+    // 初始化 pre 指针
+    pre := dummy
+    for pre != nil {
+        // 尾部指针
+        tail := pre
+        // 尾部指针 tail 每次移动 k 步
+        for i := 0; i < k; i++ {
+            tail = tail.Next
+            // 剩余可移动步数小于k，则直接返回
+            if tail == nil {
+                return dummy.Next
+            }
+        }
+        // 暂存尾部指针后面的节点，然后将指针断开
+        nex := tail.Next
+        tail.Next = nil
+        // 定义 start 指针，作为待反转链表的头部
+        start := pre.Next
+        // 进行反转链表，反转后重新连接到 pre 上
+        pre.Next = reverse(start)
+        // 将前面断开的部分重新连接上（此时的 start 是该段链表的尾部）
+        start.Next = nex
+        // pre 指针移动到当前已反转完成的尾部
+        pre = start
+    }
+    return dummy.Next
 }
 
 // 反转链表
-func reverse(head, tail *ListNode) (*ListNode, *ListNode) {
-	prev := tail.Next
-	p := head
-	for prev != tail {
-		temp := p.Next
-		p.Next = prev
-		prev = p
-		p = temp
-	}
-	return tail, head
+func reverse(head *ListNode) *ListNode {
+    var pre *ListNode
+    for head != nil {
+        temp := head.Next
+        head.Next = pre
+        pre = head
+        head = temp
+    }
+    return pre
 }
 ```
 
 ## 二叉树
-
-#### [L101-简单] 对称二叉树
-
-给你一个二叉树的根节点 `root` ， 检查它是否轴对称。
-
-**示例**
-
-```
-输入：root = [1,2,2,3,4,4,3]
-输出：true
-
-输入：root = [1,2,2,null,3,null,3]
-输出：false
-```
-
-- 树中节点数目在范围 `[1, 1000]` 内
-- `-100 <= Node.val <= 100`
-
-**题解**
-
-```go
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func isSymmetric(root *TreeNode) bool {
-    return check(root, root)
-}
-
-func check(p, q *TreeNode) bool {
-    if p == nil && q == nil {
-        return true
-    }
-    if p == nil || q == nil {
-        return false
-    }
-    return p.Val == q.Val && check(p.Left, q.Right) && check(p.Right, q.Left)
-}
-```
 
 #### [L94-简单] 二叉树的中序遍历
 
@@ -2752,6 +2815,8 @@ func check(p, q *TreeNode) bool {
 
 **题解**
 
+递归实现中序遍历
+
 ```go
 /**
  * Definition for a binary tree node.
@@ -2773,6 +2838,51 @@ func inorderTraversal(root *TreeNode) (res []int) {
     }
     inorder(root)
     return
+}
+```
+
+#### [L101-简单] 对称二叉树
+
+给你一个二叉树的根节点 `root` ， 检查它是否轴对称。
+
+**示例**
+
+```
+输入：root = [1,2,2,3,4,4,3]
+输出：true
+
+输入：root = [1,2,2,null,3,null,3]
+输出：false
+```
+
+- 树中节点数目在范围 `[1, 1000]` 内
+- `-100 <= Node.val <= 100`
+
+**题解**
+
+建立2颗树，递归分别比较2颗的左子树和右子树、右子树和左子树
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func isSymmetric(root *TreeNode) bool {
+    return check(root, root)
+}
+
+func check(p, q *TreeNode) bool {
+    if p == nil && q == nil {
+        return true
+    }
+    if p == nil || q == nil {
+        return false
+    }
+    return p.Val == q.Val && check(p.Left, q.Right) && check(p.Right, q.Left)
 }
 ```
 
@@ -2844,6 +2954,23 @@ func max(a, b int) int {
 - `nums` 按 **严格递增** 顺序排列
 
 **题解**
+
+平衡二叉树需要满足：
+
+任意节点的左子树和右子树的高度之差的绝对值不超过 1 
+
+二叉搜索树需要满足以下条件：
+
+1. 对于根节点，左子树中所有节点的值 < 根节点的值 < 右子树中所有节点的值。
+2. 任意节点的左、右子树也是二叉搜索树，即同样满足条件 `1.` 。
+
+二叉树的中序遍历遵循“左 → 根 → 右”的遍历顺序，而二叉搜索树满足“左子节点 < 根节点 < 右子节点”的大小关系，
+
+因此，可以得出结论：**中序遍历二叉搜索树得到的是升序序列**
+
+本题中，已知一个升序序列，求二叉搜索树，从上面的结论可以知道升序序列的中位数为二叉搜索树的根节点
+
+因此，依次进行递归，不断获取根根节点即可
 
 ```go
 func sortedArrayToBST(nums []int) *TreeNode {
@@ -3049,28 +3176,28 @@ func levelOrder(root *TreeNode) [][]int {
 ```go
 func isValidBST(root *TreeNode) bool {
     var inorder func(node *TreeNode)
-    // 根据题意，节点最小值为-2的32次方
-    tmp := -int64(math.Pow(-2, 32))
-    res := true
-    inorder = func(node *TreeNode) {
-        // 已知结果，直接返回
-        if res == false {
-            return
-        }
-        if node == nil {
-            return
-        }
-        inorder(node.Left)
-        // 当前节点值必需大于前一个节点值，否则为非二叉搜索树
-        if int64(node.Val) <= tmp {
-            res = false
-            return 
-        }
-        tmp = int64(node.Val)
-        inorder(node.Right)
-    }
-    inorder(root)
-    return res
+	// 根据题意，节点最小值为-2的32次方
+	tmp := math.MinInt64
+	res := true
+	inorder = func(node *TreeNode) {
+		// 已知结果，直接返回
+		if res == false {
+			return
+		}
+		if node == nil {
+			return
+		}
+		inorder(node.Left)
+		// 当前节点值必需大于前一个节点值，否则为非二叉搜索树
+		if node.Val <= tmp {
+			res = false
+			return
+		}
+		tmp = node.Val
+		inorder(node.Right)
+	}
+	inorder(root)
+	return res
 }
 ```
 
@@ -3094,12 +3221,33 @@ func isValidBST(root *TreeNode) bool {
 
 **题解**
 
-二叉搜索树中序遍历结果为递增序列，利用这一特性，遍历过程 `k--`，当k为0时则就是结果
+二叉搜索树中序遍历结果为递增序列，利用这一特性
+
+方法一：中序遍历，结果存入数组 list，返回 list[k] 就是结果
 
 ```go
 func kthSmallest(root *TreeNode, k int) int {
+    var list []int
     var inorder func(node *TreeNode)
+    inorder = func(node *TreeNode) {
+        if node == nil {
+            return
+        }
+        inorder(node.Left)
+        list = append(list, node.Val)
+        inorder(node.Right)
+    }
+    inorder(root)
+    return list[k-1]
+}
+```
+
+方法二：遍历过程 `k--`，当k为0时则就是结果
+
+```go
+func kthSmallest(root *TreeNode, k int) int {
     ans := 0
+    var inorder func(node *TreeNode)
     inorder = func(node *TreeNode) {
         if ans != 0 {
             return
@@ -3144,7 +3292,7 @@ func kthSmallest(root *TreeNode, k int) int {
 
 二叉树的层次遍历，取每一层最后一个元素
 
-```
+```go
 func rightSideView(root *TreeNode) []int {
 	ans := make([]int, 0)
 	if root == nil {
@@ -3198,6 +3346,10 @@ func rightSideView(root *TreeNode) []int {
 - `-100 <= Node.val <= 100`
 
 **题解**
+
+先前序遍历二叉树，存储节点
+
+遍历节点列表，修改二叉树左右节点信息
 
 ```go
 func flatten(root *TreeNode) {
@@ -3255,7 +3407,7 @@ func flatten(root *TreeNode) {
 
 因为前序和中序的左右子树结果长度一致，只是顺序不同，因此可以根据中序的左右子树长度来映射前序中左右子树的长度
 
-安装前序遍历进行递归，还原二叉树
+按照前序遍历进行递归，还原二叉树
 
 ```go
 // 递归
@@ -3303,28 +3455,45 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 
 **题解**
 
-```go
-func rootSum(root *TreeNode, targetSum int) (res int) {
-    if root == nil {
-        return
-    }
-    val := root.Val
-    if val == targetSum {
-        res++
-    }
-    res += rootSum(root.Left, targetSum-val)
-    res += rootSum(root.Right, targetSum-val)
-    return
-}
+遍历所有节点，统计以每个节点作为根节点情况下符合条件的路径数量
 
+所以一共两次先序遍历即可实现
+
+- 时间复杂度：O(n^2)
+- 空间复杂度：O(n)
+
+```go
 func pathSum(root *TreeNode, targetSum int) int {
     if root == nil {
         return 0
     }
-    res := rootSum(root, targetSum)
-    res += pathSum(root.Left, targetSum)
-    res += pathSum(root.Right, targetSum)
-    return res
+    ans := 0
+    var preorder func(node *TreeNode, res *int)
+    preorder = func(node *TreeNode, res *int) {
+        if node == nil {
+            return
+        }
+        *res += rootSum(node, targetSum)
+        preorder(node.Left, res)
+        preorder(node.Right, res)
+    }
+    // 遍历所有节点，以每个节点为根节点统计对应符合条件的数量
+    preorder(root, &ans)
+    return ans
+}
+
+// 先序遍历：以当前节点为根节点下所有节点和为 target 的数量
+func rootSum(node *TreeNode, target int) (res int) {
+    if node == nil {
+        return
+    }
+    v := node.Val
+    if v == target {
+        res++
+    }
+    res += rootSum(node.Left, target-v)
+    res += rootSum(node.Right, target-v)
+    return
 }
 ```
 
@@ -3351,6 +3520,10 @@ func pathSum(root *TreeNode, targetSum int) int {
 
 **题解**
 
+递归左右子树，找到等于p或者q的节点，如果root的左右子树中都能找到等于p或者q的节点，则root为父节点
+
+否则，父节点为p或者q
+
 ```go
 func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
     // 当越过叶节点，则直接返回 null
@@ -3364,9 +3537,6 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
     // 分别递归左右子树
     left := lowestCommonAncestor(root.Left, p, q)
     right := lowestCommonAncestor(root.Right, p, q)
-    if left == nil && right == nil {
-        return nil
-    }
     if left == nil {
         return right
     }
@@ -3472,7 +3642,29 @@ func max(x, y int) int {
 
 岛屿问题的深度优先遍历，本题传入的是char类型，需要注意
 
+遍历矩阵每个位置，如果为1，说明是岛屿，则进行扩张，
+
+则以该位置为中心，进行上下左右扩张，扩张过的地方赋值为2
+
+需要注意边界条件判断，超出边界则 return
+
 ```go
+func numIslands(grid [][]byte) int {
+	ans := 0
+	// 遍历矩阵
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			// 1 是岛屿，则进行扩张操作
+			if grid[i][j] == '1' {
+				ans++
+				dfsIslands(grid, i, j)
+			}
+		}
+	}
+	return ans
+}
+
+// 以某个点位为中心进行上下左右位置的标记
 func dfsIslands(grid [][]byte, r, c int) {
 	// 超出边界，返回
 	if r < 0 || len(grid) <= r || c < 0 || len(grid[0]) <= c {
@@ -3489,19 +3681,6 @@ func dfsIslands(grid [][]byte, r, c int) {
 	dfsIslands(grid, r+1, c)
 	dfsIslands(grid, r, c-1)
 	dfsIslands(grid, r, c+1)
-}
-
-func numIslands(grid [][]byte) int {
-	ans := 0
-	for i := 0; i < len(grid); i++ {
-		for j := 0; j < len(grid[0]); j++ {
-			if grid[i][j] == '1' {
-				ans++
-				dfsIslands(grid, i, j)
-			}
-		}
-	}
-	return ans
 }
 ```
 
@@ -3534,6 +3713,12 @@ func numIslands(grid [][]byte) int {
 
 **题解**
 
+先遍历矩阵，获取所有腐烂橘子坐标存入队列 queue中，并获取新鲜橘子的数量
+
+遍历 queue，一次遍历，时间+1，该橘子坐标出队，并进行一次上下左右位置的腐烂操作，同时将腐烂的橘子入队
+
+最后需要判断剩余的新鲜橘子数量是否为0，大于0的话则说明无法全部腐化，返回-1
+
 ```go
 func orangesRotting(grid [][]int) int {
     m, n := len(grid), len(grid[0])
@@ -3563,7 +3748,7 @@ func orangesRotting(grid [][]int) int {
             queue = queue[1:]
             r, c := orange[0], orange[1]
             // 分别在腐烂橘子的上、下、左、右进行感染
-            for r-1 >= 0 && grid[r-1][c] == 1 {// 上
+            if r-1 >= 0 && grid[r-1][c] == 1 {// 上
                 grid[r-1][c] = 2
                 count--
                 queue = append(queue, []int{r-1, c})
@@ -3622,16 +3807,30 @@ func orangesRotting(grid [][]int) int {
 
 **题解**
 
-深度优先搜索
+深度优先搜索（DFS）：
+
+先构建邻接表（存储有向图）`edges=[0:[1,2], 1:[3], 2:[3]]`
+
+构建 visited 栈标记每个搜索节点的状态：0=未搜索，1=搜索中，2=已完成
+
+对有向图进行深度优先搜索（DFS）：
+
+- 如果当前节点未搜索过，开始搜索，并标记节点为 1
+- 若该节点已在搜索中，则说明存在环（双向），则不满足拓扑排序条件，退出循环
+- 当该节点没有下一个节点的时候，搜索完成，标记为 2
+
+搜索结束后，返回是否满足拓扑排序结果即可，如果满足，则一定存在
 
 ```go
 func canFinish(numCourses int, prerequisites [][]int) bool {
-    // 结果集
-	res := make([]int, 0)
-	// 遍历过的节点，存入栈
-	visited := make([]int, numCourses)
-	// 邻接表
+    // 构建邻接表（存储有向图）
+	// i 对应于一个节点（即课程），edges[i] 则是一个包含所有以课程 i 为先修课程的课程列表。
 	edges := make([][]int, numCourses)
+	for _, info := range prerequisites {
+		edges[info[1]] = append(edges[info[1]], info[0])
+	}
+	// 栈结构：标记每个节点的状态：0=未搜索，1=搜索中，2=已完成
+	visited := make([]int, numCourses)
 	// 是否存在拓扑排序（如果一个有向图包含环，则不存在）
 	valid := true
 	// 深度优先遍历
@@ -3652,21 +3851,75 @@ func canFinish(numCourses int, prerequisites [][]int) bool {
 		}
 		// 搜索完成，修改为已完成状态
 		visited[u] = 2
-		// 记录结果
-		res = append(res, u)
-	}
-	// 构建邻接表
-	// i 对应于一个节点（即课程），edges[i] 则是一个包含所有以课程 i 为先修课程的课程列表。
-	for _, info := range prerequisites {
-		edges[info[1]] = append(edges[info[1]], info[0])
 	}
 	// 遍历，对未搜索的节点进行深度优先搜索
+	// 为什么遍历 numCourses？因为题目中说到 0 ～ numCourses-1 为对应要选的课程
 	for i := 0; i < numCourses && valid; i++ {
 		if visited[i] == 0 {
 			dfs(i)
 		}
 	}
 	return valid
+}
+```
+
+广度优先搜索（BFS）：
+
+先构建邻接表（存储有向图）`edges=[0:[1,2], 1:[3], 2:[3]]`，并计算出每个课程的度（所依赖课程数）
+
+先找出不依赖任何课程的课程队列 queue
+
+遍历 queue 中的节点（入度为0，说明不依赖其他课程，可以进行学习，所以可以加入结果集合中）
+
+- 进行出队操作，并将当前节点加入结果
+- 删除当前节点，并删除依赖它的边（入度-1）
+- 若出现入度为0的节点，则加入 queue 队列
+- 不断进行循环，直到不存在入度为0的节点
+
+当最后结果集合的数量小于课程数，说明存在无法完成的课程，返回false，反之，则返回 true
+
+```go
+func canFinish(numCourses int, prerequisites [][]int) bool {
+	// 每门课程的入度（即有多少课程依赖它）
+	inDegree := make([]int, numCourses)
+	// 构建邻接表
+	edges := make([][]int, numCourses)
+	for _, info := range prerequisites {
+		// edges[i] 表示课程 i 的所有后继课程（即依赖于课程 i 的课程）。
+		edges[info[1]] = append(edges[info[1]], info[0])
+		// 获取每门课程的入度（有多少课程依赖它）
+		inDegree[info[0]]++
+	}
+	// 先找出所有入度为0的节点（即先找出不依赖其他课程的课程）
+	queue := make([]int, 0)
+	for i := 0; i < numCourses; i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+    // 结果集
+	res := make([]int, 0)
+	// 遍历入度为0的节点
+	for len(queue) > 0 {
+		// 出队
+		u := queue[0]
+		queue = queue[1:]
+		// 入度为0，则说明已不依赖其他节点，加入结果
+		res = append(res, u)
+		// 删除依赖当前课程的度（边）
+		for _, v := range edges[u] {
+			inDegree[v]--
+			// 度为0的时候则可以加入 queue 队列中
+			if inDegree[v] == 0 {
+				queue = append(queue, v)
+			}
+		}
+	}
+	// 解雇长度不等于课程数，说明有无法删除的节点，则说明存在环
+	if len(res) != numCourses {
+		return false
+	}
+	return true
 }
 ```
 
