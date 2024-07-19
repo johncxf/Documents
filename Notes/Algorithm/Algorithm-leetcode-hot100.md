@@ -3959,6 +3959,8 @@ trie.search("app");     // 返回 True
 
 **题解**
 
+本题使用字典树：https://segmentfault.com/a/1190000040801084
+
 ```go
 // Trie 前缀树结构体
 type Trie struct {
@@ -4029,261 +4031,6 @@ func (this *Trie) SearchPrefix(prefix string) *Trie {
 
 ## 回溯
 
-#### [L17-中等] 电话号码的字母组合
-
-给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
-
-给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
-
-<img src="../../Image/oldimg/17_telephone_keypad.png" alt="17_telephone_keypad" style="zoom:50%;" />
-
-**示例**
-
-```
-输入："23"
-输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
-说明：尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
-
-输入：digits = "2"
-输出：["a","b","c"]
-
-输入：digits = ""
-输出：[]
-```
-
-**题解**
-
-**回溯法：**
-
-<img src="../../Image/algorithm/lt17-letterCombinations.png" alt="image-20240624213814028" style="zoom:50%;" />
-
-Go：
-
-```go
-var phoneMap map[string]string = map[string]string{
-	"2": "abc",
-	"3": "def",
-	"4": "ghi",
-	"5": "jkl",
-	"6": "mno",
-	"7": "pqrs",
-	"8": "tuv",
-	"9": "wxyz",
-}
-
-func backtrackLetter(digits string, index int, combination string, res *[]string) {
-	if index == len(digits) {
-		*res = append(*res, combination)
-		return
-	}
-	digit := string(digits[index])
-	letters := phoneMap[digit]
-	for i := 0; i < len(letters); i++ {
-		backtrackLetter(digits, index+1, combination+string(letters[i]), res)
-	}
-}
-
-func letterCombinations(digits string) []string {
-	if len(digits) == 0 {
-		return []string{}
-	}
-	res := make([]string, 0)
-	backtrackLetter(digits, 0, "", &res)
-	return res
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    public $res = [];
-    public $str = "";
-    public $array = [
-        '2' => ['a', 'b', 'c'],
-        '3' => ['d', 'e', 'f'],
-        '4' => ['g', 'h', 'i'],
-        '5' => ['j', 'k', 'l'],
-        '6' => ['m', 'n', 'o'],
-        '7' => ['p', 'q', 'r', 's'],
-        '8' => ['t', 'u', 'v'],
-        '9' => ['w', 'x', 'y', 'z'],
-    ];
-
-    /**
-     * @param String $digits
-     * @return String[]
-     */
-    function letterCombinations($digits) {
-        if (!$digits) return [];
-        $this->_dfs($digits, 0);
-        return $this->res;
-    }
-
-    private function _dfs($digits, $step) {
-        if ($step == strlen($digits)) {
-            $this->res[] = $this->str;
-            return;
-        }
-        $key = substr($digits, $step, 1);
-        $chars = $this->array[$key];
-        foreach ($chars as $v) {
-            $this->str .=$v;
-            $this->_dfs($digits, $step + 1);
-            $this->str = substr($this->str, 0, strlen($this->str) - 1);
-        }
-    }
-}
-```
-
-#### [L22-中等] 括号生成
-
-给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
-
-**示例**
-
-例如，给出 n = 3，生成结果为：
-
-```
-[
-  "((()))",
-  "(()())",
-  "(())()",
-  "()(())",
-  "()()()"
-]
-```
-
-**题解**
-
-回溯法
-
-Go:
-
-```go
-func backtrackGenPas(left, right, n int, state string, res *[]string) {
-	if left == n && right == n {
-		*res = append(*res, state)
-		return
-	}
-	if left < n {
-		backtrackGenPas(left+1, right, n, state+"(", res)
-	}
-	if right < n && left > right {
-		backtrackGenPas(left, right+1, n, state+")", res)
-	}
-}
-
-func generateParenthesis(n int) []string {
-	res := make([]string, 0)
-	backtrackGenPas(0, 0, n, "", &res)
-	return res
-}
-```
-
-PHP：
-
-```php
-class Solution {
-    public $list = [];
-    /**
-     * @param Integer $n
-     * @return String[]
-     */
-    function generateParenthesis($n) {
-        $this->_gen(0, 0, $n, '');
-        return $this->list;
-    }
-    private function _gen($left, $right, $num, $result) {
-        if ($left == $num && $right == $num) {
-            array_push($this->list, $result);
-            return;
-        }
-        if ($left < $num) {
-            $this->_gen($left + 1, $right, $num, $result.'(');
-        }
-        if ($right < $num && $left > $right) {
-            $this->_gen($left, $right + 1, $num, $result.')');
-        }
-    }
-}
-```
-
-#### [L39-中等] 组合总和
-
-给你一个 **无重复元素** 的整数数组 `candidates` 和一个目标整数 `target` ，找出 `candidates` 中可以使数字和为目标数 `target` 的 所有 **不同组合** ，并以列表形式返回。你可以按 **任意顺序** 返回这些组合。
-
-`candidates` 中的 **同一个** 数字可以 **无限制重复被选取** 。如果至少一个数字的被选数量不同，则两种组合是不同的。 
-
-对于给定的输入，保证和为 `target` 的不同组合数少于 `150` 个。
-
-**示例**
-
-```
-输入：candidates = [2,3,6,7], target = 7
-输出：[[2,2,3],[7]]
-解释：
-2 和 3 可以形成一组候选，2 + 2 + 3 = 7 。注意 2 可以使用多次。
-7 也是一个候选， 7 = 7 。
-仅有这两种组合。
-
-输入: candidates = [2,3,5], target = 8
-输出: [[2,2,2,2],[2,3,3],[3,5]]
-
-输入: candidates = [2], target = 1
-输出: []
-```
-
-**提示：**
-
-- `1 <= candidates.length <= 30`
-- `2 <= candidates[i] <= 40`
-- `candidates` 的所有元素 **互不相同**
-- `1 <= target <= 40`
-
-**题解**
-
-> 回溯算法
-
-<img src="../../Image/algorithm/image-202403202038.png" style="zoom:75%;" />
-
-代码实现：
-
-```go
-// 回溯
-func backtraceCombinationSum(start, target int, state, choices []int, res *[][]int) {
-	// 子集和等于 target 时，记录解
-	if target == 0 {
-		*res = append(*res, append([]int{}, state...))
-		return
-	}
-	// 遍历所有选择
-	// 剪枝二：从 start 开始遍历，避免生成重复子集
-	for i := start; i < len(choices); i++ {
-		// 剪枝一：若子集和超过 target ，则直接结束循环
-		// 这是因为数组已排序，后边元素更大，子集和一定超过 target
-		if target-choices[i] < 0 {
-			break
-		}
-		// 更新状态
-		state = append(state, choices[i])
-		// // 进行下一轮选择
-		backtraceCombinationSum(i, target-choices[i], state, choices, res)
-		// 回退
-		state = state[:len(state)-1]
-	}
-}
-
-func combinationSum(candidates []int, target int) [][]int {
-	// 先进行排序，为去重
-	sort.Ints(candidates)
-	res := make([][]int, 0)
-	state := make([]int, 0)
-	backtraceCombinationSum(0, target, state, candidates, &res)
-	return res
-}
-```
-
 #### [L46-中等] 全排列
 
 给定一个 **没有重复 ** 数字的序列，返回其所有可能的全排列。
@@ -4327,6 +4074,7 @@ func backtracePermute(nums []int, state []int, selected []bool, res [][]int) [][
 	}
 	// 遍历所有选择
 	for i := 0; i < len(nums); i++ {
+        // 剪枝
 		if selected[i] {
 			continue
 		}
@@ -4342,7 +4090,6 @@ func backtracePermute(nums []int, state []int, selected []bool, res [][]int) [][
 	return res
 }
 
-// [L46-简单] 全排列
 func permute(nums []int) [][]int {
 	res := make([][]int, 0)
 	state := make([]int, 0)
@@ -4422,6 +4169,275 @@ func subsets(nums []int) [][]int {
 	path := make([]int, 0)
 	backtrackSubsets(nums, path, 0, &res)
 	return res
+}
+```
+
+#### [L17-中等] 电话号码的字母组合
+
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+<img src="../../Image/oldimg/17_telephone_keypad.png" alt="17_telephone_keypad" style="zoom:50%;" />
+
+**示例**
+
+```
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+说明：尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+
+输入：digits = "2"
+输出：["a","b","c"]
+
+输入：digits = ""
+输出：[]
+```
+
+**题解**
+
+**回溯法：**
+
+<img src="../../Image/algorithm/lt17-letterCombinations.png" alt="image-20240624213814028" style="zoom:50%;" />
+
+Go：
+
+```go
+var phoneMap = map[string]string{
+	"2": "abc",
+	"3": "def",
+	"4": "ghi",
+	"5": "jkl",
+	"6": "mno",
+	"7": "pqrs",
+	"8": "tuv",
+	"9": "wxyz",
+}
+
+func backtrackLetter(digits string, index int, combination string, res *[]string) {
+	if index == len(digits) {
+		*res = append(*res, combination)
+		return
+	}
+	digit := string(digits[index])
+	letters := phoneMap[digit]
+	for i := 0; i < len(letters); i++ {
+		backtrackLetter(digits, index+1, combination+string(letters[i]), res)
+	}
+}
+
+func letterCombinations(digits string) []string {
+	if len(digits) == 0 {
+		return []string{}
+	}
+	res := make([]string, 0)
+	backtrackLetter(digits, 0, "", &res)
+	return res
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    public $res = [];
+    public $str = "";
+    public $array = [
+        '2' => ['a', 'b', 'c'],
+        '3' => ['d', 'e', 'f'],
+        '4' => ['g', 'h', 'i'],
+        '5' => ['j', 'k', 'l'],
+        '6' => ['m', 'n', 'o'],
+        '7' => ['p', 'q', 'r', 's'],
+        '8' => ['t', 'u', 'v'],
+        '9' => ['w', 'x', 'y', 'z'],
+    ];
+
+    /**
+     * @param String $digits
+     * @return String[]
+     */
+    function letterCombinations($digits) {
+        if (!$digits) return [];
+        $this->_dfs($digits, 0);
+        return $this->res;
+    }
+
+    private function _dfs($digits, $step) {
+        if ($step == strlen($digits)) {
+            $this->res[] = $this->str;
+            return;
+        }
+        $key = substr($digits, $step, 1);
+        $chars = $this->array[$key];
+        foreach ($chars as $v) {
+            $this->str .=$v;
+            $this->_dfs($digits, $step + 1);
+            $this->str = substr($this->str, 0, strlen($this->str) - 1);
+        }
+    }
+}
+```
+
+#### [L39-中等] 组合总和
+
+给你一个 **无重复元素** 的整数数组 `candidates` 和一个目标整数 `target` ，找出 `candidates` 中可以使数字和为目标数 `target` 的 所有 **不同组合** ，并以列表形式返回。你可以按 **任意顺序** 返回这些组合。
+
+`candidates` 中的 **同一个** 数字可以 **无限制重复被选取** 。如果至少一个数字的被选数量不同，则两种组合是不同的。 
+
+对于给定的输入，保证和为 `target` 的不同组合数少于 `150` 个。
+
+**示例**
+
+```
+输入：candidates = [2,3,6,7], target = 7
+输出：[[2,2,3],[7]]
+解释：
+2 和 3 可以形成一组候选，2 + 2 + 3 = 7 。注意 2 可以使用多次。
+7 也是一个候选， 7 = 7 。
+仅有这两种组合。
+
+输入: candidates = [2,3,5], target = 8
+输出: [[2,2,2,2],[2,3,3],[3,5]]
+
+输入: candidates = [2], target = 1
+输出: []
+```
+
+**提示：**
+
+- `1 <= candidates.length <= 30`
+- `2 <= candidates[i] <= 40`
+- `candidates` 的所有元素 **互不相同**
+- `1 <= target <= 40`
+
+**题解**
+
+回溯算法
+
+本题需要注意去重和边界
+
+先对 candidates 进行排序，这样越界判断的时候，当和大于target 的时候就可以直接 break（如果不排序，这里就只能 continue）
+
+第二轮循环的时候，应该跳过第一个元素，如果不跳过，则会形成重复的组合（只是顺序不同）
+
+<img src="../../Image/algorithm/image-202403202038.png" style="zoom:75%;" />
+
+代码实现：
+
+```go
+// 回溯
+func backtraceCombinationSum(start, target int, state, choices []int, res *[][]int) {
+	// 子集和等于 target 时，记录解
+	if target == 0 {
+		*res = append(*res, append([]int{}, state...))
+		return
+	}
+	// 遍历所有选择
+	// 剪枝二：从 start 开始遍历，避免生成重复子集
+	for i := start; i < len(choices); i++ {
+		// 剪枝一：若子集和超过 target ，则直接结束循环
+		// 这是因为数组已排序，后边元素更大，子集和一定超过 target
+		if target-choices[i] < 0 {
+			break
+		}
+		// 更新状态
+		state = append(state, choices[i])
+		// // 进行下一轮选择
+		backtraceCombinationSum(i, target-choices[i], state, choices, res)
+		// 回退
+		state = state[:len(state)-1]
+	}
+}
+
+func combinationSum(candidates []int, target int) [][]int {
+	// 先进行排序，为去重
+	sort.Ints(candidates)
+	res := make([][]int, 0)
+	state := make([]int, 0)
+	backtraceCombinationSum(0, target, state, candidates, &res)
+	return res
+}
+```
+
+#### [L22-中等] 括号生成
+
+给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
+
+**示例**
+
+例如，给出 n = 3，生成结果为：
+
+```
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+```
+
+**题解**
+
+回溯法
+
+左右括号从 0 开始计数，满足以下条件回溯
+
+- 左括号数 >= n：留给右括号的位置不多了，回溯
+- 右括号数 >= 左括号数：右括号肯定不能比左括号多，回溯
+
+```go
+// 回溯
+func backtrackGenPas(left, right, n int, state string, res *[]string) {
+    // 左右括号数达到要求，加入结果集
+	if left == n && right == n {
+		*res = append(*res, state)
+		return
+	}
+    
+    // 先添加左括号，左括号添加条件需要 < n
+	if left < n {
+		backtrackGenPas(left+1, right, n, state+"(", res)
+	}
+    // 右括号添加条件需要 < n，并且当前左括号数要大于右括号
+	if right < n && left > right {
+		backtrackGenPas(left, right+1, n, state+")", res)
+	}
+}
+
+func generateParenthesis(n int) []string {
+	res := make([]string, 0)
+	backtrackGenPas(0, 0, n, "", &res)
+	return res
+}
+```
+
+PHP：
+
+```php
+class Solution {
+    public $list = [];
+    /**
+     * @param Integer $n
+     * @return String[]
+     */
+    function generateParenthesis($n) {
+        $this->_gen(0, 0, $n, '');
+        return $this->list;
+    }
+    private function _gen($left, $right, $num, $result) {
+        if ($left == $num && $right == $num) {
+            array_push($this->list, $result);
+            return;
+        }
+        if ($left < $num) {
+            $this->_gen($left + 1, $right, $num, $result.'(');
+        }
+        if ($right < $num && $left > $right) {
+            $this->_gen($left, $right + 1, $num, $result.')');
+        }
+    }
 }
 ```
 
@@ -6427,35 +6443,51 @@ func numSquares(n int) int {
 
 **题解**
 
-`dp[i]`表示前i个元素中的最长子序列，增加一个元素，需要判断该元素是否大于上一个最大序列的最后一个元素
+动态规划：
+
+`dp[i]`表示以位置i结尾的最长递增子序列，增加一个元素，需要判断该元素是否大于上一个最大序列的最后一个元素
+
+有数组 nums = [10,9,2,5,3,7,101,18]，可知 dp[0]=1，那么dp[i]如何求解呢？
+
+j表示所有小于i的位置（`0<=j<i`），dp[j] 是已计算过的值，如果 `nums[i] > nume[j]`，则表示 nums[i] 可以追加到该序列中，
+
+则有 dp[i] 取所有dp[j]+1中的最大值
 
 因此，可以得到状态转移方程：
 $$
 dp[i]=max(dp[j])+1,其中0≤j<i且num[j]<num[i]
 $$
 
+参考：https://writings.sh/post/algorithm-longest-increasing-subsequence
+
 ```go
 func lengthOfLIS(nums []int) int {
     n := len(nums)
-    if n == 0 {
-        return 0
-    }
+    // 构建dp表
+    // dp[i] 代表以位置 i 结尾的最长递增子序列的长度
     dp := make([]int, n+1)
     dp[0] = 1
-    max := 1
+    // dp中的最大值
+    max := dp[0]
+    // 状态转移，求解 dp[i]
     for i := 1; i < n; i++ {
+        // 最小就是本身，为1
         dp[i] = 1
         for j := 0; j < i; j++ {
-            if nums[i] > nums[j] {
-                if dp[i] > dp[j] + 1 {
-                    dp[i] = dp[i]
-                } else {
+            // 说明 nums[i] 可以追加到 dp[j] 中
+            // 这里为什么和 dp[i] 比？
+            // 其实这里是找 dp[j]+1 的最大值，因为上一个 dp[j-1]+1 已经赋值给dp[i]了
+            if nums[j] < nums[i] {
+                if dp[j] + 1 > dp[i] {
                     dp[i] = dp[j] + 1
+                } else {
+                    dp[i] = dp[i]
                 }
             }
         }
+        // 更新最大值
         if dp[i] > max {
-            max  = dp[i]
+            max = dp[i]
         }
     }
     return max
