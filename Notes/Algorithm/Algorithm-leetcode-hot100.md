@@ -4468,46 +4468,55 @@ class Solution {
 
 **题解**
 
+遍历二维矩阵，以当前元素作为要搜索单词的第一个字母进行深度优先搜索
+
+- 对矩阵进行上、下、左、右位置的搜索（搜索坐标不能超出矩阵范围），要搜索的字母是word单词中的下一个字母，即 index+1
+- 搜索过的单词进行打标，标记为 0
+- 如果当前矩阵位置元素不是要搜索的内容 return false
+- 如果上、下、左、右都没有要搜索的字母，return false
+- 最后全部匹配成功（index等于word长度），return true
+
 ```go
 func searchWord(board [][]byte, word string) bool {
-	m, n := len(board), len(board[0])
-	words := []byte(word)
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			if backtrackSW(board, words, i, j, 0) {
-				return true
+	for i, row := range board {
+		for j, col := range row {
+			if col == word[0] {
+				if backtrackSW(board, word, i, j, 0) {
+					return true
+				}
 			}
 		}
 	}
 	return false
 }
 
-func backtrackSW(board [][]byte, words []byte, i, j, k int) bool {
+// 回溯
+func backtrackSW(board [][]byte, word string, i, j, k int) bool {
 	// 越界
 	if i < 0 || i >= len(board) || j < 0 || j >= len(board[0]) {
 		return false
 	}
-	// 已访问过
+	// 已访问过退出
 	if board[i][j] == '0' {
 		return false
 	}
 	// 当前字符串不匹配
-	if board[i][j] != words[k] {
+	if board[i][j] != word[k] {
 		return false
 	}
 	// 全部匹配通过
-	if k == len(words)-1 {
+	if k == len(word)-1 {
 		return true
 	}
 	// 标记访问过的路径
 	board[i][j] = '0'
 	// DFS遍历所有路径
-	res := backtrackSW(board, words, i-1, j, k+1) ||
-		backtrackSW(board, words, i+1, j, k+1) ||
-		backtrackSW(board, words, i, j-1, k+1) ||
-		backtrackSW(board, words, i, j+1, k+1)
+	res := backtrackSW(board, word, i-1, j, k+1) ||
+		backtrackSW(board, word, i+1, j, k+1) ||
+		backtrackSW(board, word, i, j-1, k+1) ||
+		backtrackSW(board, word, i, j+1, k+1)
 	// 回退
-	board[i][j] = words[k]
+	board[i][j] = word[k]
 	return res
 }
 ```
@@ -4531,6 +4540,10 @@ func backtrackSW(board [][]byte, words []byte, i, j, k int) bool {
 
 **题解**
 
+回溯：
+
+依次枚举子串结束的位置
+
 ```go
 func partition(s string) [][]string {
     path := make([]string, 0)
@@ -4539,6 +4552,7 @@ func partition(s string) [][]string {
     return ans
 }
 
+// 回溯
 func backtrackPa(s string, path []string, start int, ans *[][]string) {
     // 所有元素都遍历完成，将path添加到结果中
     if start == len(s) {
@@ -4679,6 +4693,12 @@ func backtrackNQ(row, n int, state *[][]string, res *[][]string, cols, diags1, d
 
 **题解**
 
+进行二分查找，需要先初始化一个 insert 插入位置，默认为 n
+
+如果目标值小于中间值，且找不到，说明只能插入在 mid 之前的位置，也就是 insert=mid
+
+如果目标值大于中间值，且找不到，则说明大于数组中所有值，插入位置为 n
+
 ```go
 func searchInsert(nums []int, target int) int {
 	n := len(nums)
@@ -4723,7 +4743,12 @@ func searchInsert(nums []int, target int) int {
 
 **题解**
 
-> 二分查找，外加一些判断条件
+二分查找，外加一些判断条件
+
+如果当前元素不是 target 则进行以下判断，则判断左序列是否递增：
+
+- 左序列递增，则将 target 与左序列首尾元素对比，如果在区间内，则 right = mid - 1，如果不在区间内，则就在右序列区间 left = mid + 1
+- 左序列非递增，则说明右序列是递增的，因此，判断target是否在右序列中，如果在则在右序列进行搜索，反之，则在左序列进行搜索
 
 GO:
 
@@ -4810,9 +4835,13 @@ class Solution {
 
 **题解**
 
-> 由题意中复杂度O(log n) ，可知应该用二分思想
+由题意中复杂度O(log n) ，可知应该用二分思想
 
 二分法：
+
+先根据二分法查找 target 在数组中的位置，没找到则返回 [-1, -1]
+
+如果找到，则分别向 mid 左右位置遍历查找是否还存在等于 target 的元素，存在，则更新对应坐标
 
 GO：
 
@@ -5019,6 +5048,12 @@ func searchMatrix(matrix [][]int, target int) bool {
 - `nums` 原来是一个升序排序的数组，并进行了 `1` 至 `n` 次旋转
 
 **题解**
+
+二分查找：
+
+当中间值小于等于最右侧值，说明右侧序列递增，此时中间值也是右侧序列的最小值，记录，此时旋转点只可能在左侧，所以在左侧继续查找
+
+如果中间值不是小于最右侧值，说明右侧存在翻转点，在右侧进行查找
 
 ```go
 func findMin(nums []int) int {
@@ -5247,6 +5282,8 @@ minStack.getMin();   --> 返回 -2.
 
 **题解**
 
+维护一个栈结构，一个最小栈结构，最小栈 push 的逻辑，每次入栈当前最小的元素
+
 ```go
 type MinStack struct {
 	stack    []int
@@ -5317,6 +5354,12 @@ func (t *MinStack) GetMin() int {
 
 **题解**
 
+初始化一个栈，遍历字符串：
+
+- 如果是数字则直接入栈（需要考虑数字多位情况）
+- 如果是字母或者左括号也直接入栈
+- 如果是右括号，则获取连续的字母并出栈，左括号出栈，此时栈顶元素为数字（获取并出栈），对之前获取的字母进行反转后进行重复，再重新入栈
+
 ```go
 func decodeString(s string) string {
 	// 栈，存储数字、左括号、字母
@@ -5367,6 +5410,110 @@ func getDigits(s string, i *int) string {
 		ret += string(s[*i])
 	}
 	return ret
+}
+```
+
+#### [L739-中等] 每日温度
+
+给定一个整数数组 `temperatures` ，表示每天的温度，返回一个数组 `answer` ，其中 `answer[i]` 是指对于第 `i` 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 `0` 来代替。
+
+**示例**
+
+```
+输入: temperatures = [73,74,75,71,69,72,76,73]
+输出: [1,1,4,2,1,1,0,0]
+
+输入: temperatures = [30,40,50,60]
+输出: [1,1,1,0]
+
+输入: temperatures = [30,60,90]
+输出: [1,1,0]
+```
+
+- `1 <= temperatures.length <= 105`
+- `30 <= temperatures[i] <= 100`
+
+**题解**
+
+单调栈：单调递减
+
+对于温度列表 [73,74,75,71,69,72,76,73]，单调栈 stack 的初始状态为空，答案 ans 的初始状态是 [0,0,0,0,0,0,0,0]，按照以下步骤更新单调栈和答案，其中单调栈内的元素都是下标，括号内的数字表示下标在温度列表中对应的温度。
+
+当 i=0 时，单调栈为空，因此将 0 进栈。
+
+- stack=[0(73)]
+
+- ans=[0,0,0,0,0,0,0,0]
+
+
+当 i=1 时，由于 74 大于 73，因此移除栈顶元素 0，赋值 ans[0]:=1−0，将 1 进栈。
+
+- stack=[1(74)]
+
+- ans=[1,0,0,0,0,0,0,0]
+
+
+当 i=2 时，由于 75 大于 74，因此移除栈顶元素 1，赋值 ans[1]:=2−1，将 2 进栈。
+
+- stack=[2(75)]
+
+- ans=[1,1,0,0,0,0,0,0]
+
+
+当 i=3 时，由于 71 小于 75，因此将 3 进栈。
+
+- stack=[2(75),3(71)]
+- ans=[1,1,0,0,0,0,0,0]
+
+
+当 i=4 时，由于 69 小于 71，因此将 4 进栈。
+
+- stack=[2(75),3(71),4(69)]
+
+- ans=[1,1,0,0,0,0,0,0]
+
+
+当 i=5 时，由于 72 大于 69 和 71，因此依次移除栈顶元素 4 和 3，赋值 ans[4]:=5−4 和 ans[3]:=5−3，将 5 进栈。
+
+- stack=[2(75),5(72)]
+
+- ans=[1,1,0,2,1,0,0,0]
+
+
+当 i=6 时，由于 76 大于 72 和 75，因此依次移除栈顶元素 5 和 2，赋值 ans[5]:=6−5 和 ans[2]:=6−2，将 6 进栈。
+
+- stack=[6(76)]
+
+- ans=[1,1,4,2,1,1,0,0]
+
+
+当 i=7 时，由于 73 小于 76，因此将 7 进栈。
+
+- stack=[6(76),7(73)]
+
+- ans=[1,1,4,2,1,1,0,0]
+
+
+```go
+func dailyTemperatures(temperatures []int) []int {
+    n := len(temperatures)
+    ans := make([]int, n)
+    stack := make([]int, 0)
+    for i := 0; i < n; i++ {
+        // 当前温度
+        temperature := temperatures[i]
+        // 栈不为空，并且栈顶元素下标对应温度大于当前温度
+        for len(stack) > 0 && temperature > temperatures[stack[len(stack)-1]] {
+            // 栈顶元素出栈
+            index := stack[len(stack)-1]
+            stack = stack[:len(stack)-1]
+            // 更新答案
+            ans[index] = i - index
+        }
+        // 当前温度下标入栈
+        stack = append(stack, i)
+    }
+    return ans
 }
 ```
 
@@ -5425,109 +5572,6 @@ func largestRectangleArea(heights []int) int {
         if area > ans {
             ans = area
         }
-    }
-    return ans
-}
-```
-
-#### [L739-中等] 每日温度
-
-给定一个整数数组 `temperatures` ，表示每天的温度，返回一个数组 `answer` ，其中 `answer[i]` 是指对于第 `i` 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 `0` 来代替。
-
-**示例**
-
-```
-输入: temperatures = [73,74,75,71,69,72,76,73]
-输出: [1,1,4,2,1,1,0,0]
-
-输入: temperatures = [30,40,50,60]
-输出: [1,1,1,0]
-
-输入: temperatures = [30,60,90]
-输出: [1,1,0]
-```
-
-- `1 <= temperatures.length <= 105`
-- `30 <= temperatures[i] <= 100`
-
-**题解**
-
-对于温度列表 [73,74,75,71,69,72,76,73]，单调栈 stack 的初始状态为空，答案 ans 的初始状态是 [0,0,0,0,0,0,0,0]，按照以下步骤更新单调栈和答案，其中单调栈内的元素都是下标，括号内的数字表示下标在温度列表中对应的温度。
-
-当 i=0 时，单调栈为空，因此将 0 进栈。
-
-- stack=[0(73)]
-
-- ans=[0,0,0,0,0,0,0,0]
-
-
-当 i=1 时，由于 74 大于 73，因此移除栈顶元素 0，赋值 ans[0]:=1−0，将 1 进栈。
-
-- stack=[1(74)]
-
-- ans=[1,0,0,0,0,0,0,0]
-
-
-当 i=2 时，由于 75 大于 74，因此移除栈顶元素 1，赋值 ans[1]:=2−1，将 2 进栈。
-
-- stack=[2(75)]
-
-- ans=[1,1,0,0,0,0,0,0]
-
-
-当 i=3 时，由于 71 小于 75，因此将 3 进栈。
-
-- stack=[2(75),3(71)]
-
-- ans=[1,1,0,0,0,0,0,0]
-
-
-当 i=4 时，由于 69 小于 71，因此将 4 进栈。
-
-- stack=[2(75),3(71),4(69)]
-
-- ans=[1,1,0,0,0,0,0,0]
-
-
-当 i=5 时，由于 72 大于 69 和 71，因此依次移除栈顶元素 4 和 3，赋值 ans[4]:=5−4 和 ans[3]:=5−3，将 5 进栈。
-
-- stack=[2(75),5(72)]
-
-- ans=[1,1,0,2,1,0,0,0]
-
-
-当 i=6 时，由于 76 大于 72 和 75，因此依次移除栈顶元素 5 和 2，赋值 ans[5]:=6−5 和 ans[2]:=6−2，将 6 进栈。
-
-- stack=[6(76)]
-
-- ans=[1,1,4,2,1,1,0,0]
-
-
-当 i=7 时，由于 73 小于 76，因此将 7 进栈。
-
-- stack=[6(76),7(73)]
-
-- ans=[1,1,4,2,1,1,0,0]
-
-
-```go
-func dailyTemperatures(temperatures []int) []int {
-    n := len(temperatures)
-    ans := make([]int, n)
-    stack := make([]int, 0)
-    for i := 0; i < n; i++ {
-        // 当前温度
-        temperature := temperatures[i]
-        // 栈不为空，并且栈顶元素下标对应温度大于当前温度
-        for len(stack) > 0 && temperature > temperatures[stack[len(stack)-1]] {
-            // 栈顶元素出栈
-            index := stack[len(stack)-1]
-            stack = stack[:len(stack)-1]
-            // 更新答案
-            ans[index] = i - index
-        }
-        // 当前温度下标入栈
-        stack = append(stack, i)
     }
     return ans
 }
@@ -5888,6 +5932,104 @@ func (mf *MedianFinder) FindMedian() float64 {
 
 ## 贪心算法
 
+#### [L121-简单] 买卖股票的最佳时机
+
+给定一个数组 `prices` ，它的第 `i` 个元素 `prices[i]` 表示一支给定股票第 `i` 天的价格。
+
+你只能选择 **某一天** 买入这只股票，并选择在 **未来的某一个不同的日子** 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 `0` 。
+
+**示例**
+
+```
+输入：[7,1,5,3,6,4]
+输出：5
+解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+     
+输入：prices = [7,6,4,3,1]
+输出：0
+解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+- `1 <= prices.length <= 105`
+- `0 <= prices[i] <= 104`
+
+**题解**
+
+贪心策略：
+
+贪心的选择股价最低点作为买入点，选择收益最高作为卖出点
+
+```go
+func maxProfit(prices []int) int {
+    minPro := int(1e5)
+    maxPro := 0
+    for i := 0; i < len(prices); i++ {
+        if (prices[i] < minPro) {
+            minPro = prices[i]
+        }
+        if (prices[i] - minPro > maxPro) {
+            maxPro = prices[i] - minPro
+        }
+    }
+    return maxPro
+}
+```
+
+#### [L55-中等] 跳跃游戏
+
+给你一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个下标，如果可以，返回 `true` ；否则，返回 `false` 。
+
+**示例**
+
+```
+输入：nums = [2,3,1,1,4]
+输出：true
+解释：可以先跳 1 步，从下标 0 到达下标 1, 然后再从下标 1 跳 3 步到达最后一个下标。
+
+输入：nums = [3,2,1,0,4]
+输出：false
+解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
+```
+
+**题解**
+
+贪心算法
+
+由题意可知：
+
+尽可能到达最远位置（贪心）。
+如果能到达某个位置，那一定能到达它前面的所有位置。
+
+设 k 为最远可到达的位置，如果能到达当前位置（i < k），则最远位置`k=i+nums[i]`
+
+若最远位置k已经 >= 数组最大长度，则肯定可以达到，可直接返回 true
+
+```go
+func canJump(nums []int) bool {
+    k, n := 0, len(nums)
+    for i := 0; i < n; i++ {
+        // i 之前可达到最远位置没能到达当前i位置，说明无法达到
+        if i > k {
+            return false
+        }
+        // 取当前可达到的最远位置
+        if i + nums[i] > k {
+            k = i + nums[i]
+        }
+        // 如果当前可达到最远位置已大于 n-1，直接返回 true
+        if k >= n - 1 {
+            return true
+        }
+    }
+    return true
+}
+```
+
 #### [L45-中等] 跳跃游戏 II
 
 给定一个长度为 `n` 的 **0 索引**整数数组 `nums`。初始位置为 `nums[0]`。
@@ -5927,6 +6069,7 @@ func jump(nums []int) int {
 		if i+nums[i] > max {
 			max = i + nums[i]
 		}
+        // 已到结束位置，则更新下一个跳跃
 		if i == end {
 			end = max
 			steps++
@@ -5937,97 +6080,6 @@ func jump(nums []int) int {
 		}
 	}
 	return steps
-}
-```
-
-#### [L55-中等] 跳跃游戏
-
-给你一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
-
-判断你是否能够到达最后一个下标，如果可以，返回 `true` ；否则，返回 `false` 。
-
-**示例**
-
-```
-输入：nums = [2,3,1,1,4]
-输出：true
-解释：可以先跳 1 步，从下标 0 到达下标 1, 然后再从下标 1 跳 3 步到达最后一个下标。
-
-输入：nums = [3,2,1,0,4]
-输出：false
-解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
-```
-
-**题解**
-
-> 贪心算法
-
-由题意可知：
-
-尽可能到达最远位置（贪心）。
-如果能到达某个位置，那一定能到达它前面的所有位置。
-
-设 k 为最远可到达的位置，如果能到达当前位置（i < k），则最远位置`k=i+nums[i]`
-
-若最远位置k已经 >= 数组最大长度，则肯定可以达到，可直接返回 true
-
-```go
-func canJump(nums []int) bool {
-    k, n := 0, len(nums)
-    for i := 0; i < n; i++ {
-        if i > k {
-            return false
-        }
-        if i + nums[i] > k {
-            k = i + nums[i]
-        }
-        if k >= n - 1 {
-            return true
-        }
-    }
-    return true
-}
-```
-
-#### [L121-简单] 买卖股票的最佳时机
-
-给定一个数组 `prices` ，它的第 `i` 个元素 `prices[i]` 表示一支给定股票第 `i` 天的价格。
-
-你只能选择 **某一天** 买入这只股票，并选择在 **未来的某一个不同的日子** 卖出该股票。设计一个算法来计算你所能获取的最大利润。
-
-返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 `0` 。
-
-**示例**
-
-```
-输入：[7,1,5,3,6,4]
-输出：5
-解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
-     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
-     
-输入：prices = [7,6,4,3,1]
-输出：0
-解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
-```
-
-- `1 <= prices.length <= 105`
-- `0 <= prices[i] <= 104`
-
-**题解**
-
-```go
-func maxProfit(prices []int) int {
-    minPro := int(1e5)
-    maxPro := 0
-    for i := 0; i < len(prices); i++ {
-        if (prices[i] < minPro) {
-            minPro = prices[i]
-        }
-        if (prices[i] - minPro > maxPro) {
-            maxPro = prices[i] - minPro
-        }
-    }
-    return maxPro
 }
 ```
 
@@ -6057,6 +6109,54 @@ func maxProfit(prices []int) int {
 - `s` 仅由小写英文字母组成
 
 **题解**
+
+贪心策略：选择区间尽量短，则片段会越多，而区间短的条件是当前区间的元素都不在其他区间出现
+
+先统计字符串中每个字母个数
+
+遍历字符串，将当前字母加入一个临时hash表tmp中，当前字母剩余数量-1，区间长度+1
+
+如果当前字母剩余数量为0，则在tmp中删除该元素，如果tmp为空，所有当前区间所有元素都独立，不在剩余区间内存在
+
+```go
+func partitionLabels(s string) []int {
+    // 存在每个字母个数
+    hash := [126]int{}
+    for _, ch := range s {
+        hash[ch]++
+    }
+    // 结果集
+    ans := make([]int, 0)
+    // 存储当前区间内存在，但是未全部包含完的字母
+    tmp := map[byte]bool{}
+    // 当前区间长度
+    length := 0
+    // 遍历字符串
+    for i := 0; i < len(s); i++ {
+        ch := s[i]
+        // 区间长度+1
+        length++
+        // 该字母剩余数量-1
+        hash[ch]--
+        // 将字母加入 tmp 中
+        tmp[ch] = true
+        if hash[ch] == 0 {
+            delete(tmp, ch)
+        }
+        if len(tmp) == 0 {
+            ans = append(ans, length)
+            length = 0
+        }
+    }
+    return ans
+}
+```
+
+这里也是贪心，和上面不同的是先找出每个字母最后出现的位置
+
+遍历字符串，每次更新当前区间中字母最后出现位置的最远位置
+
+当最远位置等于当前位置时，说明当前区间内的字符不会在其他区间出现，更加入结果集
 
 ```go
 func partitionLabels(s string) []int {
@@ -6167,6 +6267,12 @@ func climbStairs2(n int) int {
 
 **题解**
 
+由题意可以知道，ans[i] 等于 ans[i-1] 追加上第i行元素的集合，可以得到公式：`ans[i][j] = ans[i-1][j-1] + ans[i-1][j]`
+
+建立 dp 表 ans，长度为 numRows，
+
+由于每一行首位都为1，所以有：`ans[i][0] = 1, ans[i][i] = 1`
+
 ```go
 func generate(numRows int) [][]int {
     ans := make([][]int, numRows)
@@ -6212,7 +6318,32 @@ func generate(numRows int) [][]int {
 
 **题解**
 
-`dp[i]` 表示字符串` s[0, i-1]` 是否为能被拆分
+dp[i] 表示以 i 结尾的字符串是否可以被 wordDict 中组合而成
+
+```go
+func wordBreak(s string, wordDict []string) bool {
+    n := len(s)
+	// 构建dp表
+	// dp[i] 表示以 i 结尾的字符串是否可以被 wordDict 中组合而成
+	dp := make([]bool, n+1)
+	dp[0] = true
+	// 状态转移：遍历所有 i
+	for i := 1; i <= n; i++ {
+		// 进行选择
+		for _, word := range wordDict {
+			length := len(word)
+			// 以 i 结尾的字符串长度需要大于当前单词长度
+			// 单词相等
+			if i-length >= 0 && s[i-length:i] == word {
+				dp[i] = dp[i] || dp[i-length]
+			}
+		}
+	}
+	return dp[n]
+}
+```
+
+`dp[i]` 表示字符串` s[0, i-1]` 是否能被拆分
 
 `s[0, i-1]` 可以拆分为 `s[0, j-1]` 和 `s[j, i-1]`，所以可以得到状态转移公式：`dp[i]=dp[j] && s[j, i-1]是否可被拆分`
 
@@ -6340,6 +6471,14 @@ func maxAndMin(a, b, c int) (min, max int) {
 
 **题解**
 
+设 dp[i] 表示前 i 个元素中，最大可获得的金额
+
+由题意可知，不能获取连续的两个元素，因此，可以推导出
+$$
+dp[i]=max(dp[i-1], dp[i-2]+nums[i])，i >= 2
+$$
+
+
 ```go
 func rob(nums []int) int {
     n := len(nums)
@@ -6400,21 +6539,23 @@ func rob(nums []int) int {
 
 则当前数对应最小平方数为：`f(n) = f(n-j*j) + 1`（即上一个数最少要再加一次完全平方数，才能等于n）
 
-而11 + 1 = 12、8 + 4 = 12、3 + 9 = 12有三种方式都可以得到n=12， 要选哪个呢？选最少的那个。f[n] = Math.min(f[n - j * j] + 1, f[n]);
+而11 + 1 = 12、8 + 4 = 12、3 + 9 = 12有三种方式都可以得到n=12， 要选哪个呢？选最少的那个。`f[n]=min(f[n-j*j]+1, f[n])`
+
+所以状态转移方程：`dp[n]=min(dp[n-j*j]+1, dp[n])`
 
 ```go
 func numSquares(n int) int {
-    f := make([]int, n+1)
+    dp := make([]int, n+1)
     for i := 1; i <= n; i++ {
-        min := math.MaxInt32
+        // 设置一个较大数
+        dp[i] = i
         for j := 1; j*j <= i; j++ {
-            if f[i-j*j] < min {
-                min = f[i-j*j]
+            if dp[i-j*j]+1 < dp[i] {
+                dp[i] = dp[i-j*j]+1
             }
         }
-        f[i] = min + 1
     }
-    return f[n]
+    return dp[n]
 }
 ```
 
@@ -6522,6 +6663,8 @@ func lengthOfLIS(nums []int) int {
 
 **题解**
 
+本题类似完全背包问题求解方式
+
 **第一步：思考每轮的决策，定义状态，从而得到 𝑑𝑝 表**
 
 状态 [𝑖,𝑎] 对应的子问题为：**前 𝑖 种硬币能够凑出金额 𝑎 的最少硬币数量**，记为 𝑑𝑝[𝑖,𝑎] 。
@@ -6538,15 +6681,23 @@ $$
 
 当无硬币时，**无法凑出任意 >0 的目标金额**，即是无效解。为使状态转移方程中的 min() 函数能够识别并过滤无效解，我们考虑使用 +∞ 来表示它们，即令首行所有 𝑑𝑝[0,𝑎] 都等于 +∞ 。
 
+参考：https://www.hello-algo.com/chapter_dynamic_programming/unbounded_knapsack_problem/#2
+
 ```go
 func coinChange(coins []int, amount int) int {
 	n := len(coins)
 	max := amount + 1
 	// 构建dp表
+    // dp[i][j]：i个硬币，目标金额为j时的最少金币数
 	dp := make([][]int, n+1)
 	for i := 0; i <= n; i++ {
 		dp[i] = make([]int, max)
 	}
+    // 边界确定
+    // 金额为0时候，不需要金币，所以：dp[i][0]=0
+    // for i := 0; i <= n; i++ {
+    //     dp[i][0] = 0
+    // }
 	// 当无硬币时，无法凑出任意 >0 的目标金额，即是无效解，用大于 amount+1 表示
 	for a := 1; a <= amount; a++ {
 		dp[0][a] = max
@@ -6610,7 +6761,7 @@ func coinChange(coins []int, amount int) int {
 
 - 如果不选取任何正整数，则被选取的正整数之和等于 0。因此对于所有 `0≤i<n`，都有 `dp[i][0]=true`。
 
-- 当 i==0 时，只有一个正整数 nums[0] 可以被选取，因此 `dp[0][nums[0]]=true`。
+- 当 i=0 时，只有一个正整数 nums[0] 可以被选取，因此 `dp[0][nums[0]]=true`。
 
 如果 `j≥nums[i]`，则对于当前的数字 nums[i]，可以选取也可以不选取，两种情况只要有一个为 true，就有 `dp[i][j]=true`。
 如果 `j<nums[i]`，则在选取的数字的和等于 j 的情况下无法选取当前的数字 nums[i]，因此有 `dp[i][j]=dp[i−1`][j]。
@@ -6750,62 +6901,49 @@ func uniquePaths(m, n int) int {
 
 动态规划
 
-设 `dp[i][j]` 是到达 `i, j` 最多长路径，则：
+建立dp表  `dp[i][j]` ：到达 `i, j` 位置的最小路径和
 
-- 当`i=0,j=0`时：`dp[0][0] = grid[0`][0]
+只能向下或右移动，因此 `dp[i][j]` 由上或左决定
+
+即：`dp[i][j]=min(dp[i-1][j], dp[i][j-1]) + grid[i][j]` 
+
+边界确定：
+
+- 当`i=0,j=0`时：`dp[0][0] = grid[0][0]`
 - 当`i>0,j=0`时：`dp[i][0] = dp[i-1][0] + grid[i][0]`
 - 当`i=0,j>0`时：`dp[0][j] = dp[0][j-1] + grid[0][j]`
-- 当`i>0,j>0`时： `dp[i][j]=min(dp[i-1][j], dp[i][j-1]) + grid[i][j]`
 
 ```go
 func minPathSum(grid [][]int) int {
-	m, n := len(grid), len(grid[0])
-	dp := make([][]int, m)
-	for i := range dp {
-		dp[i] = make([]int, n)
-	}
-	dp[0][0] = grid[0][0]
-	for i := 1; i < m; i++ {
-		dp[i][0] = dp[i-1][0] + grid[i][0]
-	}
-	for j := 1; j < n; j++ {
-		dp[0][j] = dp[0][j-1] + grid[0][j]
-	}
-	for i := 1; i < m; i++ {
-		for j := 1; j < n; j++ {
-			if dp[i-1][j] > dp[i][j-1] {
-				dp[i][j] = dp[i][j-1] + grid[i][j]
-			} else {
-				dp[i][j] = dp[i-1][j] + grid[i][j]
-			}
-		}
-	}
-	return dp[m-1][n-1]
-}
-
-// 优化
-func minPathSum(grid [][]int) int {
-	m, n := len(grid), len(grid[0])
-	// 直接以 grid 为 dp 表结构
-	// 初始化 dp[i][0]
-	for i := 1; i < m; i++ {
-		grid[i][0] = grid[i-1][0] + grid[i][0]
-	}
-	// 初始化 dp[0][j]
-	for j := 1; j < n; j++ {
-		grid[0][j] = grid[0][j-1] + grid[0][j]
-	}
-	// 求解
-	for i := 1; i < m; i++ {
-		for j := 1; j < n; j++ {
-			if grid[i-1][j] > grid[i][j-1] {
-				grid[i][j] = grid[i][j-1] + grid[i][j]
-			} else {
-				grid[i][j] = grid[i-1][j] + grid[i][j]
-			}
-		}
-	}
-	return grid[m-1][n-1]
+    m, n := len(grid), len(grid[0])
+    // 构建dp表
+    // dp[i][j]：达到 i,j 的最小路径
+    dp := make([][]int, m)
+    for i := range dp {
+        dp[i] = make([]int, n)
+    }
+    // 边界确定
+    // dp[0][0]=grid[0][0]
+    dp[0][0] = grid[0][0]
+    // 当i为0时，则 dp[i][0] = dp[i-1][0] + grid[i][0]
+    for i := 1; i < m; i++ {
+        dp[i][0] = dp[i-1][0] + grid[i][0]
+    }
+    // 当j为0时，则 dp[0][j] = dp[0][j-1] + grid[0][j]
+    for j := 1; j < n; j++ {
+        dp[0][j] = dp[0][j-1] + grid[0][j]
+    }
+    // 状态转移
+    for i := 1; i < m; i++ {
+        for j := 1; j < n; j++ {
+            if dp[i-1][j] < dp[i][j-1] {
+                dp[i][j] = dp[i-1][j] + grid[i][j]
+            } else {
+                dp[i][j] = dp[i][j-1] + grid[i][j]
+            }
+        }
+    }
+    return dp[m-1][n-1]
 }
 ```
 
@@ -7156,6 +7294,72 @@ exection -> execution (插入 'u')
 - `word1` 和 `word2` 由小写英文字母组成
 
 **题解**
+
+动态规划：
+
+求得word1和word2的长度分别为n、m，需要考虑 word1[n-1]和word2[m-1]尾部字符是否相等：
+
+- `word1[n-1] == word2[m-1]`：则说明不需要进行操作，进一步查看word1[n-2]和word2[m-2]是否相等
+- `word1[n-1] != word2[m-1]`：说明需要进行一次编辑（插入或修改或删除），使尾部字符串相同，从而考虑更好规模问题
+
+定义 `dp[i][j]`：**将 word1 的前 i 个字符改为 word2 的前 j 个字符所需要的最少操作数**
+
+则可以知道，当`word1[n-1] == word2[m-1]`时，不需要进行编辑，所以此时： `dp[i][j]=dp[i-1][j-1]`
+
+当`word1[n-1] != word2[m-1]`时，需要进行编辑，有3种编辑模式，需要比较三种编辑方式的最小值，分别是：
+
+- 在word1[i-1]之后添加word2[j-1]： `dp[i][j]=dp[i][j-1] + 1`
+- 删除word1[i-1]：`dp[i][j]=dp[i-1][j] + 1`
+- 编辑：`dp[i][j]=dp[i-1][j-1] + 1`
+
+所以，此时：`dp[i][j]=Min(dp[i][j-1], dp[i-1][j], dp[i-1][j-1]) + 1`
+
+确定边界：当n、m都为0，则不需要操作，`dp[0][0]=0`；当i为0时，需要操作j次，`dp[i][0]=i`；当j为0，则需要操作i次，`dp[0][j]=j`；
+
+参考：https://www.hello-algo.com/chapter_dynamic_programming/edit_distance_problem/#1
+
+```go
+func minDistance(word1 string, word2 string) int {
+    n, m := len(word1), len(word2)
+    // 构建 dp 表
+    // dp[i][j]：word1的前i个字符变为word2的前j个字符所需要的最小距离
+    dp := make([][]int, n+1)
+    for i := range dp {
+        dp[i] = make([]int, m+1)
+    }
+    // 边界确认
+    // dp[0][0] = 0，默认就是0，可以省略
+    // dp[i][0] = i
+    for i := 1; i <= n; i++ {
+        dp[i][0] = i
+    }
+    // dp[0][j] = j
+    for j := 1; j <= m; j++ {
+        dp[0][j] = j
+    }
+    // 状态转移
+    for i := 1; i <= n; i++ {
+        for j := 1; j <= m; j++ {
+            // 尾部字符相等
+            if word1[i-1] == word2[j-1] {
+                dp[i][j] = dp[i-1][j-1]
+            } else {
+                // 取最小值
+                dp[i][j] = dp[i-1][j-1] + 1
+                if dp[i][j] > dp[i][j-1] + 1 {
+                    dp[i][j] = dp[i][j-1] + 1
+                }
+                if dp[i][j] > dp[i-1][j] + 1 {
+                    dp[i][j] = dp[i-1][j] + 1
+                } 
+            }
+        }
+    }
+    return dp[n][m]
+}
+```
+
+动态规划：
 
 参考：https://leetcode.cn/problems/edit-distance/solutions/188223/bian-ji-ju-chi-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked
 
