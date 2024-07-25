@@ -2370,6 +2370,46 @@ func detectCycle(head *ListNode) *ListNode {
 }
 ```
 
+快慢指针
+
+<img src="../../Image/algorithm/QQ_1721818671240.png" alt="QQ_1721818671240" style="zoom:50%;" />
+
+slow、fast从头节点开始，slow每次走1步，fast每次走2步
+
+第一次在环中相遇（b点），此时，fast共走过的路径为：a+n(b+c)+b，slow走过的路程：a+b
+
+因此 fast比slow快2倍，则有：a+n(b+c)+b=a+b
+
+可以推导出 a=(n-1)(b+c)+c，说明从头节点到入环点的距离等于相遇点到入环点+n-1个环
+
+因此，slow从相遇点继续走，cur从头节点开始走，最终会在入环点相遇
+
+```go
+func detectCycle(head *ListNode) *ListNode {
+    slow, fast := head, head
+    for fast != nil {
+        // 慢指针一步步移动
+        slow = slow.Next
+        if fast.Next == nil {
+            return nil
+        }
+        // 快指针2步移动
+        fast = fast.Next.Next
+        // 当快慢指针相遇
+        if fast == slow {
+            // cur 指针从头开始移动，slow继续移动，会在入环点相遇
+            cur := head
+            for cur != slow {
+                cur = cur.Next
+                slow = slow.Next
+            }
+            return cur
+        }
+    }
+    return nil
+}
+```
+
 #### [L146-中等] LRU 缓存
 
 请你设计并实现一个满足 [LRU (最近最少使用) 缓存](https://baike.baidu.com/item/LRU) 约束的数据结构。
@@ -5715,6 +5755,11 @@ func longestValidParentheses(s string) int {
 
 **题解**
 
+堆排序
+
+- 时间复杂度：O(NlogN)
+- 空间复杂度：O(logN)
+
 构建大顶堆，然后不断删除堆顶，删除k-1个堆顶
 
 ```go
@@ -5724,16 +5769,14 @@ func findKthLargest(nums []int, k int) int {
 	for i := n / 2; i >= 0; i-- {
 		maxHeapify(nums, i, n)
 	}
-	// 不断删除堆顶元素
-	for i := len(nums) - 1; i >= len(nums)-k+1; i-- {
-		// 通过把堆顶和堆底元素进行交换，再删除堆底元素实现删除
-		// 这样可以保证堆结构最小调整
-		nums[0], nums[i] = nums[i], nums[0]
-		n--
-		// 删除后重新进行堆化
-		maxHeapify(nums, 0, n)
-	}
-	return nums[0]
+	// 不断删除堆顶元素，只需要删除k个元素就好了
+    for i := len(nums)-1; i > n-k; i-- {
+        // 通过把堆顶和堆底元素进行交换，再删除堆底元素实现删除
+        nums[0], nums[i] = nums[i], nums[0]
+        // 删除后重新进行堆化
+        maxHeapify(nums, 0, i)
+    }
+    return nums[0]
 }
 
 func maxHeapify(a []int, i, size int) {
@@ -5759,6 +5802,74 @@ func maxHeapify(a []int, i, size int) {
 }
 ```
 
+快速排序
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(logN)
+
+基于快速排序进行优化
+
+```go
+// 基于快速排序
+func findKthLargest2(nums []int, k int) int {
+	n := len(nums)
+	return quickSort(nums, 0, n-1, k-1)
+}
+
+func quickSort(nums []int, left, right, k int) int {
+	if left == right {
+		return nums[k]
+	}
+	base := nums[left]
+	i, j := left, right
+	for i < j {
+		// j 向左移动，找到大于 base 的数
+		for i < j && nums[j] <= base {
+			j--
+		}
+		// i 向右移动，找到小于 base 的数
+		for i < j && nums[i] >= base {
+			i++
+		}
+		// 交换i、j位置
+		nums[i], nums[j] = nums[j], nums[i]
+	}
+	// 交换基准位置
+	nums[left], nums[j] = nums[j], nums[left]
+	if k <= i {
+		return quickSort(nums, left, i, k)
+	} else {
+		return quickSort(nums, i+1, right, k)
+	}
+}
+```
+
+桶排序：
+
+- 时间复杂度：O(N)
+
+```go
+func findKthLargest(nums []int, k int) int {
+    // 因为：-10^4 <= nums[i] <= 10^4
+    // 所以分配 20001 个桶
+    buckets := make([]int, 20001)
+    // 将元素放入桶中
+    for _, num := range nums {
+        // 将负数转为正数
+        buckets[num+10000]++
+    }
+    // 遍历桶
+    for i := len(buckets)-1; i >= 0; i-- {
+        k = k - buckets[i]
+        if k <= 0 {
+            // 加入数组的时候+10000，这里减去
+            return i-10000
+        }
+    }
+    return 0
+}
+```
+
 #### [L347-中等] 前 K 个高频元素
 
 给你一个整数数组 `nums` 和一个整数 `k` ，请你返回其中出现频率前 `k` 高的元素。你可以按 **任意顺序** 返回答案。
@@ -5778,6 +5889,19 @@ func maxHeapify(a []int, i, size int) {
 - 题目数据保证答案唯一，换句话说，数组中前 `k` 个高频元素的集合是唯一的
 
 **题解**
+
+小顶堆
+
+- 时间复杂度：O(NlogN)
+
+使用hashMap统计每个元素出现的次数，然后构建长度为k的小顶堆
+
+遍历hashMap：
+
+- 当堆长度小于k，则直接入堆
+- 当堆长度等于k，判断k是否大于堆顶元素，如果大于堆顶元素，则删除堆顶元素，并将该元素入堆
+
+以下代码借助 Go heap.Interface 和 sort.Interface 进行实现堆结构
 
 ```go
 type intHeap [][2]int
@@ -5827,6 +5951,43 @@ func topKFrequent(nums []int, k int) []int {
 		ret[k-i-1] = heap.Pop(h).([2]int)[0]
 	}
 	return ret
+}
+```
+
+桶排序
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(N)
+
+使用hashMap统计每个元素出现的次数，然后对次数进行桶排序
+
+以元素出现的次数为下标构建二维数组桶（可能存在相同次数的元素，所以用二维数组），共 len(nums)+1 个桶
+
+然后倒序遍历 buckets，取出前 k 个元素
+
+```go
+func topKFrequent(nums []int, k int) []int {
+    // 先遍历数组统计每个元素出现的次数
+    hash := map[int]int{}
+    for _, num := range nums {
+        hash[num]++
+    }
+    // 桶排序
+    // 构建 n+1 个桶
+    buckets := make([][]int, len(nums)+1)
+    // 以元素出现的次数为下标分配到桶里
+    for i, v := range hash {
+        buckets[v] = append(buckets[v], i)
+    }
+    // 倒序遍历所有桶，取出 k 个元素
+    var ans []int
+    for i := len(buckets) - 1; i > 0 && k > 0; i-- {
+        if len(buckets[i]) > 0 {
+            k = k - len(buckets[i])
+            ans = append(ans, buckets[i]...)
+        }
+    }
+    return ans
 }
 ```
 
@@ -6854,24 +7015,36 @@ func canPartition(nums []int) bool {
 
 动态规划
 
-`dp[i][j]` 是到达 `i, j` 最多路径，表达式：`dp[i][j] = dp[i-1][j] + dp[i`][j-1]
+构建dp表`dp[i][j]` ：到达 `i, j` 位置最多路径
+
+状态转移方程：`dp[i][j] = dp[i-1][j] + dp[i][j-1]`
+
+边界处理，当i为0时，只能向右移动，路径都为1；当j为0时，只能向下移动，路径都为1，第一个位置路径也为1
 
 ```go
-func uniquePaths(m, n int) int {
-	dp := make([][]int, m)
-	for i := range dp {
-		dp[i] = make([]int, n)
-		dp[i][0] = 1
-	}
-	for j := 0; j < n; j++ {
-		dp[0][j] = 1
-	}
-	for i := 1; i < m; i++ {
-		for j := 1; j < n; j++ {
-			dp[i][j] = dp[i-1][j] + dp[i][j-1]
-		}
-	}
-	return dp[m-1][n-1]
+func uniquePaths(m int, n int) int {
+    // 构建dp表
+    // dp[i][j] 到达 i,j 位置的路径数
+    dp := make([][]int, m)
+    // 边界处理
+    // dp[0][0] = 1
+    // dp[i][0] = 1
+    for i := range dp {
+        dp[i] = make([]int, n)
+        dp[i][0] = 1
+    }
+    // dp[0][j] = 1
+    for j := 1; j < n; j++ {
+        dp[0][j] = 1
+    }
+    // 状态转移
+    // dp[i][j] = dp[i-1][j] + dp[i][j-1]
+    for i := 1; i < m; i++ {
+        for j := 1; j < n; j++ {
+            dp[i][j] = dp[i-1][j] + dp[i][j-1]
+        }
+    }
+    return dp[m-1][n-1]
 }
 ```
 
@@ -6969,9 +7142,8 @@ func minPathSum(grid [][]int) int {
 
 **暴力法**
 
-> 时间复杂度-O(n^3)
->
-> 空间复杂度-O(1)
+- 时间复杂度-O(n^3)
+- 空间复杂度-O(1)
 
 GO：
 
@@ -7044,9 +7216,12 @@ function isPalindrome(str, left, right) {
 
 **中心扩散法**
 
-> 时间复杂度-O(n^2)
->
-> 空间复杂度-O(1)
+- 时间复杂度-O(n^2)
+- 空间复杂度-O(1)
+
+以当前字符i或者当前2个字符i、i+1为中心分别进行左右扩散，扩散到不为回文串退出
+
+获取当前扩散完成的回文串的长度，如果大于最大值则进行更新
 
 GO：
 
@@ -7059,19 +7234,23 @@ func longestPalindrome(s string) string {
 
     left, right := 0, 0
     for i := 0; i < n - 1; i++ {
+        // 以 i 为中心进行左右扩散
         left1, right1 := expandAroundCenter(s, i, i);
-        left2, right2 := expandAroundCenter(s, i, i + 1);
         if right1 - left1 > right - left {
             left, right = left1, right1
         }
-        if right2 - left2 > right - left {
-            left, right = left2, right2
+        // 以 i, i+1 为中心进行左右扩散（2个连续字符相等的场景）
+        if s[i] == s[i+1] {
+            left2, right2 := expandAroundCenter(s, i, i + 1);
+            if right2 - left2 > right - left {
+                left, right = left2, right2
+            }
         }
     }
-
     return s[left: right+1]
 }
 
+// 进行左右扩散
 func expandAroundCenter(s string, left, right int) (int, int) {
     for left >= 0 && right < len(s) {
         if s[left] == s[right] {
@@ -7123,40 +7302,56 @@ class Solution {
 - 时间复杂度-O(n^2)
 - 空间复杂度-O(n^2)
 
+构建dp表，`dp[l][r] `表示字符串 l 到 r 区间字符是否为回文串，即 s[l:r+1] 是否为回文串
+
+当 s[l] == s[r] 时：
+
+- 若 r-l < 3，说明字符串最多3个字符，因为左右字符相等，所以肯定是回文串，即 `dp[l][r] = true`
+- 若 r-l >= 3，则需要根据s[l+1, r-1]来判断是否为回文串，则 `dp[l][r] = dp[l+1][r-1]`
+
+当 s[l] != s[r] 则: `dp[i][j] = false`
+
+边界确定，l为0，r为0时，只有一个字符为回文串：`dp[0][0] = true`
+
+每次更新 `dp[i][j]`的时候判断当前是否为回文串，如果是回文串并且长度大于 max 值则更新 max，并记录下标
+
 GO：
 
 ```go
 func longestPalindrome(s string) string {
     n := len(s)
-    if (n < 2) {
-        return s
-    }
-    // 构建dp表：dp[i][j] 表示 s[i..j] 是否是回文串
+    // 构建dp表
+    // dp[l][r] 表示字符串 l 到 r 区间字符是否为回文串，即 s[l:r+1] 是否为回文串
     dp := make([][]bool, n)
     for i := range dp {
         dp[i] = make([]bool, n)
     }
-    // 最大长度和开始下标
+    // 边界确定
+    dp[0][0] = true
+    // 状态转移
+    // 当 s[l] == s[r]，若 r-l <= 3 则 dp[l][r] = true，若 r-l > 3 则 dp[l][r] = dp[l+1][r-1]
+    // 当 s[l] != s[r] 则: dp[i][j] = false
+    // 最大长度，最大长度开始下标
     max, index := 1, 0
-    for j := 1; j < n; j++ {
-        for i := 0; i < j; i++ {
-            if s[i] != s[j] {
-                dp[i][j] = false
+    for r := 1; r < n; r++ {
+        for l := 0; l < r; l++ {
+            if s[l] != s[r] {
+                dp[l][r] = false
             } else {
-                if j - i < 3 {// 长度小于2，1个字母为回文串，2个字母相等也是回文串
-                    dp[i][j] = true
+                if r-l < 3 {
+                    // s[l] 和 s[r] 相等时，字符串为1、2、3个字符时都是回文串
+                    dp[l][r] = true
                 } else {
-                    dp[i][j] = dp[i + 1][j - 1]
+                    dp[l][r] = dp[l+1][r-1]
                 }
             }
-            // 更新回文长度和起始位置
-            if dp[i][j] == true && j - i + 1 > max {
-                max = j - i + 1
-                index = i
+            if dp[l][r] && r-l+1 > max {
+                max = r-l+1
+                index = l
             }
         }
     }
-    return s[index: index+max]
+    return s[index:index+max]
 }
 ```
 
@@ -7221,13 +7416,15 @@ class Solution {
 
 **题解**
 
-`dp[i][j]`表示 text1的前i个字符和 text2 的前 j 个字符的最长公共子序列的长度
+构建dp表`dp[i][j]`表示 text1的前i个字符和 text2 的前 j 个字符的最长公共子序列的长度
 
 text1和text2的长度分别为m，n，创建 m+1、n+1的dp表
 
-当 i=0 或 j=0 时最长公共子序列长度都为0，所以：`dp[i][0]=0`、 `dp[0][j]=0`
+每增加一个字符，判断text1[i-1]和text2[j-1]是否相等，如果相等，说明在前一个序列基础上+1:`dp[i][j] = dp[i-1][j-1] + 1`
 
-当 i>0 且 j>0 时，可以得到状态转移方程：
+如果不相等：`dp[i][j] = Max(dp[i-1][j], dp[i][j-1])`
+
+因此，得到状态转移方程：
 $$
 dp[i][j]=dp[i-1][j-1] + 1，此时 text1[i-1]=text2[j-1]
 $$
@@ -7236,13 +7433,27 @@ $$
 dp[i][j]=max(dp[i-1][j],dp[i][j-1])，此时 text1[i-1]!=text2[j-1]
 $$
 
+边界确定：当 i=0 或 j=0 时最长公共子序列长度都为0，所以：`dp[i][0]=0`、 `dp[0][j]=0`
+
 ```go
 func longestCommonSubsequence(text1 string, text2 string) int {
     m, n := len(text1), len(text2)
+    // 构建dp表
+    // dp[i][j] 表示text1前i个字符，text2前j个字符的最长公共子序列
     dp := make([][]int, m+1)
     for i := range dp {
         dp[i] = make([]int, n+1)
     }
+    // 边界确定
+    // 当i或j为0是对应值为0
+    // dp[i][0] = 0
+    // dp[0][j] = 0
+    for j := 0; j <= n; j++ {
+        dp[0][j] = 0
+    }
+    // 每增加一个字符，text1[i-1]和text2[j-1]是否相同
+    // text1[i-1] == text2[j-1]: dp[i][j] = dp[i-1][j-1] + 1
+    // text1[i-1] != text2[j-1]: dp[i][j] = Max(dp[i-1][j], dp[i][j-1])
     for i := 1; i <= m; i++ {
         for j := 1; j <= n; j++ {
             if text1[i-1] == text2[j-1] {
@@ -7610,8 +7821,8 @@ func sortColors(nums []int) {
 
 解题思路：
 
-1. 第一次从右侧开始遍历，找到第一个较小值 `nums[i]`
-2. 第二次从右侧开始遍历，找出第一个大于较小值的数值 `nums[j]`
+1. 第一次从右侧开始遍历，找到第一个较小值 `nums[i]`，即第一个 `nums[i] < nums[i+1]` 的数
+2. 第二次从右侧开始遍历，找出第一个大于较小值 `nums[i]`的数值 `nums[j]`
 3. 交换 `nums[i]` 和  `nums[j]`
 4. 翻转  `nums[i]` 之后的序列
 
@@ -7622,32 +7833,38 @@ func sortColors(nums []int) {
 GO：
 
 ```go
-func nextPermutation(nums []int) {
-	n := len(nums)
-	i := n - 2
-	// 第一次从右侧开始遍历，找出最靠近右侧的较小值
-	for i >= 0 && nums[i] >= nums[i+1] {
-		i--
-	}
-	if i >= 0 {
-		j := n - 1
-		// 第二次遍历，找出最靠右的大于较小值的第一个数
-		for j >= 0 && nums[i] >= nums[j] {
-			j--
-		}
-		// 交换两个数的位置
-		nums[i], nums[j] = nums[j], nums[i]
-	}
-	// 将右侧翻转
-	reverse(nums[i+1:])
-	//fmt.Println(nums)
+func nextPermutation(nums []int)  {
+    n := len(nums)
+    // 从右往左遍历，找出第一个较小值 nums[i]
+    i := n-2
+    for ; i >= 0; i-- {
+        if nums[i] < nums[i+1] {
+            break
+        }
+    }
+    // i < 0 的时候相当于当前是最大的序列，直接翻转即可，也就是翻转成最小序列
+    if i >= 0 {
+        // 从右往左遍历，找出第一个大于较小值的数 nums[j]
+        j := n-1
+        for ; j > i; j-- {
+            if nums[j] > nums[i] {
+                break
+            }
+        }
+        // 交换 nums[i] 和 nums[j]
+        nums[i], nums[j] = nums[j], nums[i]
+    }
+    // 翻转 nums[i+1:] 部分
+    reverse(nums[i+1:])
 }
 
 // 翻转数组
-func reverse(a []int) {
-	for i, n := 0, len(a); i < n/2; i++ {
-		a[i], a[n-1-i] = a[n-1-i], a[i]
-	}
+func reverse(arr []int) {
+    n := len(arr)
+    for i := 0; i < n/2; i++ {
+        arr[i], arr[n-1-i] = arr[n-1-i], arr[i]
+    }
+    return
 }
 ```
 
@@ -7722,7 +7939,24 @@ class Solution {
 
 **题解**
 
-快慢指针，把数组类比成链表，重复的值即是有换链表的入环点，解法和  [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/huan-xing-lian-biao-ii-by-leetcode/) 一样
+借助一个数组，但空间复杂度为：O(n)
+
+```go
+func findDuplicate(nums []int) int {
+    tmp := make([]int, len(nums))
+    for _, num := range nums {
+        if tmp[num] > 0 {
+            return num
+        }
+        tmp[num]++
+    }
+    return -1
+}
+```
+
+快慢指针
+
+把数组类比成链表，重复的值即是有换链表的入环点，解法和  [142. 环形链表 II](https://leetcode.cn/problems/linked-list-cycle-ii/solutions/441131/huan-xing-lian-biao-ii-by-leetcode-solution/) 一样
 
 - 慢指针走一步 `slow = slow.next` ==> 本题 `slow = nums[slow]`
 
