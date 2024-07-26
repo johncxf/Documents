@@ -464,55 +464,120 @@ class Solution {
 
 **题解**
 
-动态规划：
+暴力枚举
+
+- 时间复杂度：O(N^2)
+
+如果柱子 i 能接到雨水，说明柱子i左右都存在高度大于它的柱子，才能接到雨水
+
+那么如果柱子 i 能接到雨水，怎么计算呢？
+
+找出柱子i左侧高度最大的柱子leftMax和右侧高度最大的柱子rightMax，取这两个柱子高度的较小值 min
+
+最后柱子i能够接到的雨水就是 height[i]-min 的值
+
+因此，就可以针对每个柱子i进行遍历，分别找出对应柱子能否接到雨水，以及接到雨水的量（首位的柱子因为不存在左侧柱子和右侧柱子，所以跳过）
 
 ```go
 func trap(height []int) int {
-	n := len(height)
-	if n == 0 {
-		return -1
-	}
-
-	leftMax := make([]int, n)
-	leftMax[0] = height[0]
-	for i := 1; i < n; i++ {
-		if leftMax[i-1] > height[i] {
-			leftMax[i] = leftMax[i-1]
-		} else {
-			leftMax[i] = height[i]
-		}
-	}
-
-	rightMax := make([]int, n)
-	rightMax[n-1] = height[n-1]
-	for i := n - 2; i >= 0; i-- {
-		if rightMax[i+1] > height[i] {
-			rightMax[i] = rightMax[i+1]
-		} else {
-			rightMax[i] = height[i]
-		}
-	}
-	ans := 0
-	for i, h := range height {
-		if leftMax[i] < rightMax[i] {
-			ans += leftMax[i] - h
-		} else {
-			ans += rightMax[i] - h
-		}
-	}
-	return ans
+    n := len(height)
+    ans := 0
+    for i := 1; i < n - 1; i++ {
+        // 向左查找大于本身高度的最大值
+        leftMax := 0
+        for l := i-1; l >= 0; l-- {
+            if height[l] > height[i] && height[l] > leftMax {
+                leftMax = height[l]
+            }
+        }
+        // 向右查找大于本身高度的最大值
+        rightMax := 0
+        for r := i+1; r < n; r++ {
+            if height[r] > height[i] && height[r] > rightMax {
+                rightMax = height[r]
+            }
+        }
+        // 左右都有大于当前高度的柱子才能接到雨水
+        if leftMax != 0 && rightMax != 0 {
+            // 接的雨水等于两个最高柱子的最小值减去自身柱子
+            min := leftMax
+            if rightMax < min {
+                min = rightMax
+            }
+            ans += min-height[i]
+        }
+    }
+    return ans
 }
 ```
 
-- 时间复杂度：O(n)
-- 空间复杂度：O(n)
+动态规划：
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(N)
+
+暴力枚举过程，存在重复搜索的过程，那么如何进行优化呢？
+
+可以使用动态规划的思路，分别找出每个柱子i左侧最高柱子，和右侧的最高柱子，记录在leftMax和rightMax两个数组中，最后遍历所有柱子，将能够接到的雨水相加即可
+
+建立两个dp表，leftMax[i] 和 rightMax[i]，分别表示柱子i左侧、右侧最高柱子的高度
+
+为了方便计算，如果左侧或右侧不存在高度自身的柱子，则最大高度为本身，
+
+所以可以得到动态规划表达式：
+
+- `leftMax[i]=Max(leftMax[i-1], height[i])`
+- `rightMax[i]=Max(rightMax[i-1], height[i])`
+
+边界确认，第一个元素左侧没有值，所以 `leftMax[0]=height[0]`，最后一个元素右侧没有值，所以 `rightMax[n-1]=height[n-1]`
+
+```go
+func trap(height []int) int {
+    n := len(height)
+    // 建立dp表
+    leftMax, rightMax := make([]int, n), make([]int, n)
+    // 边界确认
+    leftMax[0], rightMax[n-1] = height[0], height[n-1]
+    // 状态转移
+    for i := 1; i < n; i++ {
+        leftMax[i] = height[i]
+        if leftMax[i-1] > leftMax[i] {
+            leftMax[i] = leftMax[i-1]
+        }
+    }
+    for j := n-2; j >= 0; j-- {
+        rightMax[j] = height[j]
+        if rightMax[j+1] > rightMax[j] {
+            rightMax[j] = rightMax[j+1]
+        }
+    }
+    // 遍历柱子，计算雨水总量
+    ans := 0
+    for i := 1; i < n-1; i++ {
+        // 取较小值
+        if leftMax[i] < rightMax[i] {
+            ans += leftMax[i] - height[i]
+        } else {
+            ans += rightMax[i] - height[i]
+        }
+    }
+    return ans
+}
+```
 
 滑动窗口
 
-> 在动态规划解法基础上进行优化
+- 时间复杂度：O(n)
+- 空间复杂度：O(1)
+
+在动态规划解法基础上进行优化，动态规划维护2个数组，记录每个柱子i左右的最高柱子
+
+因为leftMax是从左到右，rightMax是从右到左，也就是leftMax[i]只和leftMax[i-1]有关系，rightMax[j]只和rightMax[j+1]有关系，
+
+所以只需要2两个遍历就可以代替2个数组
 
 ```go
-func trap2(height []int) int {
+func trap(height []int) int {
 	n := len(height)
 	if n == 0 {
 		return -1
@@ -537,9 +602,6 @@ func trap2(height []int) int {
 	return ans
 }
 ```
-
-- 时间复杂度：O(n)
-- 空间复杂度：O(1)
 
 ## 滑动窗口
 
@@ -846,10 +908,24 @@ func subarraySum4(nums []int, k int) int {
 
 - `m == s.length`
 - `n == t.length`
-- `1 <= m, n <= 105`
+- `1 <= m, n <= 10^5`
 - `s` 和 `t` 由英文字母组成
 
 **题解**
+
+滑动窗口
+
+创建一个 hash表 hashT 维护 t 字符以及字符个数，方便和子串比较
+
+创建一个 hash表 cnt 维护 s 字符串中一个滑动窗口中字符的数量（只统计属于字符串t范围内的字符）
+
+初始化窗口左右指针l、r都为0，r不断向右移动
+
+扩充的字符 s[r] 如果是字符串 t 的子集，则在 cnt 进行统计
+
+当前扩大后的窗口如果覆盖字符t，则开始进行收缩操作（l++）
+
+每次收缩前更新最小子串的值，如果收缩的字符属于字符t，则在执行cnt--
 
 ```go
 func minWindow(s string, t string) string {
@@ -932,54 +1008,47 @@ func minWindow(s string, t string) string {
 
 **题解**
 
-暴力，时间复杂度 O(nk) 超时
-
-```go
-// 超时 - 不适用
-func maxSlidingWindow99(nums []int, k int) []int {
-	maxIndex, max := 0, nums[0]
-	ans, kArr := make([]int, 0), make([]int, 0)
-	for i := 0; i < k; i++ {
-		kArr = append(kArr, nums[i])
-		if nums[i] > max {
-			max = nums[i]
-			maxIndex = i
-		}
-	}
-	ans = append(ans, max)
-	for i := k; i < len(nums); i++ {
-		kArr = append(kArr, nums[i])
-		kArr = kArr[1:]
-		if nums[i] > max {
-			max = nums[i]
-			maxIndex = len(kArr) - 1
-		} else {
-			if maxIndex > 0 {
-				maxIndex--
-			} else {
-				max = kArr[0]
-				maxIndex = 0
-				for j, v := range kArr {
-					if v > max {
-						maxIndex = j
-						max = v
-					}
-				}
-			}
-		}
-		ans = append(ans, max)
-	}
-	return ans
-}
-```
-
-优化：
+暴力，时间复杂度 O(NK) 超时
 
 ```go
 func maxSlidingWindow(nums []int, k int) []int {
+    n := len(nums)
+    var ans []int
+    // 以i为窗口起始点进行遍历
+    for i := 0; i <= n-k; i++ {
+        max := nums[i]
+        // 查找 i+k 个元素中的最大值
+        for j := i+1; j < i+k; j++ {
+            if nums[j] > max {
+                max = nums[j]
+            }
+        }
+        ans = append(ans, max)
+    }
+    return ans
+}
+```
+
+单调队列
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(K)
+
+实现一个单调队列，单调递减
+
+并实现入队函数 push()，要保持单调递减，则入队元素要依次和队尾元素比较，小于等于当前元素的全部出队，最后再把当前元素入队
+
+先把前k个元素入队，此时队首元素就是第一个窗口的最大值
+
+从 i=k 开始，依次移动窗口，将元素进行入队（需要保证队首元素在窗口范围内），并将队头加入结果集合
+
+```go
+func maxSlidingWindow(nums []int, k int) []int {
+    // 单调队列，单调递减
 	q := make([]int, 0)
+    // 实现单调队列入队操作
 	push := func(i int) {
-		// 删除队列中所有大于 num[i] 的元素
+		// 删除所有小于 num 的元素，并将 num 添加至队尾，保持单调递减
 		for len(q) > 0 && nums[i] >= nums[q[len(q)-1]] {
 			q = q[:len(q)-1]
 		}
@@ -989,16 +1058,18 @@ func maxSlidingWindow(nums []int, k int) []int {
 	for i := 0; i < k; i++ {
 		push(i)
 	}
-
+	// 结果集合
 	ans := make([]int, 0)
 	ans = append(ans, nums[q[0]])
+    // 移动窗口右坐标 i
 	for i := k; i < len(nums); i++ {
-		// 入队
+		// 当前元素入队
 		push(i)
-		// 保证队首元素不能超过区间范围
+		// 如果当前队头元素不在长度为 k 的区间，则删除该队头元素
 		for q[0] <= i-k {
 			q = q[1:]
 		}
+        // 将队头加入结果集合
 		ans = append(ans, nums[q[0]])
 	}
 	return ans
@@ -5617,119 +5688,6 @@ func largestRectangleArea(heights []int) int {
 }
 ```
 
-#### [L32-困难] 最长有效括号
-
-给你一个只包含 `'('` 和 `')'` 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
-
-**示例**
-
-```
-输入：s = "(()"
-输出：2
-解释：最长有效括号子串是 "()"
-
-输入：s = ")()())"
-输出：4
-解释：最长有效括号子串是 "()()"
-
-输入：s = ""
-输出：0
-```
-
-- `0 <= s.length <= 3 * 104`
-- `s[i]` 为 `'('` 或 `')'`
-
-**题解**
-
-非动态规划法，依次标记字符串中每个位置是否匹配成功，然后遍历标记数组，连续标记的就是子串，获取最大的子串即可
-
-```go
-func longestValidParentheses(s string) int {
-	n := len(s)
-	if n == 0 {
-		return 0
-	}
-	// 栈，存储左括号下标，用于判断是否匹配成功
-	stack := make([]int, 0)
-	// 标记数组，标记字符串该位置是否匹配成功
-	flags := make([]bool, n)
-	// 遍历字符串，进行标记
-	for i := 0; i < n; i++ {
-		if s[i] == '(' {
-			stack = append(stack, i)
-		} else {
-			if len(stack) == 0 {
-				continue
-			} else {
-				// 左括号下标
-				leftIndex := stack[len(stack)-1]
-				// 出栈
-				stack = stack[:len(stack)-1]
-				// 标记
-				flags[i], flags[leftIndex] = true, true
-			}
-		}
-	}
-	// 遍历标记数组，找出连续匹配成功的最大字符串
-	max := 0
-	cur := 0
-	for _, flag := range flags {
-		if flag {
-			cur++
-		} else {
-			if cur > max {
-				max = cur
-			}
-			cur = 0
-		}
-	}
-	// 最后一个字符也匹配成功的情况
-	if cur > max {
-		max = cur
-	}
-	return max
-}
-```
-
-在上面的基础上进行优化
-
-```go
-func longestValidParentheses(s string) int {
-	n := len(s)
-	if n == 0 {
-		return 0
-	}
-	// 栈，栈低存储没有被匹配的最后一个右括号，其他元素为左括号
-	stack := make([]int, 0)
-	// 初始化一个 -1
-	stack = append(stack, -1)
-	max := 0
-	// 遍历字符串，进行标记
-	for i := 0; i < n; i++ {
-		if s[i] == '(' {
-			stack = append(stack, i)
-		} else {
-			// 出栈
-			stack = stack[:len(stack)-1]
-			if len(stack) == 0 {
-				// 栈为空，下标入栈，此时刚好是栈低元素
-				stack = append(stack, i)
-			} else {
-				// 不为空，更新最大值
-				if i-stack[len(stack)-1] > max {
-					max = i - stack[len(stack)-1]
-				}
-			}
-		}
-	}
-	return max
-}
-```
-
-动态规划法：
-
-不想推导了。。。
-
 ## 堆
 
 #### [L215-中等] 数组中的第K个最大元素
@@ -6976,6 +6934,130 @@ func canPartition(nums []int) bool {
     return dp[n-1][target]
 }
 ```
+
+#### [L32-困难] 最长有效括号
+
+给你一个只包含 `'('` 和 `')'` 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
+
+**示例**
+
+```
+输入：s = "(()"
+输出：2
+解释：最长有效括号子串是 "()"
+
+输入：s = ")()())"
+输出：4
+解释：最长有效括号子串是 "()()"
+
+输入：s = ""
+输出：0
+```
+
+- `0 <= s.length <= 3 * 104`
+- `s[i]` 为 `'('` 或 `')'`
+
+**题解**
+
+非动态规划法，依次标记字符串中每个位置是否匹配成功，然后遍历标记数组，连续标记的就是子串，获取最大的子串即可
+
+初始化一个栈 stack，一个长度为n的标记数组 flags（记录每个位置是否能匹配成功，初始值为false）
+
+遍历字符串：
+
+- 遇到左括号直接入栈
+- 遇到右括号则判断 stack是否为空
+    - stack为空，说明没有与之匹配的括号，跳过
+    - stack不为空，则stack中出栈一个元素，并将flags中这两个坐标都标记为true
+
+最后遍历 flags，连续为true的就是有效匹配的子串，找出最长连续的子串即可
+
+```go
+func longestValidParentheses(s string) int {
+	n := len(s)
+	if n == 0 {
+		return 0
+	}
+	// 栈，存储左括号下标，用于判断是否匹配成功
+	stack := make([]int, 0)
+	// 标记数组，标记字符串该位置是否匹配成功
+	flags := make([]bool, n)
+	// 遍历字符串，进行标记
+	for i := 0; i < n; i++ {
+		if s[i] == '(' {
+			stack = append(stack, i)
+		} else {
+			if len(stack) == 0 {
+				continue
+			} else {
+				// 左括号下标
+				leftIndex := stack[len(stack)-1]
+				// 出栈
+				stack = stack[:len(stack)-1]
+				// 标记
+				flags[i], flags[leftIndex] = true, true
+			}
+		}
+	}
+	// 遍历标记数组，找出连续匹配成功的最大字符串
+	max := 0
+	cur := 0
+	for _, flag := range flags {
+		if flag {
+			cur++
+		} else {
+			if cur > max {
+				max = cur
+			}
+			cur = 0
+		}
+	}
+	// 最后一个字符也匹配成功的情况
+	if cur > max {
+		max = cur
+	}
+	return max
+}
+```
+
+在上面的基础上进行优化
+
+```go
+func longestValidParentheses(s string) int {
+	n := len(s)
+	if n == 0 {
+		return 0
+	}
+	// 栈，栈低存储没有被匹配的最后一个右括号，其他元素为左括号
+	stack := make([]int, 0)
+	// 初始化一个 -1
+	stack = append(stack, -1)
+	max := 0
+	// 遍历字符串，进行标记
+	for i := 0; i < n; i++ {
+		if s[i] == '(' {
+			stack = append(stack, i)
+		} else {
+			// 出栈
+			stack = stack[:len(stack)-1]
+			if len(stack) == 0 {
+				// 栈为空，下标入栈，此时刚好是栈低元素
+				stack = append(stack, i)
+			} else {
+				// 不为空，更新最大值
+				if i-stack[len(stack)-1] > max {
+					max = i - stack[len(stack)-1]
+				}
+			}
+		}
+	}
+	return max
+}
+```
+
+动态规划法：
+
+不想推导了。。。
 
 ## 多维动态规划
 
