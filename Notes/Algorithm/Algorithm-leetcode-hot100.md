@@ -1342,45 +1342,74 @@ func productExceptSelf(nums []int) []int {
 
 **题解**
 
-我将数组所有的数放入哈希表，随后从 1 开始依次枚举正整数，并判断其是否在哈希表中
+首页要搞懂题目的意思，要找数组nums中不存在的最小正整数，数组nums长度为n，则要找的正整数肯定在 1～n+1 中
 
-此种方法时间复杂度为 O(n)，空间复杂度也是 O(n)，空间复杂度不满足题目要求
+因为，若nums中所有数都小于1，那最小正整数为1，若nums所有数刚好是1～n，那最小正整数刚好为n+1
 
-因此，可以利用原数组进行改造
+哈希表：
 
-题解见：https://leetcode.cn/problems/first-missing-positive/solutions/304743/que-shi-de-di-yi-ge-zheng-shu-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked
+- 时间复杂度：O(N)
+- 空间复杂度：O(N)
+
+将数组所有的数放入哈希表，随后从 1 开始依次枚举正整数，并判断其是否在哈希表中
+
+此种方法空间复杂度不满足题目要求
 
 ```go
 func firstMissingPositive(nums []int) int {
-	n := len(nums)
-	// 将数组中所有小于等于 0 的数修改为 N+1
-	for i := 0; i < n; i++ {
-		if nums[i] <= 0 {
-			nums[i] = n + 1
-		}
-	}
-	// 定义取绝对值函数
-	abs := func(x int) int {
-		if x < 0 {
-			return -x
-		}
-		return x
-	}
-	// 遍历所有元素
-	for i := 0; i < n; i++ {
-		num := abs(nums[i])
-		// 将所有小于 n 的元素打标记
-		if num <= n {
-			nums[num-1] = -abs(nums[num-1])
-		}
-	}
-	// 取第一个正数 + 1，如果都是负数，那答案就是 n + 1
-	for i := 0; i < n; i++ {
-		if nums[i] > 0 {
-			return i + 1
-		}
-	}
-	return n + 1
+    hash := make(map[int]bool, 0)
+    // 遍历数组，将数组中所有数存入 hash 表
+    for _, num := range nums {
+        hash[num] = true
+    }
+    n := len(nums)
+    // 从1开始枚举正整数，遇到hash表中不存在的就是最小的正整数
+    for i := 1; i <= n; i++ {
+        if !hash[i] {
+            return i
+        }
+    }
+    // 如果 1～n 都存在数组中，那最小的正整数就是 n+1
+    return n+1
+}
+```
+
+如果需要达到空间复杂度为 O(1)，还有一种方法是，从1开始枚举正整数，然后再从数组中查找，但是这种方法时间复杂度为O(N^2)，不符合要求
+
+因此，如果要达到要求的复杂度，需要将原数组作为一个哈希表进行使用
+
+最终要找的正整数在`[1, n+1]` 范围内，n+1只有当nums中所有数都能在1～n中找到时，才会等于n+1
+
+我们可以将数1放到下标为0的位置，把数2放到下标为1的位置，也就是把数 nums[i] 放到  nums[i]-1的位置上，按照这个思路遍历一遍数组
+
+得到新的数组nums中，如果nums[i] 不等于当前下标-1，说明当前位置的数缺失，也就是第一个最小缺失的正数，如果全部都符合要求，说明1～n都不缺，那就是n+1
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(1)
+
+```go
+func firstMissingPositive(nums []int) int {
+    n := len(nums)
+    // 遍历一遍数组，将 nums[i] 放到下标为 nums[i]-1 的位置上
+    for i := 0; i < n; i++ {
+        // nums[i] 范围在 1 ～ n
+        // 这里用 for 循环是因为当前位置 i 与 nums[i]-1 位置换了元素，那当前位置 i 需要重新进行判断
+        for nums[i] > 0 && nums[i] <= n && nums[nums[i]-1] != nums[i] {
+            nums[i], nums[nums[i]-1] = nums[nums[i]-1], nums[i]
+        }
+        // 这样也可以
+		//if nums[i] > 0 && nums[i] <= n && nums[nums[i]-1] != nums[i] {
+		//	nums[i], nums[nums[i]-1] = nums[nums[i]-1], nums[i]
+		//	i--
+		//}
+    }
+    // 再次遍历数组，找出 nums[i] 不等于 i-1 的数
+    for i, num := range nums {
+        if num != i+1 {
+            return i+1
+        }
+    }
+    return n+1
 }
 ```
 
@@ -3683,6 +3712,8 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 
 **题解**
 
+递归
+
 ```go
 func maxPathSum(root *TreeNode) int {
     maxSum := math.MinInt32
@@ -4719,60 +4750,78 @@ func isPalindrome(s string, left, right int) bool {
 
 **题解**
 
+回溯算法：
+
+进行逐行放置皇后，放置前需要判断对应列，对应2条对角线上是否已经存在皇后，如果已经存在，则不能继续放置
+
+因此本题的关键是如何判断列和对角线是否已经放置皇后
+
+列很简单，只需要用一个长度为n的数组记录哪一列放置了皇后即可
+
+而对角线，则可以自己在图上把一个n*n矩阵每个坐标标记出来，就可以发现：
+
+- 正对角线 `/`：一条对角线上所有位置坐标 row+col 值相等，值范围` [0, (n-1)*2]`
+- 反对角线 `\`：一条对角线上所有位置坐标 row-col 值相等，值范围` [-(n-1), n-1]`
+
+所以可以开两个长度为 2n-1 的数组来记录2条对角线是否已经放置皇后
+
 参考：https://www.hello-algo.com/chapter_backtracking/n_queens_problem/#3
 
 ```go
 func solveNQueens(n int) [][]string {
-	// 初始化 n*n 大小的棋盘，其中 'Q' 代表皇后，'#' 代表空位
-	state := make([][]string, n)
-	for i := 0; i < n; i++ {
-		row := make([]string, n)
-		for j := 0; j < n; j++ {
-			row[j] = "."
-		}
-		state[i] = row
-	}
-	// 记录列是否有皇后
-	cols := make([]bool, n)
-	// 记录主对角线是否有皇后
-	diags1 := make([]bool, 2*n-1)
-	// 记录副对角线是否有皇后
-	diags2 := make([]bool, 2*n-1)
-	// 结果
-	res := make([][]string, 0)
-	// 进行回溯
-	backtrackNQ(0, n, &state, &res, &cols, &diags1, &diags2)
-	return res
+    // 初始化 n*n 大小的棋盘
+    state := make([][]string, n)
+    for i := range state {
+        row := make([]string, n)
+        for j := range row {
+            row[j] = "."
+        }
+        state[i] = row
+    }
+    // 记录列是否放置皇后
+    cols := make([]bool, n)
+    // 记录对角线是否放置了皇后
+    diags1, diags2 := make([]bool, 2*n-1), make([]bool, 2*n-1)
+    // 结果集
+    res := make([][]string, 0)
+    // 进行逐行枚举回溯
+    backtrace(n, 0, cols, diags1, diags2, state, &res)
+    return res
 }
 
-// 回溯
-func backtrackNQ(row, n int, state *[][]string, res *[][]string, cols, diags1, diags2 *[]bool) {
-	// 当放置完所有行时，记录解
-	if row == n {
-		newState := make([]string, len(*state))
-		for i := range newState {
-			newState[i] = strings.Join((*state)[i], "")
-		}
-		*res = append(*res, newState)
-		return
-	}
-	// 遍历所有列
-	for col := 0; col < n; col++ {
-		// 计算该格子对应的主对角线和次对角线
-		diag1 := row - col + n - 1
-		diag2 := row + col
-		// 剪枝：不允许该格子所在列、主对角线、次对角线上存在皇后
-		if !(*cols)[col] && !(*diags1)[diag1] && !(*diags2)[diag2] {
-			// 尝试：将皇后放置在该格子
-			(*state)[row][col] = "Q"
-			(*cols)[col], (*diags1)[diag1], (*diags2)[diag2] = true, true, true
-			// 放置下一行
-			backtrackNQ(row+1, n, state, res, cols, diags1, diags2)
-			// 回退：将该格子恢复为空位
-			(*state)[row][col] = "."
-			(*cols)[col], (*diags1)[diag1], (*diags2)[diag2] = false, false, false
-		}
-	}
+
+func backtrace(n, row int, cols, diags1, diags2 []bool, state [][]string, res *[][]string) {
+    // 放置完所有行，记录结果
+    if row == n {
+        newState := make([]string, len(state))
+        // 将 state 的结果进行组装
+        for i := range newState {
+            newState[i] = strings.Join(state[i], "")
+        }
+        // 将当前结果加入结果集
+        *res = append(*res, newState)
+        return
+    }
+    // 遍历所有列
+    for col := 0; col < n; col++ {
+        // 计算两个对角线
+        // 对角线 \，这一条对角线上的坐标 row-col 是恒定值，由于存在负数，所以加上 n-1
+        diag1 := (row - col) + (n - 1)
+        // 对角线 /，这一条对角线上的坐标 row + col 为恒定值
+        diag2 := row + col
+        // 剪枝：当前列、对角线都没有放置皇后
+        if !cols[col] && !diags1[diag1] && !diags2[diag2] {
+            // 在当前位置放置皇后
+            state[row][col] = "Q"
+            // 更新当前列和对角线
+            cols[col], diags1[diag1], diags2[diag2] = true, true, true
+            // 递归下一行
+            backtrace(n, row+1, cols, diags1, diags2, state, res)
+            // 回退
+            state[row][col] = "."
+            cols[col], diags1[diag1], diags2[diag2] = false, false, false
+        }
+    }
 }
 ```
 
@@ -5216,46 +5265,99 @@ func findMin(nums []int) int {
 
 先合并两个有序数组，然后根据奇数，还是偶数，返回中位数
 
-这种方法时间复杂度为：O(m+n)，不符合题意
+这种方法时间复杂度为：O(N+M)，不符合题意
 
 ```go
-func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
-	// 先合并两个有序数组
+// 先合并2两个数组，再取中位数
+func findMedianSortedArrays1(nums1 []int, nums2 []int) float64 {
 	nums := mergeSortedArrays(nums1, nums2)
-    // 取数组中位数
-	count := len(nums)
-	if count%2 == 0 {
-		return float64(nums[count/2-1]+nums[count/2]) / 2.0
+	n := len(nums)
+	if n%2 != 0 {
+		return float64(nums[n/2])
 	} else {
-		return float64(nums[count/2])
+		return float64(nums[n/2-1]+nums[n/2]) / 2
 	}
 }
 
-func mergeSortedArrays(l, r []int) (res []int) {
-	for len(l) != 0 && len(r) != 0 {
-		if l[0] <= r[0] {
-			res = append(res, l[0])
-			l = l[1:]
+// 合并两个递增数组
+func mergeSortedArrays(nums1, nums2 []int) []int {
+	var res []int
+	for len(nums1) > 0 && len(nums2) > 0 {
+		if nums1[0] < nums2[0] {
+			res = append(res, nums1[0])
+			nums1 = nums1[1:]
 		} else {
-			res = append(res, r[0])
-			r = r[1:]
+			res = append(res, nums2[0])
+			nums2 = nums2[1:]
 		}
 	}
-	for len(l) != 0 {
-		res = append(res, l[0])
-		l = l[1:]
+	if len(nums1) > 0 {
+		res = append(res, nums1...)
 	}
-	for len(r) != 0 {
-		res = append(res, r[0])
-		r = r[1:]
+	if len(nums2) > 0 {
+		res = append(res, nums2...)
 	}
-	return
+	return res
 }
 ```
 
-优化解法：
+在上面的基础上继续优化
 
-`O(log (m+n))` 的复杂度，需要使用二分法
+由于是找中位数，所以在合并数组的时候不需要全部遍历，只需要遍历一半就可以找到
+
+遍历前count/2个数
+
+- 当count为奇数时，中位数就是第count/2个
+- 当count为偶数时，中位数就是第count/2和count/2-1两个数的平均数
+
+可以设定left、right两个指针，每次取一个最小数的时候，将right赋值给left，最小数赋值给right
+
+最后只需要判断count为偶数还是奇数来确定是返回结果即可
+
+时间复杂度为：O((N+M)/2)
+
+```go
+func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
+    // 总数
+    count := len(nums1) + len(nums2)
+    // 左右两个数
+    left, right := 0, 0
+    // 遍历前count/2个数
+    // 当count为奇数时，中位数就是第count/2个
+    // 当count为偶数时，中位数就是第count/2和count/2-1两个数的平均数
+    for i := 0; i <= count/2; i++ {
+        // 左指针移动一位
+        left = right
+        // 每次取最小的数，并在数组中移除该数
+        if len(nums1) > 0 && len(nums2) > 0 {
+            if nums1[0] < nums2[0] {
+                right = nums1[0]
+                nums1 = nums1[1:]
+            } else {
+                right = nums2[0]
+                nums2 = nums2[1:]
+            }
+        } else if len(nums1) == 0 {
+            right = nums2[0]
+            nums2 = nums2[1:]
+        } else if len(nums2) == 0 {
+            right = nums1[0]
+            nums1 = nums1[1:]
+        }
+    }
+    if count % 2 != 0 {
+        return float64(right)
+    } else {
+        return float64(left+right)/2
+    }
+}
+```
+
+二分法：
+
+题目要求`O(log (m+n))` 的复杂度，需要使用二分法
+
+上面的方法是针对前 count/2 的元素进行一个个查找，可以针对这部分进行优化，进行二分查找，这样时间复杂度就可以达到`O(log (m+n))` 
 
 ## 栈
 
@@ -5649,6 +5751,137 @@ func dailyTemperatures(temperatures []int) []int {
 - `0 <= heights[i] <= 104`
 
 **题解**
+
+暴力枚举宽：
+
+- 时间复杂度：O(N^2)
+- 空间复杂度：O(1)
+
+遍历数组 heights，以每个位置 i 作为左边界，求当前左边界情况下，不断扩大右边界情况下的最大面积
+
+```go
+// 暴力-枚举宽
+func largestRectangleArea(heights []int) int {
+    n := len(heights)
+    maxArea := heights[0]
+    // 遍历数组 heights，以每个位置为左边界
+    for l := 0; l < n; l++ {
+        // 最小高度
+        minHeight := heights[l]
+        // 右边界
+        for r := l; r < n; r++ {
+            if heights[r] < minHeight {
+                minHeight = heights[r]
+            }
+            area := (r-l+1)*minHeight
+            if area > maxArea {
+                maxArea = area
+            }
+        }
+    }
+    return maxArea
+}
+```
+
+暴力枚举高：
+
+- 时间复杂度：O(N^2)
+- 空间复杂度：O(1)
+
+遍历数组，以每个元素作为目标矩阵的高h（当前矩阵最低的高度），向两侧延伸，直到遇到高度小于h的柱子后停止，计算当前的面积
+
+```go
+// 暴力-枚举高
+func largestRectangleArea2(heights []int) int {
+	n := len(heights)
+	maxArea := heights[0]
+	// 以当前元素为矩阵最低高度，向两侧进行枚举
+	for i := 0; i < n; i++ {
+		h := heights[i]
+		l, r := i, i
+		// 向左、右两侧侧遍历，遇到小于当前高度h终止
+		for l-1 >= 0 && heights[l-1] >= h {
+			l--
+		}
+		for r+1 < n && heights[r+1] >= h {
+			r++
+		}
+		area := (r - l + 1) * h
+		if area > maxArea {
+			maxArea = area
+		}
+	}
+	return maxArea
+}
+```
+
+以上两种方法时间复杂度都是O(N^2)，需要进一步优化
+
+从枚举高的场景可知，要求当前柱子 i 的高h为矩阵高时，需要找出 i 左右两侧最近的高度小于h的两个柱子
+
+可以利用单调栈，分别找出每个位置左右两侧最近的高度小于h的两个柱子坐标
+
+然后再遍历每个位置，分别计算面积
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(N)
+
+```go
+func largestRectangleArea(heights []int) int {
+    n := len(heights)
+    left, right := make([]int, n), make([]int, n)
+    // 单调栈：单调递增
+    stack := make([]int, 0)
+    // 从左到右遍历所有元素，找出所有i左侧最近低于heights[i]的元素坐标
+    for i := 0; i < n; i++ {
+        // 保持单调栈属性：栈顶元素不能大于等于当前元素，不然进行出栈
+        for len(stack) > 0 && heights[stack[len(stack)-1]] >= heights[i] {
+            stack = stack[:len(stack)-1]
+        }
+        if len(stack) == 0 {
+            // 栈为空，说明左侧不存在小于当前高度的元素，置为-1
+            left[i] = -1
+        } else {
+            // 不为空，取最近的小于当前高度的坐标
+            left[i] = stack[len(stack)-1]
+        }
+        // 当前位置入栈
+        stack = append(stack, i)
+    }
+    // 单调栈重置
+    stack = make([]int, 0)
+    // 从右往左遍历所有元素，找出所有i右侧最近低于heights[i]的元素坐标
+    for i := n-1; i >= 0; i-- {
+        // 保持单调栈属性：栈顶元素不能大于等于当前元素，不然进行出栈
+        for len(stack) > 0 && heights[stack[len(stack)-1]] >= heights[i] {
+            stack = stack[:len(stack)-1]
+        }
+        if len(stack) == 0 {
+            // 栈为空，说明右侧没有小于它的元素，置为 n
+            right[i] = n
+        } else {
+            // 不为空，取最近的小于当前高度的坐标
+            right[i] = stack[len(stack)-1]
+        }
+        // 当前位置入栈
+        stack = append(stack, i)
+    }
+    maxArea := heights[0]
+    // 遍历所有位置 i，以 heights[i] 为高度计算面积
+    for i := 0; i < n; i++ {
+        area := (right[i]-left[i]-1)*heights[i]
+        if area > maxArea {
+            maxArea = area
+        }
+    }
+    return maxArea
+}
+```
+
+以上代码求left、right进行了两次遍历，可以进行合并处理：
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(N)
 
 ```go
 func largestRectangleArea(heights []int) int {
