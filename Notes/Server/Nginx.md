@@ -1,8 +1,16 @@
 # Nginx
 
-Nginx是lgor Sysoev为俄罗斯访问量第二的rambler.ru站点设计开发的，从2004年发布至今。
+Nginx是由lgor Sysoev为俄罗斯访问量第二的rambler.ru站点设计开发的，从2004年发布至今；
+
+Nginx 是一个轻量级/高性能的web服务器，主要功能包括：反向代理、负载均衡、配置SSL证书、防盗链、解决跨域问题、缓存、限流、动静资源分离等
 
 - 中文文档：https://www.nginx.cn/doc/
+
+### 代理
+
+正向代理（forward proxy）：是一个位于客户端和目标服务器之间的服务器(代理服务器)，为了从目标服务器取得内容，客户端向代理服务器发送一个请求并指定目标，然后代理服务器向目标服务器转交请求并将获得的内容返回给客户端。
+
+反向代理（reverse proxy）：是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器。
 
 ## 安装配置
 
@@ -297,15 +305,15 @@ http {
         server IP:80 weight=3;
         server IP:80 weight=2;
         server IP:80 weight=3;
-				#nginx的upstream目前支持的分配:轮询|weight|ip_hash
+		#nginx的upstream目前支持的分配:轮询|weight|ip_hash
   	}
   
   	#虚拟主机的配置
     server {
-    		#监听端口
+    	#监听端口
         listen       8080;
     
-    		#监听地址，域名可以有多个，用空格隔开
+    	#监听地址，域名可以有多个，用空格隔开
         server_name  localhost;
 				
     		#默认编码
@@ -313,13 +321,13 @@ http {
 
         #access_log  logs/host.access.log  main;
     
-				#默认入口文件名称
+		#默认入口文件名称
         location / {
             root   html;
             index  index.html index.htm;
         }
     
-    		#对******进行负载均衡
+    	#对******进行负载均衡
         location ~ .*.(php|php5)?$
         {
             fastcgi_pass 127.0.0.1:9000;

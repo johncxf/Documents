@@ -2,7 +2,190 @@
 
 ### 链表
 
+#### [L876-简单] 链表的中间节点
 
+给你单链表的头结点 `head` ，请你找出并返回链表的中间结点。
+
+如果有两个中间结点，则返回第二个中间结点。
+
+**示例**
+
+```
+输入：head = [1,2,3,4,5]
+输出：[3,4,5]
+解释：链表只有一个中间结点，值为 3 。
+
+输入：head = [1,2,3,4,5,6]
+输出：[4,5,6]
+解释：该链表有两个中间结点，值分别为 3 和 4 ，返回第二个结点。
+```
+
+- 链表的结点数范围是 `[1, 100]`
+- `1 <= Node.val <= 100`
+
+**题解**
+
+先统计链表总数count，然后依次移动 count/2 次
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(1)
+
+```go
+func middleNode(head *ListNode) *ListNode {
+    tmp := head
+    count := 0
+    for tmp != nil {
+        count++
+        tmp = tmp.Next
+    }
+    for i := 0; i < count / 2; i++ {
+        head = head.Next
+    }
+    return head
+}
+```
+
+快慢指针：
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(1)
+
+```go
+func middleNode(head *ListNode) *ListNode {
+    slow, fast := head, head
+    for fast != nil && fast.Next != nil {
+        slow = slow.Next
+        fast = fast.Next.Next
+    }
+    return slow
+}
+```
+
+#### [L143-中等] 重排链表
+
+给定一个单链表 `L` 的头节点 `head` ，单链表 `L` 表示为：
+
+```
+L0 → L1 → … → Ln - 1 → Ln
+```
+
+请将其重新排列后变为：
+
+```
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+```
+
+不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+**示例**
+
+```
+输入：head = [1,2,3,4]
+输出：[1,4,2,3]
+
+输入：head = [1,2,3,4,5]
+输出：[1,5,2,4,3]
+```
+
+- 链表的长度范围为 `[1, 5 * 104]`
+- `1 <= node.val <= 1000`
+
+**题解**
+
+线性表
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(N)
+
+将链表所有节点存入数组，然后设置两个指针 i、j，是 nodes[i] 的 next 指向 nodes[j] ，nodes[j] 的next指向nodes[i+1] 
+
+```go
+func reorderList(head *ListNode) {
+	nodes := []*ListNode{}
+	// 将链表所有节点存入数组
+	for node := head; node != nil; node = node.Next {
+		nodes = append(nodes, node)
+	}
+	i, j := 0, len(nodes)-1
+	for i < j {
+		nodes[i].Next = nodes[j]
+		nodes[j].Next = nodes[i+1]
+		i++
+		j--
+	}
+	nodes[i].Next = nil
+}
+```
+
+找出结论：目标链表即为将原链表的左半端和反转后的右半端合并后的结果
+
+<img src="../../Image/algorithm/1720928500-dnEgOE-143_2.png" alt="143_2.png" style="zoom:50%;" />
+
+因此，可以按照上图步骤进行：
+
+- 找出链表中点并进行拆分
+- 反转右侧链表
+- 合并两个链表
+
+最后复杂度：
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(1)
+
+```go
+func reorderList(head *ListNode) {
+	if head.Next == nil {
+		return
+	}
+	// 中间节点
+	mid := middleList(head)
+	// 左右链表
+	left, right := head, mid.Next
+	// 断开左右链表
+	mid.Next = nil
+	// 反转右侧链表
+	right = reverseList(right)
+	// 合并链表
+	mergeTwoList(left, right)
+}
+
+// 合并链表
+func mergeTwoList(l1, l2 *ListNode) {
+	for l1 != nil && l2 != nil {
+		tmp1 := l1.Next
+		tmp2 := l2.Next
+
+		l1.Next = l2
+		l1 = tmp1
+
+		l2.Next = l1
+		l2 = tmp2
+	}
+}
+
+// 找出链表中间节点
+func middleList(head *ListNode) *ListNode {
+	slow, fast := head, head
+	// 偶数中间值为前一个
+	for fast.Next != nil && fast.Next.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	return slow
+}
+
+// 反转链表
+func reverseList(head *ListNode) *ListNode {
+	var prev *ListNode
+	for head != nil {
+		temp := head.Next
+		head.Next = prev
+		prev = head
+		head = temp
+	}
+	return prev
+}
+```
 
 ### 二叉树
 
@@ -1523,6 +1706,85 @@ class Solution {
         
         return $num;
     }
+}
+```
+
+#### [L2414-中等] 最长的字母序连续子字符串的长度
+
+**字母序连续字符串** 是由字母表中连续字母组成的字符串。换句话说，字符串 `"abcdefghijklmnopqrstuvwxyz"` 的任意子字符串都是 **字母序连续字符串** 。
+
+- 例如，`"abc"` 是一个字母序连续字符串，而 `"acb"` 和 `"za"` 不是。
+
+给你一个仅由小写英文字母组成的字符串 `s` ，返回其 **最长** 的 字母序连续子字符串 的长度。
+
+**示例**
+
+```
+输入：s = "abacaba"
+输出：2
+解释：共有 4 个不同的字母序连续子字符串 "a"、"b"、"c" 和 "ab" 。
+"ab" 是最长的字母序连续子字符串。
+
+输入：s = "abcde"
+输出：5
+解释："abcde" 是最长的字母序连续子字符串。
+```
+
+- `1 <= s.length <= 105`
+- `s` 由小写英文字母组成
+
+**题解**
+
+枚举：
+
+- 时间复杂度：O(N^2)
+- 空间复杂度：O(1)
+
+遍历字符串，以每个元素作为开始元素，向右进行查找，下一个字符必需是上一个字符的连续字符，不然退出
+
+```go
+func longestContinuousSubstring(s string) int {
+	max := 0
+	for i := 0; i < len(s); i++ {
+		count := 1
+		for j := i; j < len(s)-1 && s[j]+1 == s[j+1]; j++ {
+			count++
+		}
+		if count > max {
+			max = count
+		}
+	}
+	return max
+}
+```
+
+模拟：
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(1)
+
+遍历字符串，遇到不是连续的则更新此时的最大值，并将当前元素作为起始元素
+
+```go
+func longestContinuousSubstring(s string) int {
+	max := 0
+	// 定义左右区间
+	l, r := 0, 1
+	// 遍历数组
+	for ; r < len(s); r++ {
+		// 不连续则更新当前最大值
+		if s[r-1]+1 != s[r] {
+			if r-l > max {
+				max = r - l
+			}
+			// 左区间更新
+			l = r
+		}
+	}
+	if r-l > max {
+		max = r - l
+	}
+	return max
 }
 ```
 

@@ -173,11 +173,11 @@ void print(int n) {
 
 链表（linked list）是一种线性数据结构，其中的每个元素都是一个节点对象，各个节点通过“引用”相连接。引用记录了下一个节点的内存地址，通过它可以从当前节点访问到下一个节点。
 
-<img src="/../../Image/algorithm/image-20240630183041107.png" alt="image-20240630183041107" style="zoom:50%;" />
+<img src="../../Image/algorithm/image-20240630183041107.png" alt="image-20240630183041107" style="zoom:50%;" />
 
 常见的链表类型包括三种：
 
-<img src="/../../Image/algorithm/image-20240630223917845.png" alt="image-20240630223917845" style="zoom:50%;" />
+<img src="../../Image/algorithm/image-20240630223917845.png" alt="image-20240630223917845" style="zoom:50%;" />
 
 #### 单链表
 

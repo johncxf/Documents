@@ -2101,6 +2101,12 @@ func main() {
 ch := make(chan int)
 ```
 
+发送时元素值在右，通道变量在左：
+
+```
+ch <- 1  // 表示把元素 1 发送到通道 ch
+```
+
 接收时通道变量在右，可以通过指定变量接收元素值：
 
 ```go
@@ -2257,13 +2263,13 @@ fatal error: all goroutines are asleep - deadlock!
 
 因此，Go 语言支持的单向管道，实际上是在使用层面对通道进行限制，而不是语法层面：即我们在某个协程中只能对通道进行写入操作，而在另一个协程中只能对该通道进行读取操作。从这个层面来说，单向通道的作用是约束在生产协程中只能发送数据到通道，而在消费协程中只能从通道接收数据，从而让代码遵循「最小权限原则」，避免误操作和通道使用的混乱，让代码更加稳健。
 
-##### 单向只写通道（发送通道）：
+##### 单向只写通道（发送通道）
 
 ```go
 func test(ch chan<- int)
 ```
 
-##### 单向只读通道（接收通道）：
+##### 单向只读通道（接收通道）
 
 ```go
 func test(ch <-chan int)
@@ -2345,6 +2351,120 @@ select {
 可以看出，`select` 不像 `switch`，`case` 后面并不带判断条件，而是直接去查看 `case` 语句，每个 `case` 语句都必须是一个面向通道的操作，比如上面的示例代码中，第一个 `case` 试图从 `chan1` 接收数据并直接忽略读到的数据，第二个 `case` 试图向 `chan2` 通道发送一个整型数据 `1`，需要注意的是这两个 `case` 的执行不是 `if...else...` 那种先后关系，而是会并发执行，然后 `select` 会选择先操作成功返回的那个 `case` 分支去执行，如果两者同时返回，则随机选择一个执行，如果这两者都没有返回，则进入 `default` 分支，这里也不会出现阻塞，如果 `chan1` 通道为空，或者 `chan2` 通道已满，就会立即进入 `default` 分支，但是如果没有 `default` 语句，则会阻塞直到某个通道操作成功。
 
 ### Sync 包
+
+#### sync.Mutex
+
+`sync.Mutex` 是互斥锁。
+
+锁定和解锁操作分别通过互斥锁 `sync.Mutex` 的 `Lock` 和 `Unlock` 方法实现：
+
+```go
+lock := &sync.Mutex{}
+
+lock.Lock()
+代码段(临界区)
+lock.Unlock()
+```
+
+#### sync.RWMutex
+
+`sync.RWMutex` 是读写锁，分读锁和写锁，会对读操作和写操作区分对待。
+
+- 在读锁占用的情况下，会阻止写，但不阻止读，也就是多个 goroutine 可同时获取读锁，读锁调用 `RLock()` 方法开启，通过 `RUnlock` 方法释放；
+- 而写锁会阻止任何其他 goroutine（无论读和写）进来，整个锁相当于由该 goroutine 独占，和 Mutex 一样，写锁通过 `Lock` 方法启用，通过 `Unlock` 方法释放；
+- RWMutex 的底层实现实际上是组合了 Mutex：
+
+```go
+lock := &sync.RWMutex{}
+
+// 读锁
+lock.RLock()
+代码段(临界区)
+lock.RUnlock()
+
+// 写锁
+lock.Lock()
+代码段(临界区)
+lock.Unlock()
+```
+
+- 在读多写少的场景下，更适合用读写锁
+
+#### sync.Cond
+
+和互斥锁或读写锁（以下统称互斥锁）组合使用，用来协调想要访问共享资源的线程。
+
+```go
+locker := &sync.Mutex{}
+cond := sync.NewCond(locker)
+
+// 等待
+cond.Wait()
+
+// 通过单个协程
+cond.Signal()
+
+// 通知多个协程
+cond.Broadcast()
+```
+
+#### 原子操作
+
+https://laravelacademy.org/post/19993
+
+#### sync.WaitGroup
+
+`sync.WaitGroup` 提供了以下三个方法：
+
+- `Add`：`WaitGroup` 类型有一个计数器，默认值是0，我们可以通过 `Add` 方法来增加这个计数器的值，通常我们可以通过个方法来标记需要等待的子协程数量；
+- `Done`：当某个子协程执行完毕后，可以通过 `Done` 方法标记已完成，该方法会将所属 `WaitGroup` 类型实例计数器值减一，通常可以通过 `defer` 语句来调用它；
+- `Wait`：`Wait` 方法的作用是阻塞当前协程，直到对应 `WaitGroup` 类型实例的计数器值归零，如果在该方法被调用的时候，对应计数器的值已经是 0，那么它将不会做任何事情。
+
+#### sync.Once
+
+与 `sync.WaitGroup` 类型类似，`sync.Once` 类型也是开箱即用和并发安全的，其主要用途是保证指定函数代码只执行一次，类似于单例模式，常用于应用启动时的一些全局初始化操作。它只提供了一个 `Do` 方法，该方法只接受一个参数，且这个参数的类型必须是 `func()`，即无参数无返回值的函数类型。
+
+`sync.Once` 主要用于以下场景：
+
+- 单例模式：确保全局只有一个实例对象，避免重复创建资源；
+- 延迟初始化：在程序运行过程中需要用到某个资源时，通过 `sync.Once` 动态地初始化该资源；
+- 只执行一次的操作：例如只需要执行一次的配置加载、数据清理等操作；
+
+#### sync.Pool
+
+`sync.Pool`是一个临时对象池，可用来临时存储对象，下次使用时从对象池中获取，避免重复创建对象。相应的，该类型提供了 `Put` 和 `Get` 方法，分别对临时对象进行存储和获取。我们可以把 `sync.Pool` 看作存放可重复使用值的容器，由于 `Put` 方法支持的参数类型是空接口`interface{}`，因此这个值可以是任何类型，对应的，`Get` 方法返回值类型也是 `interface{}`。当我们通过 `Get` 方法从临时对象池获取临时对象后，会将原来存放在里面的对象删除，最后再返回这个对象，而如果临时对象池中原来没有存储任何对象，调用 `Get` 方法时会通过对象池的 `New` 字段对应函数创建一个新值并返回（这个 `New` 字段需要在初始化临时对象池时指定，否则对象池为空时调用 `Get` 方法返回的可能就是 `nil`），从而保证无论临时对象池中是否存在值，始终都能返回结果。
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+func main() {
+    var pool = &sync.Pool{
+        New: func() interface{} {
+            return "Hello,World!"
+        },
+    }
+    value := "Hello,123!"
+    pool.Put(value)
+    fmt.Println(pool.Get())
+    fmt.Println(pool.Get())
+}
+```
+
+输出：
+
+```
+Hello,123!
+Hello,World!
+```
+
+### context
+
+https://laravelacademy.org/post/20005#google_vignette
 
 ## 网络编程
 
