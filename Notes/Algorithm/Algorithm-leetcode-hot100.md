@@ -134,7 +134,12 @@ class Solution {
 
 **题解**
 
-构建hashMap，先对字符串安装字母进行排序，然后以排序后的字符串为key，原单词为 value
+排序+哈希表：
+
+- 时间复杂度：O(nklogk)
+- 空间复杂度：O(nk)
+
+构建hashMap，先对字符串按照字母进行排序，然后以排序后的字符串为key，原单词为 value
 
 最后遍历 hashMap，取出所有 value 拼装成结果数组即可
 
@@ -157,6 +162,29 @@ func groupAnagrams(strs []string) [][]string {
 		ans = append(ans, v)
 	}
 	return ans
+}
+```
+
+计数+哈希表：
+
+- 时间复杂度：O(n(k+∣Σ∣))，*n* 是 *strs* 中的字符串的数量，*k* 是 *strs* 中的字符串的的最大长度，Σ 是字符集
+- 空间复杂度：O(n(k+∣Σ∣))
+
+```go
+func groupAnagrams(strs []string) [][]string {
+    hash := map[[26]int][]string{}
+    for _, str := range strs {
+        cnt := [26]int{}
+        for _, ch := range str {
+            cnt[ch-'a']++
+        }
+        hash[cnt] = append(hash[cnt], str)
+    }
+    var ans [][]string
+    for _, v := range hash {
+        ans = append(ans, v)
+    }
+    return ans
 }
 ```
 
@@ -285,18 +313,18 @@ Go：
 
 ```go
 func maxArea(height []int) int {
-    n := len(height)
-    left, right, max, tmp := 0, n - 1, 0, 0
-    for left < right {
-        if height[left] < height[right] {
-            tmp = height[left] * (right - left)
-            left++
+    max, l, r := 0, 0, len(height)-1
+    for l < r {
+        h := height[l]
+        if height[l] > height[r] {
+            h = height[r]
+            r--
         } else {
-            tmp = height[right] * (right - left)
-            right--
+            l++
         }
-        if tmp > max {
-            max = tmp
+        area := (r-l+1)*h
+        if area > max {
+            max = area
         }
     }
     return max
@@ -632,23 +660,19 @@ func trap(height []int) int {
 
 ```go
 func lengthOfLongestSubstring(s string) int {
-    n := len(s)
-    right, max := 0, 0
-    // hash map，存储不重复的字符串，用于判断字符串是否出现过
-    hash := make(map[byte]int)
-    for i := 0; i < n; i++ {
-        // 除了 i = 0 第一次，每一次移动左指针的时候都需要删除第一个hash元素
-        if i != 0 {
-            delete(hash, s[i-1])
+    max := 0
+    // 记录当前窗口所有元素出现次数
+    count := map[byte]int{}
+    for l, r := 0, 0; r < len(s); r++ {
+        count[s[r]]++
+        // 当出现重复元素时，移动左指针，直到没有元素重复
+        for count[s[r]] > 1 {
+            count[s[l]]--
+            l++
         }
-        // 不断移动右指针，直到出现重复字符退出
-        for right < n && hash[s[right]] == 0 {
-            hash[s[right]]++
-            right++
-        }
-        // 更新最大值
-        if right - i > max {
-            max = right - i
+        // 计算当前窗口最大值并更新
+        if r-l+1 > max {
+            max = r-l+1
         }
     }
     return max
@@ -1143,6 +1167,39 @@ func maxSubArray(nums []int) int {
 }
 ```
 
+迭代：
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(1)
+
+遍历数组，记录当前子数组和：
+
+- 当前元素值大于子数组和+当前元素值，则更新子数组和值为当前值
+- 反之，则把子数组和加上当前元素值
+- 每次更新最大值
+
+```go
+func maxSubArray(nums []int) int {
+    // 最大值，当前子数组和
+    max, cur := nums[0], nums[0]
+    for i := 1; i < len(nums); i++ {
+        if nums[i] > cur + nums[i] {
+            // 当前元素值大于子数组和，则更新当前子数组和值
+            cur = nums[i]
+        } else {
+            // 当前子数组和值需要加上当前元素
+            cur += nums[i]
+        }
+        if cur > max {
+            max = cur
+        }
+    }
+    return max
+}
+```
+
+
+
 #### [L56-中等] 合并区间
 
 以数组 `intervals` 表示若干个区间的集合，其中单个区间为 `intervals[i] = [starti, endi]` 。请你合并所有重叠的区间，并返回 *一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间* 。
@@ -1236,6 +1293,35 @@ func rotateArray(nums []int, k int) {
 	arr2 := nums[n-k:]
 	ans := append(arr2, arr1...)
 	copy(nums, ans)
+}
+```
+
+数组翻转（原地）：
+
+```
+nums = [1,2,3,4,5,6,7], k = 3
+数组翻转：[7,6,5,4,3,2,1]
+翻转 0,k-1 元素：[5,6,7,4,3,2,1]
+翻转 k,n-1 元素：[5,6,7,1,2,3,4]
+```
+
+代码实现：
+
+```go
+func rotate(nums []int, k int)  {
+    n := len(nums)
+    k = k % n
+    reverse(nums, 0, n-1)
+    reverse(nums, 0, k-1)
+    reverse(nums, k, n-1)
+}
+
+func reverse(nums []int, i, j int) {
+    for i < j {
+        nums[i], nums[j] = nums[j], nums[i]
+        i++
+        j--
+    }
 }
 ```
 
@@ -1562,6 +1648,9 @@ func spiralOrder(matrix [][]int) []int {
 
 即：对于`matrix[row][col]`，在旋转后，它的新位置为 `matrix[col][n−row−1]`
 
+- 时间复杂度：O(N^2)
+- 空间复杂度：O(N^2)
+
 ```go
 func rotate(matrix [][]int)  {
     n := len(matrix)
@@ -1575,6 +1664,50 @@ func rotate(matrix [][]int)  {
         }
     }
     copy(matrix, newMatrix)
+}
+```
+
+题目要求原地，所以上面的解法不符合要求
+
+先水平翻转，再对角线翻转
+
+- 时间复杂度：O(N^2)
+- 空间复杂度：O(1)
+
+```
+5  1  9  11
+2  4  8  10
+13 3  6  7
+15 14 12 16
+先进行水平翻转：newMatrix[n-1-row][col] = matrix[row][col]
+15 14 12 16
+13 3  6  7
+2  4  8  10
+5  1  9  11
+再进行主对角线翻转：newMatrix[col][row] = matrix[row][col]
+15 13 2  5
+14 3  4  1
+12 6  8  9
+16 7  10 11
+经过两次翻转后可以发现结果和方法一的结果是一致的：matrix[col][n−row−1]
+```
+
+代码实现：
+
+```go
+func rotate(matrix [][]int)  {
+    n := len(matrix)
+    // 先水平翻转（直接一行一行互换即可）
+    for row := 0; row < n/2; row++ {
+        matrix[row], matrix[n-1-row] = matrix[n-1-row], matrix[row]
+    }
+    // 再主对角线翻转
+    for row := 0; row < n; row++ {
+        // 这里只需要遍历对角线左侧的元素，和右侧进行换值
+        for col := 0; col < row; col++ {
+            matrix[row][col], matrix[col][row] = matrix[col][row], matrix[row][col]
+        }
+    }
 }
 ```
 
@@ -1605,7 +1738,54 @@ func rotate(matrix [][]int)  {
 
 **题解**
 
+直接查找
+
+- 时间复杂度：*O*(*mn*)
+- 空间复杂度：*O*(1)
+
+```go
+func searchMatrix1(matrix [][]int, target int) bool {
+	for _, row := range matrix {
+		for _, col := range row {
+			if col == target {
+				return true
+			}
+		}
+	}
+	return false
+}
+```
+
+二分查找：
+
+- 时间复杂度：*O*(*m*log*n*)
+- 空间复杂度：*O*(1)
+
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+	m, n := len(matrix), len(matrix[0])
+	// 对每一行进行二分查找（也可以对每一列）
+    for i := 0; i < m; i++ {
+        l, r := 0, n-1
+        for l <= r {
+            mid := (l + r) / 2
+            if matrix[i][mid] == target {
+                return true
+            } else if matrix[i][mid] < target {
+                l = mid+1
+            } else {
+                r = mid-1
+            }
+        }
+    }
+    return false
+}
+```
+
 Z 字查找
+
+- 时间复杂度：*O*(*m*+*n*)
+- 空间复杂度：*O*(1)
 
 ```go
 func searchMatrix(matrix [][]int, target int) bool {
@@ -1678,18 +1858,17 @@ Go：
 
 ```go
 func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-    dummy := &ListNode{Val: 0}
+    dummy := &ListNode{}
     current := dummy
     for list1 != nil && list2 != nil {
         if list1.Val < list2.Val {
             current.Next = list1
-            current = current.Next
             list1 = list1.Next
         } else {
             current.Next = list2
-            current = current.Next
             list2 = list2.Next
         }
+        current = current.Next
     }
     if list1 != nil {
         current.Next = list1
@@ -1803,6 +1982,24 @@ func hasCycle(head *ListNode) bool {
         }
         hash[head] = true
         head = head.Next
+    }
+    return false
+}
+```
+
+快慢指针：
+
+慢指针 slow 每次走一步，快指针 fast 每次走两步，如果有环一定会相遇
+
+```go
+func hasCycle(head *ListNode) bool {
+    slow, fast := head, head
+    for fast != nil && fast.Next != nil {
+        slow = slow.Next
+        fast = fast.Next.Next
+        if slow == fast {
+            return true
+        }
     }
     return false
 }
@@ -1967,6 +2164,9 @@ func reverseList(head *ListNode) *ListNode {
 **题解**
 
 先遍历链表存入数组，再遍历数组进行判断
+
+- 时间复杂度：*O(N)*
+- 空间复杂度：*O(N)*
 
 ```go
 /**
@@ -3047,7 +3247,10 @@ func check(p, q *TreeNode) bool {
 
 **题解**
 
-> 深度优先搜索
+深度优先搜索
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(height)
 
 ```go
 /**
@@ -3070,6 +3273,35 @@ func max(a, b int) int {
         return a
     }
     return b
+}
+```
+
+广度优先搜索
+
+- 时间复杂度：O(N)
+- 空间复杂度：O(N)
+
+```go
+func maxDepth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    ans := 0
+    q := []*TreeNode{root}
+    for len(q) > 0 {
+        p := make([]*TreeNode, 0)
+        for _, node := range q {
+            if node.Left != nil {
+                p = append(p, node.Left)
+            }
+            if node.Right != nil {
+                p = append(p, node.Right)
+            }
+        }
+        ans++
+        q = p
+    }
+    return ans
 }
 ```
 
@@ -5127,6 +5359,26 @@ class Solution {
 
 **题解**
 
+Z 字查找
+
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+	m, n := len(matrix), len(matrix[0])
+    for i, j := 0, n-1; i < m && j >= 0; {
+        if matrix[i][j] == target {
+            return true
+        } else if matrix[i][j] < target {
+            i++
+        } else {
+            j--
+        }
+    }
+    return false
+}
+```
+
+二分查找：
+
 先对第一列进行二分查找，找出最后一个小于目标值的元素 row
 
 因为，矩阵从上到下递增，从左到右递增，所以目标值只可能存在于 row 行中
@@ -6159,23 +6411,27 @@ func topKFrequent(nums []int, k int) []int {
 ```go
 func topKFrequent(nums []int, k int) []int {
     // 先遍历数组统计每个元素出现的次数
-    hash := map[int]int{}
+    count := map[int]int{}
     for _, num := range nums {
-        hash[num]++
+        count[num]++
     }
     // 桶排序
     // 构建 n+1 个桶
     buckets := make([][]int, len(nums)+1)
     // 以元素出现的次数为下标分配到桶里
-    for i, v := range hash {
+    for i, v := range count {
         buckets[v] = append(buckets[v], i)
     }
+    ans := make([]int, 0)
     // 倒序遍历所有桶，取出 k 个元素
-    var ans []int
-    for i := len(buckets) - 1; i > 0 && k > 0; i-- {
-        if len(buckets[i]) > 0 {
-            k = k - len(buckets[i])
+    for i := len(buckets)-1; i >= 0; i-- {
+        if len(buckets[i]) == 0 {
+            continue
+        }
+        // 题目中说答案唯一，所以判断 k > 0，最后一个集合里面的数都符合要求
+        if k > 0 {
             ans = append(ans, buckets[i]...)
+            k -= len(buckets[i])
         }
     }
     return ans
@@ -6312,7 +6568,7 @@ func (mf *MedianFinder) FindMedian() float64 {
 
 贪心策略：
 
-贪心的选择股价最低点作为买入点，选择收益最高作为卖出点
+遍历数组，记录当前时间以及之前价格最低点，作为买入时间点，并以当前时间为卖出时间，计算当前的收益，更新最大收益
 
 ```go
 func maxProfit(prices []int) int {
@@ -6958,12 +7214,11 @@ func lengthOfLIS(nums []int) int {
     n := len(nums)
     // 构建dp表
     // dp[i] 代表以位置 i 结尾的最长递增子序列的长度
-    dp := make([]int, n+1)
-    dp[0] = 1
+    dp := make([]int, n)
     // dp中的最大值
-    max := dp[0]
+    max := 1
     // 状态转移，求解 dp[i]
-    for i := 1; i < n; i++ {
+    for i := 0; i < n; i++ {
         // 最小就是本身，为1
         dp[i] = 1
         for j := 0; j < i; j++ {
@@ -6973,8 +7228,6 @@ func lengthOfLIS(nums []int) int {
             if nums[j] < nums[i] {
                 if dp[j] + 1 > dp[i] {
                     dp[i] = dp[j] + 1
-                } else {
-                    dp[i] = dp[i]
                 }
             }
         }
@@ -7116,7 +7369,7 @@ func coinChange(coins []int, amount int) int {
 - 当 i=0 时，只有一个正整数 nums[0] 可以被选取，因此 `dp[0][nums[0]]=true`。
 
 如果 `j≥nums[i]`，则对于当前的数字 nums[i]，可以选取也可以不选取，两种情况只要有一个为 true，就有 `dp[i][j]=true`。
-如果 `j<nums[i]`，则在选取的数字的和等于 j 的情况下无法选取当前的数字 nums[i]，因此有 `dp[i][j]=dp[i−1`][j]。
+如果 `j<nums[i]`，则在选取的数字的和等于 j 的情况下无法选取当前的数字 nums[i]，因此有 `dp[i][j]=dp[i−1][j]`。
 
 状态转移方程：
 $$
@@ -7840,7 +8093,7 @@ exection -> execution (插入 'u')
 
 所以，此时：`dp[i][j]=Min(dp[i][j-1], dp[i-1][j], dp[i-1][j-1]) + 1`
 
-确定边界：当n、m都为0，则不需要操作，`dp[0][0]=0`；当i为0时，需要操作j次，`dp[i][0]=i`；当j为0，则需要操作i次，`dp[0][j]=j`；
+确定边界：当n、m都为0，则不需要操作，`dp[0][0]=0`；当j为0时，需要操作i次，`dp[i][0]=i`；当i为0，则需要操作j次，`dp[0][j]=j`；
 
 参考：https://www.hello-algo.com/chapter_dynamic_programming/edit_distance_problem/#1
 
