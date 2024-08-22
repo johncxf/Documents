@@ -519,5 +519,3 @@ session_destroy();
 <img src="../../Image/oldimg/1565599172028.png" alt="1565599172028" style="zoom:50%;" />
 
 #### 18.浏览器缓存和数据压缩
-
-#### 19.CDN

@@ -1473,6 +1473,16 @@ func firstMissingPositive(nums []int) int {
 - 时间复杂度：O(N)
 - 空间复杂度：O(1)
 
+```
+下标：  0 1 2 3
+原数组：3 4 -1 1
+	  -1 4 3 1
+	  -1 1 3 4
+最后：	1 -1 3 4
+```
+
+代码：
+
 ```go
 func firstMissingPositive(nums []int) int {
     n := len(nums)
@@ -2895,10 +2905,10 @@ func sortList(head *ListNode) *ListNode {
 		return head
 	}
 	// 定义快慢指针
-	slow, fast := head, head.Next
+	slow, fast := head, head
 	// 慢指针每次走1步，快指针每次走2步，当快指针fast走到最后的时候，慢指针的位置就是中点
 	// 当链表为偶数是，slow指向中间前一个元素
-	for fast != nil && fast.Next != nil {
+	for fast.Next != nil && fast.Next.Next != nil {
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
@@ -4717,7 +4727,7 @@ func backtraceCombinationSum(start, target int, state, choices []int, res *[][]i
 		}
 		// 更新状态
 		state = append(state, choices[i])
-		// // 进行下一轮选择
+		// 进行下一轮选择
 		backtraceCombinationSum(i, target-choices[i], state, choices, res)
 		// 回退
 		state = state[:len(state)-1]
@@ -5085,29 +5095,24 @@ func backtrace(n, row int, cols, diags1, diags2 []bool, state [][]string, res *[
 
 **题解**
 
-进行二分查找，需要先初始化一个 insert 插入位置，默认为 n
+进行二分查找，如果能找到直接返回
 
-如果目标值小于中间值，且找不到，说明只能插入在 mid 之前的位置，也就是 insert=mid
-
-如果目标值大于中间值，且找不到，则说明大于数组中所有值，插入位置为 n
+找不到则最后插入坐标刚好是 left 的位置
 
 ```go
 func searchInsert(nums []int, target int) int {
-	n := len(nums)
-	left, right := 0, n-1
-	insert := n
+	left, right := 0, len(nums)-1
 	for left <= right {
 		mid := (right + left) / 2
 		if target == nums[mid] { // 找到
 			return mid
 		} else if target < nums[mid] { // 目标值小于中间值，且找不到
-			insert = mid
 			right = mid - 1
 		} else { // 目标值大于中间值，且找不到
 			left = mid + 1
 		}
 	}
-	return insert
+	return left
 }
 ```
 
@@ -8550,5 +8555,28 @@ func findDuplicate(nums []int) int {
 }
 ```
 
+利用原数组作为辅助数组
 
+```go
+func findDuplicate(nums []int) int {
+    // 遍历所有元素
+    for _, num := range nums {
+        // 如果该位置为负数，说明被修改过，也就是存在重复
+        if nums[abs(num)] < 0 {
+            return abs(num)
+        }
+        // 修改以当前元素绝对值为下标位置的值为负数
+        nums[abs(num)] = -nums[abs(num)]
+    }
+    return -1
+}
+
+func abs(num int) int {
+    if num < 0 {
+        return -num
+    }
+    return num
+}
+
+```
 

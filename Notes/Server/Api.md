@@ -293,7 +293,7 @@ return $this->response->paginator(User::paginate(2),new UserTransformer());
 
 下面是ContentTransformer中的定义，
 
-```text
+```php
 class ContentTransformer extends TransformerAbstract
 {
 	# 定义可以include可使用的字段
@@ -322,7 +322,7 @@ return $this->response->paginator(Content::paginate(1),new ContentTransformer())
 
 返回结果如下
 
-```text
+```php
 {
     "data": [
         {
@@ -362,7 +362,7 @@ return response()->json(['error' => 'Unauthorized'], 401);
 
 **错误响应**
 
-```text
+```php
 // 一个自定义消息和状态码的普通错误。
 return $this->response->error('This is an error.', 404);
 
@@ -386,7 +386,7 @@ return $this->response->errorUnauthorized('帐号或密码错误');
 
 使用 `api.throttle`中间件结合 `limit、expires` 参数可实现接口次数限制。下面是定义在 `routes/api.php` 路由文件中的示例。
 
-```text
+```php
 $api->version('v1', ['namespace' => '\App\Api'], function ($api) {
     $api->group(['middleware' => 'api.throttle', 'limit' => 2, 'expires' => 1], function ($api) {
         $api->get('user', 'UserController@all');
@@ -402,7 +402,7 @@ $api->version('v1', ['namespace' => '\App\Api'], function ($api) {
 
 **在所有的路由上启用**
 
-```text
+```php
 $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     // 在这个版本群组下的所有路由将进行身份验证。
 });
@@ -410,7 +410,7 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
 
 **特定的路由上启用**
 
-```text
+```php
 $api->version('v1', function ($api) {
     $api->get('user', ['middleware' => 'api.auth', function () {
         // 这个路由将进行身份验证。
@@ -426,7 +426,7 @@ $api->version('v1', function ($api) {
 
 `Laravel`可以在控制器里启用中间件。您可以在构造函数里使用 `middleware` 的方法。
 
-```text
+```php
 class UserController extends Illuminate\Routing\Controller
 {
     use Helpers;
@@ -479,7 +479,7 @@ php artisan jwt:secret
 
 JWT配置文件是 `config/jwt.php`，下面有部分配置项进行说明：
 
-```text
+```php
 #令牌过期时间(单位分钟)，设置null为永不过期
 'ttl' => env('JWT_TTL', 60)
 
@@ -493,7 +493,7 @@ JWT配置文件是 `config/jwt.php`，下面有部分配置项进行说明：
 
 下面的示例应该能让您了解这可能是什么样子的。显然，您应该根据需要进行任何更改，以满足自己的需要。
 
-```text
+```php
 <?php
 
 namespace App;
@@ -533,7 +533,7 @@ class User extends Authenticatable implements JWTSubject
 
 修改 `config/auth.php` 文件以使用jwt保护来为接口身份验证提供支持。
 
-```text
+```php
 'guards' => [
 	'web' => [
 		'driver' => 'session',
@@ -548,7 +548,7 @@ class User extends Authenticatable implements JWTSubject
 
 修改dingo配置文件 `config/api.php` 文件中的身份验证提供者
 
-```text
+```php
 'auth' => [
 	'jwt' => \Dingo\Api\Auth\Provider\JWT::class,
 ],
@@ -558,7 +558,7 @@ class User extends Authenticatable implements JWTSubject
 
 **路由定义**
 
-```text
+```php
 $api = app(\Dingo\Api\Routing\Router::class);
 $api->version('v1', ['namespace' => 'App\Http\Controllers\Api',], function ($api) {
     $api->post('login', 'AuthController@login');
@@ -569,7 +569,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers\Api',], function ($api
 
 **控制器定义**
 
-```text
+```php
 class AuthController extends Controller
 {
     public function __construct()
@@ -632,14 +632,7 @@ Authorization: Bearer 令牌数据
 
 在postman 工具中可以使用以下方式简化操作
 
-![image-20200326130000403](../Image/oldimg/image-20200326130000403.png)
-
-
-
-
-
-
-
+![image-20200326130000403](../../Image/oldimg/image-20200326130000403.png)
 
 
 
