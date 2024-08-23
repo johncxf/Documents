@@ -5157,8 +5157,7 @@ func searchOrderArray(nums []int, target int) int {
 		if target == nums[mid] {
 			return mid
 		}
-        // 左侧序列递增
-		if nums[mid] >= nums[left] {
+		if nums[mid] >= nums[left] {// 左侧序列递增
 			if nums[left] <= target && target <= nums[mid] {// 在左序列中
 				right = mid - 1
 			} else {// 不在左序列
@@ -6931,13 +6930,17 @@ func generate(numRows int) [][]int {
 
 **题解**
 
-dp[i] 表示以 i 结尾的字符串是否可以被 wordDict 中组合而成
+dp[i] 表示字符串前 i 个字符是否可以由 wordDict 中组合而成
+
+dp[0] 初始化为 true
+
+求解 dp[i] 时，遍历 wordDict，如果存在 word == s[i-len(word):i]，则说明 `dp[i] = dp[i] || dp[i-len(word)]`
 
 ```go
 func wordBreak(s string, wordDict []string) bool {
     n := len(s)
 	// 构建dp表
-	// dp[i] 表示以 i 结尾的字符串是否可以被 wordDict 中组合而成
+	// dp[i] 表示字符串前 i 个字符是否可以由 wordDict 中组合而成
 	dp := make([]bool, n+1)
 	dp[0] = true
 	// 状态转移：遍历所有 i
@@ -6948,8 +6951,11 @@ func wordBreak(s string, wordDict []string) bool {
 			// 以 i 结尾的字符串长度需要大于当前单词长度
 			// 单词相等
 			if i-length >= 0 && s[i-length:i] == word {
-				dp[i] = dp[i] || dp[i-length]
+				dp[i] = dp[i-length]
 			}
+            if dp[i] {
+                break
+            }
 		}
 	}
 	return dp[n]
