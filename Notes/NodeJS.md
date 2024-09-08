@@ -369,6 +369,8 @@ package.json 位于模块的目录下，用于定义包的属性。
 - **main** - main 字段指定了程序的主入口文件，require('moduleName') 就会加载这个文件。这个字段的默认值是模块根目录下面的 index.js。
 - **keywords** - 关键字
 
+详细：https://npm.nodejs.cn/cli/v10/configuring-npm/package-json
+
 ### 卸载模块
 
 我们可以使用以下命令来卸载 Node.js 模块。

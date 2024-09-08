@@ -23,8 +23,6 @@ $ npm install -g typescript
 $ tsc index.ts
 ```
 
-
-
 ## 基础语法
 
 ### 基础类型
