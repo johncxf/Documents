@@ -13,6 +13,7 @@ Spring Framework主要包括几个模块：
 - 支持基于Reactive的Web开发；
 - 以及集成JMS、JavaMail、JMX、缓存等其他模块。
 
-## SpringBoot
+## IoC 容器
 
-官网：https://spring.io/projects/spring-boot#overview
+IoC全称Inversion of Control，直译为控制反转。
+
