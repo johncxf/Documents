@@ -509,7 +509,9 @@ public @interface MyAnnotation {
 
 ## 反射
 
-Java的反射是指程序在运行期可以拿到一个对象的所有信息
+反射（Reflection），Java的反射是指程序在运行期可以拿到一个对象的所有信息。
+
+
 
 ## 泛型
 
@@ -517,7 +519,155 @@ Java的反射是指程序在运行期可以拿到一个对象的所有信息
 
 ## 面向对象
 
+### 基础
 
+#### 方法
+
+定义方法：
+
+```java
+修饰符 方法返回类型 方法名(方法参数列表) {
+    若干方法语句;
+    return 方法返回值;
+}
+```
+
+例：
+
+```java
+public void setName(String name) {
+    ...
+}
+```
+
+#### 构造方法
+
+构造方法的名称就是类名，构造方法的参数没有限制，在方法内部，也可以编写任意语句。但是，和普通方法相比，构造方法没有返回值（也没有`void`），调用构造方法，必须用`new`操作符。
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Person p = new Person("Xiao Ming", 15);
+        System.out.println(p.getName());
+        System.out.println(p.getAge());
+    }
+}
+
+class Person {
+    private String name;
+    private int age;
+
+    // 构造方法
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+
+    public int getAge() {
+        return this.age;
+    }
+}
+```
+
+所有类都有构造方法，如何自己没有定义，则编译器会默认生成：
+
+```java
+class Person {
+    public Person() {
+    }
+}
+```
+
+可以定义多个构造方法：
+
+```java
+class Person {
+    private String name;
+    private int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public Person(String name) {
+        this.name = name;
+        this.age = 12;
+    }
+
+    public Person() {
+    }
+}
+```
+
+- 如果调用`new Person("Xiao Ming", 20);`，会自动匹配到构造方法`public Person(String, int)`
+- 如果调用`new Person("Xiao Ming");`，会自动匹配到构造方法`public Person(String)`
+- 如果调用`new Person();`，会自动匹配到构造方法`public Person()`
+
+#### 包
+
+java中包名一般采用域名倒置的写法，如：`com.xxx`
+
+申明包名：
+
+```java
+package xxx; // 申明包名（一般是 com.xxx.文件夹名）
+
+public class Person {}
+```
+
+导入包：
+
+```java
+package xxx;
+
+// 
+import a.b.c
+    
+// 导入 a.b 下所有 class
+import a.b.*
+
+// 导入System类的所有静态字段和静态方法:
+import static java.lang.System.*;
+
+public class Main {
+    public static void main(String[] args) {
+        // 相当于调用System.out.println(…)
+        out.println("Hello, world!");
+    }
+}
+```
+
+### 核心类
+
+#### JavaBean
+
+JavaBean是一种符合命名规范的`class`，它通过`getter`和`setter`来定义属性；
+
+- 我们通常把一组对应的读方法（`getter`）和写方法（`setter`）称为属性（`property`）
+
+示例：
+
+```java
+public class Person {
+    private String name;
+    private int age;
+
+    public String getName() { return this.name; }
+    public void setName(String name) { this.name = name; }
+
+    public int getAge() { return this.age; }
+    public void setAge(int age) { this.age = age; }
+
+    public boolean isChild() {
+        return age <= 6;
+    }
+}
+```
 
 ## 异常处理
 
