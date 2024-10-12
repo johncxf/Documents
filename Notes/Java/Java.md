@@ -517,6 +517,116 @@ public @interface MyAnnotation {
 
 
 
+## 集合
+
+Java提供了数组这种数据类型，可以充当集合，那么，我们为什么还需要其他集合类？这是因为数组有如下限制：
+
+- 数组初始化后大小不可变；
+- 数组只能按索引顺序存取。
+
+Java标准库自带的`java.util`包提供了集合类：`Collection`，它是除`Map`外所有其他集合类的根接口。Java的`java.util`包主要提供了以下三种类型的集合：
+
+- `List`：一种有序列表的集合，例如，按索引排列的`Student`的`List`；
+- `Set`：一种保证没有重复元素的集合，例如，所有无重复名称的`Student`的`Set`；
+- `Map`：一种通过键值（key-value）查找的映射表集合，例如，根据`Student`的`name`查找对应`Student`的`Map`。
+
+### List 有序列表
+
+List 是有序列表，java 中List有两种实现方式
+
+- ArrayList：`ArrayList`把添加和删除的操作封装起来，让我们操作`List`类似于操作数组，却不用关心内部元素如何移动；
+- LinkedList：`LinkedList`通过“链表”实现；
+
+通常情况下，我们总是优先使用`ArrayList`。
+
+使用示例：
+
+```java
+package com.example.practice;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ListDemo {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        list.add("apple"); // size=1
+        list.add("pear"); // size=2
+        list.add("apple"); // 允许重复添加元素，size=3
+        System.out.println("size: " + list.size());
+
+        list.add(null); // 可以添加 null
+        System.out.println(list.get(3)); // null
+
+        // for循环遍历
+        System.out.println("-------");
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }
+
+        // 通过迭代器 Iterator 遍历
+        System.out.println("-------");
+        for (String s : list) {
+            System.out.println(s);
+        }
+    }
+}
+```
+
+### Map 哈希表
+
+Map 是 key-value 键值对的集合
+
+使用示例：
+
+```java
+package com.example.practice;
+
+import com.alibaba.fastjson.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MapDemo {
+    public static void main(String[] args) {
+        Student s = new Student("Xiao Ming", 99);
+        Map<String, Student> map = new HashMap<>();
+        
+        map.put("xiaoming", s); // 添加元素
+        System.out.println(JSONObject.toJSON(map.get("xiaoming"))); // 根据key获取value
+
+        System.out.println(map.get("aaa")); // null
+        
+        Map<String, Integer> map2 = new HashMap<>();
+        map2.put("apple", 123);
+        map2.put("pear", 456);
+        map2.put("banana", 789);
+        
+        // 根据 key 遍历
+        for (String key : map2.keySet()) {
+            Integer value = map2.get(key);
+            System.out.println(key + " = " + value);
+        }
+        
+        // for each 循环遍历Map对象的entrySet()集合
+        for (Map.Entry<String, Integer> entry : map2.entrySet()) {
+            String key = entry.getKey();
+            Integer value = entry.getValue();
+            System.out.println(key + " = " + value);
+        }
+    }
+}
+
+class Student {
+    public String name;
+    public int score;
+    public Student(String name, int score) {
+        this.name = name;
+        this.score = score;
+    }
+}
+```
+
 ## 面向对象
 
 ### 基础
